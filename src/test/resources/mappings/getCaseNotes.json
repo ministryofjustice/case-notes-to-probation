@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/nomis/casenotes"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "casenotes": [
+        {
+          "nomisId": "1234",
+          "noteId": "ABCD",
+          "noteType": "observation",
+          "content": "This is a case note",
+          "timestamp": "2017-03-12T12:34:56Z"
+        }
+      ]
+    }
+  }
+}
