@@ -15,9 +15,31 @@
           "noteId": "ABCD",
           "noteType": "observation",
           "content": "This is a case note",
-          "timestamp": "2017-03-12T12:34:56Z"
+          "timestamp": "2017-03-13T12:34:56Z"
+        },
+        {
+          "nomisId": "5678",
+          "noteId": "EFGH",
+          "noteType": "admin",
+          "content": "More case notes",
+          "timestamp": "2017-03-14T09:00:00Z"
+        },
+        {
+          "nomisId": "9876",
+          "noteId": "IJKL",
+          "noteType": "regular",
+          "content": "Even more notes",
+          "timestamp": "2017-03-15T23:45:12Z"
+        },
+        {
+          "nomisId": "5432",
+          "noteId": "MNOP",
+          "noteType": "regular",
+          "content": "Yet more notes",
+          "timestamp": "2017-03-16T13:45:12Z"
         }
       ]
-    }
+    },
+    "fixedDelayMilliseconds": 2000
   }
 }

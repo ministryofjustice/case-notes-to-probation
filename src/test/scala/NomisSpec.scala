@@ -33,7 +33,12 @@ class NomisSpec extends FunSpec with GivenWhenThen with Matchers {
 
       Then("the API receives a HTTP GET call and returns the Case Notes")
       verify(getRequestedFor(urlEqualTo("/nomis/casenotes")))
-      result should equal(PullResult(Seq(SourceCaseNote("1234", "ABCD", "observation", "This is a case note", "2017-03-12T12:34:56Z")), None))
+      result should equal(PullResult(Seq(
+        SourceCaseNote("1234", "ABCD", "observation", "This is a case note", "2017-03-13T12:34:56Z"),
+        SourceCaseNote("5678", "EFGH", "admin", "More case notes", "2017-03-14T09:00:00Z"),
+        SourceCaseNote("9876", "IJKL", "regular", "Even more notes", "2017-03-15T23:45:12Z"),
+        SourceCaseNote("5432", "MNOP", "regular", "Yet more notes", "2017-03-16T13:45:12Z")
+      ), None))
 
       api.stop()
       system.terminate()

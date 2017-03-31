@@ -35,7 +35,7 @@ class ServerSpec extends FunSpec with GivenWhenThen with Eventually with Matcher
       When("the service runs")
       val system = Server.run(testConfig)
 
-      Then("the two case notes are copied to the target system one at a time")
+      Then("the two case notes are copied to the target system individually")
       eventually(Timeout(Span(5, Seconds))) { receivedNotes should equal(Seq(Some(caseNote1.toTarget), Some(caseNote2.toTarget))) }
 
       Thread.sleep(1000) // Allow a second for PushResult logging messages to be delivered

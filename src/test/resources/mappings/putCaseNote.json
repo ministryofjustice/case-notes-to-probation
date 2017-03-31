@@ -1,9 +1,14 @@
 {
   "request": {
     "method": "PUT",
-    "url": "/delius/5678/efgh"
+    "urlPattern": "/delius/.*/.*"
   },
   "response": {
-    "status": 204
+    "status": 204,
+    "delayDistribution": {
+      "type": "uniform",
+      "lower": 1000,
+      "upper": 3000
+    }
   }
 }
