@@ -5,5 +5,5 @@ import com.google.inject.Provider
 
 class ActorSystemProvider extends Provider[ActorSystem] {
 
-  override def get() = ActorSystem("system")
+  override def get() = ActorSystem("pollpush")
 }

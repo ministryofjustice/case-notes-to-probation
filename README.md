@@ -22,6 +22,15 @@ Configuration parameters can be supplied via environment variables, e.g.:
 
 ### Development notes
 
-The pull/push functionality is unit tested via dependency-injected mock APIs. The source and target REST APIs are also directly tested via WireMock HTTP Servers that mock the HTTP endpoints.
+The pull/push functionality is unit tested via dependency-injected mock APIs. The source and target REST APIs are also directly tested via WireMock HTTP Servers that mock the HTTP endpoints, and an integration test also connects to an embedded MongoDB server.
 
 The implementation will be updated as reference source and target API environments become available.
+
+### Deployment notes
+
+Requires access to a MongoDB database instance to store and retrieve the last processed time in case of a process or server restart, configurable via environment parameters:
+
+- `MONGO_DB_URL` (defaults to `mongodb://localhost:27017` i.e. a locally running MongoDB instance)
+- `MONGO_DB_NAME` (defaults to `pollpush`)
+
+See `Configuration.scala` for a full list of configuration parameters.

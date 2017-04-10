@@ -29,22 +29,22 @@ class DeliusSpec extends FunSpec with GivenWhenThen with Matchers {
       api.start()
 
       Given("a Case Note")
-      val caseNote = TargetCaseNote(TargetCaseNoteHeader("5678", "efgh"), TargetCaseNoteBody("regular", "more notes", "time"))
+      val caseNote = TargetCaseNote(TargetCaseNoteHeader("5678", "efgh"), TargetCaseNoteBody("regular", "more notes", "time", "John Smith", "XXX"))
 
       When("the Case Note is pushed to the target")
       val result = Await.result(target.push(caseNote), 5.seconds)
+      system.terminate()
 
       Then("the API receives a HTTP PUT call")
       verify(
         putRequestedFor(urlEqualTo("/delius/5678/efgh")).
         withHeader("Content-type", equalTo("application/json")).
         withBasicAuth(new BasicCredentials("username", "password")).
-        withRequestBody(equalTo("{\"noteType\":\"regular\",\"content\":\"more notes\",\"timestamp\":\"time\"}"))
+        withRequestBody(equalTo("{\"noteType\":\"regular\",\"content\":\"more notes\",\"timestamp\":\"time\",\"staffName\":\"John Smith\",\"establishmentCode\":\"XXX\"}"))
       )
-      result should equal(PushResult(caseNote, Some(StatusCodes.NoContent), "", None))
+      result shouldBe PushResult(caseNote, Some(StatusCodes.NoContent), "", None)
 
       api.stop()
-      system.terminate()
     }
   }
 }

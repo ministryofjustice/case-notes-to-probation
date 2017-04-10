@@ -37,9 +37,6 @@ class DeliusTarget @Inject() (@Named("targetUrl") targetUrl: String,
       for (body <- Unmarshal(response.entity).to[String])
         yield PushResult(caseNote, Some(response.status), body, None)
 
-    }.recover {
-
-      case t: Throwable => PushResult(caseNote, None, "", Some(t))
-    }
+    }.recover { case t: Throwable => PushResult(caseNote, None, "", Some(t)) }
   }
 }

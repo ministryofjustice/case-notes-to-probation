@@ -14,9 +14,12 @@ libraryDependencies ++= Seq(
   "org.clapper" %% "grizzled-slf4j" % "1.3.0",
   "net.codingwell" %% "scala-guice" % "4.1.0",
   "com.typesafe.akka" %% "akka-http" % "10.0.5",
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.17",
+  "org.reactivemongo" %% "reactivemongo" % "0.12.1",
 
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-  "com.github.tomakehurst" % "wiremock" % "2.5.1" % "test"
+  "com.github.tomakehurst" % "wiremock" % "2.5.1" % "test",
+  "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % "test"
 )
 
 assemblyJarName in assembly := "pollPush.jar"
