@@ -170,9 +170,42 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
       }
     }
 
+    it("a pull error results in retries of the same pull time period after timeout retries, and pullReceived is not set") {
+
+      Given("a pull results in an error")
+      pullErrorResponse = Option(new Exception("Pull Error"))
+
+      When("the service runs")
+      runServerWithMockedServices()
+
+      Then("the same pull is attempted after the timeout")
+      eventually(fiveSecondTimeout) {
+
+        pullFromDateTime should not be None
+      }
+
+      val firstFromDateTime = pullFromDateTime
+
+      pullFromDateTime = None // Set to None so can wait below for it to be set back to firstFromDateTime
+
+      eventually(tenSecondTimeout) {
+
+        pullFromDateTime shouldBe firstFromDateTime
+      }
+
+      pullFromDateTime = None // Set to None so can wait below for it to be set back to firstFromDateTime
+
+      eventually(tenSecondTimeout) {
+
+        pullFromDateTime shouldBe firstFromDateTime
+      }
+
+      whenReceived shouldBe None
+    }
+
     it("processes recovered case notes if found on startup, but doesn't initially pull from source") {
 
-      Given("recoverable notes are available on startup, and lastReceived has been previously set")
+      Given("recoverable notes are available on startup, and pullReceived has been previously set")
       storedNotes = twoCaseNotes.map(_.toTarget)
       whenReceived = startOf2017
 
@@ -261,6 +294,7 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
   private var runningService: Option[ActorSystem] = None
   private var pullFromDateTime: Option[DateTime] = None
   private var pullUntilDateTime: Option[DateTime] = None
+  private var pullErrorResponse: Option[Throwable] = None
 
   private var pushImplementation: TargetCaseNote => Future[PushResult] = storeCaseNoteInTargetNotes
 
@@ -273,6 +307,7 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
     whenProcessed = None
     pullFromDateTime = None
     pullUntilDateTime = None
+    pullErrorResponse = None
     pushImplementation = storeCaseNoteInTargetNotes
   }
 
@@ -299,7 +334,7 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
 
     val result = sourceNotes
 
-    Future { PullResult(result, Some(from), Some(until), None) }
+    Future { PullResult(result, Some(from), Some(until), pullErrorResponse) }
   }
 
   override def push(caseNote: TargetCaseNote) = pushImplementation(caseNote) // Defaults to storeCaseNoteInTargetNotes

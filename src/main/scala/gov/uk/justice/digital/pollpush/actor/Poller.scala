@@ -54,9 +54,13 @@ class Poller @Inject() (source: BulkSource, store: DataStore, @Named("timeout") 
 
     case pullResult @ PullResult(caseNotes, Some(from), Some(until), _) =>
 
-      pullResult.error match {
+      context.system.scheduler.scheduleOnce(duration, self, PullRequest(pullResult.error match {
 
-        case Some(error) => log.warning(s"PULL ERROR: ${error.getMessage}")
+        case Some(error) =>
+
+          log.warning(s"PULL ERROR: ${error.getMessage}")
+          from
+
         case None =>
 
           log.info(s"Pulled ${caseNotes.length} Case Note(s) from $from until $until")
@@ -71,9 +75,8 @@ class Poller @Inject() (source: BulkSource, store: DataStore, @Named("timeout") 
 
             store.pullReceived(until).pipeTo(self) // Pipes received complete to EmptyResult below when no caseNotes
           }
-      }
-
-      context.system.scheduler.scheduleOnce(duration, self, PullRequest(until))
+          until
+      }))
 
     case EmptyResult(Some(error)) => log.warning(s"EMPTY RECEIVED ERROR: ${error.getMessage}")
 
