@@ -37,7 +37,7 @@ class Configuration extends AbstractModule with ScalaModule {
       "password" -> "PUSH_PASSWORD").mapValues(envOrDefault)
 
     val numberMaps = Map(
-      "timeout" -> "POLL_SECONDS").mapValues(envDefaults(_).toInt)
+      "timeout" -> "POLL_SECONDS").mapValues(envOrDefault(_).toInt)
 
     for ((name, text) <- textMaps) bind[String].annotatedWithName(name).toInstance(text)
     for ((name, number) <- numberMaps) bind[Int].annotatedWithName(name).toInstance(number)
