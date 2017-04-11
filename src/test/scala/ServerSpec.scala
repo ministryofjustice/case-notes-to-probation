@@ -1,4 +1,5 @@
 import Configuration.MockedConfiguration
+import Helpers.SourceCaseNoteBuilder
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{DateTime, StatusCodes}
 import gov.uk.justice.digital.pollpush.Server
@@ -8,6 +9,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, GivenWhenThen, Matchers}
+
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -275,8 +277,8 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
     }
   }
 
-  private val caseNote1 = SourceCaseNote("1234", "abcd", "observation", "some notes", "time", "Dave Smith", "XYZ")
-  private val caseNote2 = SourceCaseNote("5678", "efgh", "regular", "more notes", "time", "Johnny Jones", "ABA")
+  private val caseNote1 = SourceCaseNoteBuilder.build("1234", "abcd", "observation", "some notes", "time", "Dave Smith", "XYZ")
+  private val caseNote2 = SourceCaseNoteBuilder.build("5678", "efgh", "regular", "more notes", "time", "Johnny Jones", "ABA")
 
   private val twoCaseNotes = Seq(caseNote1, caseNote2)
 

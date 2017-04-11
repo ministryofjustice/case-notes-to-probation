@@ -1,3 +1,4 @@
+import Helpers.SourceCaseNoteBuilder
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.DateTime
 import akka.stream.ActorMaterializer
@@ -24,7 +25,7 @@ class NomisSpec extends FunSpec with GivenWhenThen with Matchers {
 
       configureFor(8082)
       val api = new WireMockServer(options.port(8082))
-      val source = new NomisSource("http://localhost:8082/nomis/casenotes")
+      val source = new NomisSource("http://localhost:8082/nomisapi/offenders/events/case_notes")
 
       Given("the source API")
       api.start()
@@ -35,12 +36,24 @@ class NomisSpec extends FunSpec with GivenWhenThen with Matchers {
       val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
 
       Then("the API receives a HTTP GET call and returns the Case Notes")
-      verify(getRequestedFor(urlEqualTo(s"/nomis/casenotes?from=$minuteAgo")))
+      verify(getRequestedFor(urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z")))
       result shouldBe PullResult(Seq(
-        SourceCaseNote("1234", "ABCD", "observation", "This is a case note", "2017-03-13T12:34:56Z", "John Smith", "ABC"),
-        SourceCaseNote("5678", "EFGH", "admin", "More case notes", "2017-03-14T09:00:00Z", "Dave Jones", "DEF"),
-        SourceCaseNote("9876", "IJKL", "regular", "Even more notes", "2017-03-15T23:45:12Z", "Fred Baker", "GHI"),
-        SourceCaseNote("5432", "MNOP", "regular", "Yet more notes", "2017-03-16T13:45:12Z", "Jimmy Jones", "JKL")
+        SourceCaseNoteBuilder.build(
+          "A1501AE",
+          "152799",
+          "OBSERVE",
+          "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
+          "2017-04-10T14:55:00.000Z",
+          "Brady, Phill",
+          "BMI"),
+        SourceCaseNoteBuilder.build(
+          "A1403AE",
+          "152817",
+          "ALERT",
+          "Alert Sexual Offence and Risk to Children made active.",
+          "2017-04-10T00:00:00.000Z",
+          "Richardson, Trevor",
+          "LEI")
       ), Some(minuteAgo), Some(rightNow), None)
 
       api.stop()

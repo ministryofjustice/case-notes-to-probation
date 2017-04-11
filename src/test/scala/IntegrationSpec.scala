@@ -28,17 +28,15 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
         runServerWithMongoEmbed()
 
         Then("the case notes are pushed to target simultaneously within 1 to 3 seconds each, and lastProcessed is set")
-        eventually(eightSecondTimeout) { // Allow 2 seconds to pull and max of 3 seconds to push simultaneously, plus start up time
+        eventually(tenSecondTimeout) { // Allow 2 seconds to pull and max of 3 seconds to push simultaneously, plus start up time
 
           lastProcessed should not be None  // Check that lastProcessedPull has been set in the database after pull
           storedNotesTotal.number shouldBe 0
 
-          verify(getRequestedFor(urlPathEqualTo(s"/nomis/casenotes")))
+          verify(getRequestedFor(urlPathEqualTo("/nomisapi/offenders/events/case_notes")))
 
-          verify(putRequestedFor(urlEqualTo("/delius/1234/ABCD")))
-          verify(putRequestedFor(urlEqualTo("/delius/5678/EFGH")))
-          verify(putRequestedFor(urlEqualTo("/delius/9876/IJKL")))
-          verify(putRequestedFor(urlEqualTo("/delius/5432/MNOP")))
+          verify(putRequestedFor(urlEqualTo("/delius/A1501AE/152799")))
+          verify(putRequestedFor(urlEqualTo("/delius/A1403AE/152817")))
         }
       }
     }
@@ -72,7 +70,7 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
   private val store = MongoEmbedClient.store()
 
   private val fiveSecondTimeout = Timeout(Span(5, Seconds))
-  private val eightSecondTimeout = Timeout(Span(8, Seconds))
+  private val tenSecondTimeout = Timeout(Span(10, Seconds))
 
   private var mockedRestAPIs: Option[WireMockServer] = None
   private var runningService: Option[ActorSystem] = None

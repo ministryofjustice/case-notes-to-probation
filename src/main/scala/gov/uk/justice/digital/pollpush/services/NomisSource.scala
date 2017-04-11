@@ -24,7 +24,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String)
 
   override def pull(from: DateTime, until: DateTime) =
 
-    http.singleRequest(HttpRequest(uri = Uri(s"$sourceUrl?from=$from"))).flatMap { response =>
+    http.singleRequest(HttpRequest(uri = Uri(s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z"))).flatMap { response =>
 
       Unmarshal(response.entity).to[PullResult].map(_.copy(from = Some(from), until = Some(until)))
 

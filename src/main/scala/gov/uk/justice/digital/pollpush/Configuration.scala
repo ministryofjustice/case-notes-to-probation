@@ -19,7 +19,7 @@ class Configuration extends AbstractModule with ScalaModule {
   protected def envDefaults = Map(
     "MONGO_DB_URL" -> "mongodb://localhost:27017",
     "MONGO_DB_NAME" -> "pollpush",
-    "PULL_BASE_URL" -> "http://localhost:8080/nomis/casenotes",
+    "PULL_BASE_URL" -> "http://localhost:8080/nomisapi/offenders/events/case_notes",
     "PUSH_BASE_URL" -> "http://localhost:8080/delius", // ?from=
     "PUSH_USERNAME" -> "username",
     "PUSH_PASSWORD" -> "password",

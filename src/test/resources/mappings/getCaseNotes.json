@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/nomis/casenotes"
+    "urlPath": "/nomisapi/offenders/events/case_notes"
   },
   "response": {
     "status": 200,
@@ -9,42 +9,70 @@
       "Content-Type": "application/json"
     },
     "jsonBody": {
-      "casenotes": [
+      "events": [
         {
-          "nomisId": "1234",
-          "noteId": "ABCD",
-          "noteType": "observation",
-          "content": "This is a case note",
-          "timestamp": "2017-03-13T12:34:56Z",
-          "staffName": "John Smith",
-          "establishmentCode": "ABC"
+          "type": "CASE_NOTE",
+          "id": 2564,
+          "timestamp": "2017-04-10T14:57:26.332Z",
+          "noms_id": "A1501AE",
+          "prison_id": "BMI",
+          "case_note": {
+            "case_note": {
+              "id": 152799,
+              "contact_datetime": "2017-04-10T14:55:00.000Z",
+              "source": {
+                "code": "INST",
+                "desc": "Prison"
+              },
+              "type": {
+                "code": "OBSERVE",
+                "desc": "Observations"
+              },
+              "sub_type": {
+                "code": "OBS_GEN",
+                "desc": "General Entry"
+              },
+              "staff_member": {
+                "id": 15397,
+                "name": "Brady, Phill",
+                "userid": "PHILL_GEN"
+              },
+              "text": "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
+              "amended": true
+            }
+          }
         },
         {
-          "nomisId": "5678",
-          "noteId": "EFGH",
-          "noteType": "admin",
-          "content": "More case notes",
-          "timestamp": "2017-03-14T09:00:00Z",
-          "staffName": "Dave Jones",
-          "establishmentCode": "DEF"
-        },
-        {
-          "nomisId": "9876",
-          "noteId": "IJKL",
-          "noteType": "regular",
-          "content": "Even more notes",
-          "timestamp": "2017-03-15T23:45:12Z",
-          "staffName": "Fred Baker",
-          "establishmentCode": "GHI"
-        },
-        {
-          "nomisId": "5432",
-          "noteId": "MNOP",
-          "noteType": "regular",
-          "content": "Yet more notes",
-          "timestamp": "2017-03-16T13:45:12Z",
-          "staffName": "Jimmy Jones",
-          "establishmentCode": "JKL"
+          "type": "CASE_NOTE",
+          "id": 2581,
+          "timestamp": "2017-04-10T20:10:29.869Z",
+          "noms_id": "A1403AE",
+          "prison_id": "LEI",
+          "case_note": {
+            "case_note": {
+              "id": 152817,
+              "contact_datetime": "2017-04-10T00:00:00.000Z",
+              "source": {
+                "code": "AUTO",
+                "desc": "System"
+              },
+              "type": {
+                "code": "ALERT",
+                "desc": "Alert"
+              },
+              "sub_type": {
+                "code": "ACTIVE",
+                "desc": "Made Active"
+              },
+              "staff_member": {
+                "id": 15377,
+                "name": "Richardson, Trevor",
+                "userid": "TREV_GEN"
+              },
+              "text": "Alert Sexual Offence and Risk to Children made active.",
+              "amended": false
+            }
+          }
         }
       ]
     },
