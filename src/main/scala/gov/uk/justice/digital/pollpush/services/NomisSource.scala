@@ -13,6 +13,7 @@ import org.json4s.Formats
 import org.json4s.native.Serialization._
 import scala.concurrent.ExecutionContext.Implicits.global
 
+
 class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String)
                             (implicit val formats: Formats,
                              implicit val system: ActorSystem,
@@ -24,9 +25,15 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String)
 
   override def pull(from: DateTime, until: DateTime) =
 
-    http.singleRequest(HttpRequest(uri = Uri(s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z"))).flatMap { response =>
+    http.singleRequest(HttpRequest(uri = Uri(s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z"))).flatMap {
 
-      Unmarshal(response.entity).to[PullResult].map(_.copy(from = Some(from), until = Some(until)))
+      case HttpResponse(statusCode, _, _, _) if statusCode.isFailure =>
+
+        throw new Exception(statusCode.value)
+
+      case HttpResponse(_, _, entity, _) =>
+
+        Unmarshal(entity).to[PullResult].map(_.copy(from = Some(from), until = Some(until)))
 
     }.recover { case error: Throwable => PullResult(Seq(), Some(from), Some(until), Some(error)) }
 }

@@ -5,15 +5,15 @@ import akka.stream.ActorMaterializer
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
-import gov.uk.justice.digital.pollpush.data.{PullResult, SourceCaseNote}
+import gov.uk.justice.digital.pollpush.data.{PullResult}
 import gov.uk.justice.digital.pollpush.services.NomisSource
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization
-import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
+import org.scalatest.{BeforeAndAfterAll, FunSpec, GivenWhenThen, Matchers}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class NomisSpec extends FunSpec with GivenWhenThen with Matchers {
+class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with Matchers {
 
   implicit val formats = Serialization.formats(NoTypeHints)
   implicit val system = ActorSystem()
@@ -57,7 +57,31 @@ class NomisSpec extends FunSpec with GivenWhenThen with Matchers {
       ), Some(minuteAgo), Some(rightNow), None)
 
       api.stop()
-      system.terminate()
     }
+
+    it("reports a failure HTTP response code as an error") {
+
+      configureFor(8083)
+      val api = new WireMockServer(options.port(8083))
+      val source = new NomisSource("http://localhost:8083/internalError")
+
+      Given("the source API returns an 500 Internal Error")
+      api.start()
+      val rightNow = DateTime.now
+      val minuteAgo = rightNow.minus(6000)
+
+      When("a Case Notes pull from the API is attempted")
+      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+
+      Then("the 500 error is reported")
+      result.error.get.toString should include("500")
+
+      api.stop()
+    }
+  }
+
+  override def afterAll() {
+
+    system.terminate()
   }
 }

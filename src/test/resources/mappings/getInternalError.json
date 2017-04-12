@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/internalError"
+  },
+  "response": {
+    "status": 500,
+    "fixedDelayMilliseconds": 1000
+  }
+}
