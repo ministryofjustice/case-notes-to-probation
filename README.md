@@ -34,3 +34,8 @@ Requires access to a MongoDB database instance to store and retrieve the last pr
 - `MONGO_DB_NAME` (defaults to `pollpush`)
 
 See `Configuration.scala` for a full list of configuration parameters.
+
+### Building and running with Docker
+
+- Build Docker Image `./buildDocker.sh`
+- Run Docker Container `docker run -d pollpush -e POLL_SECONDS=30 -e MONGO_DB_URL=mongodb://localhost:27017` (replace parameter values as appropriate)
