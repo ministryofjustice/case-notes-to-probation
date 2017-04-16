@@ -39,3 +39,9 @@ See `Configuration.scala` for a full list of configuration parameters.
 
 - Build Docker Image `./buildDocker.sh`
 - Run Docker Container `docker run -d pollpush -e POLL_SECONDS=30 -e MONGO_DB_URL=mongodb://localhost:27017` (replace parameter values as appropriate)
+
+To run a Docker based integration test against mocked APIs and a real MongoDB instance:
+
+- Build Docker Mock API Image `./buildDockerMockApi.sh`
+- Run the integration test `./dockerIntegrationTest.sh`
+- (To clean up afterwards run `./dockerCleanupTest.sh`)

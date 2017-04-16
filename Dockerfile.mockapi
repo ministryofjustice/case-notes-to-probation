@@ -1,0 +1,12 @@
+FROM java
+
+MAINTAINER Nick Talbot <nick.talbot@digital.justice.gov.uk>
+
+WORKDIR /root
+
+RUN wget -O wiremock-standalone.jar http://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.6.0/wiremock-standalone-2.6.0.jar
+COPY src/test/resources ./
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/bin/java", "-jar", "wiremock-standalone.jar", "--port", "80"]
