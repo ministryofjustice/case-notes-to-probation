@@ -45,3 +45,14 @@ To run a Docker based integration test against mocked APIs and a real MongoDB in
 - Build Docker Mock API Image `./buildDockerMockApi.sh`
 - Run the integration test `./dockerIntegrationTest.sh`
 - (To clean up afterwards run `./dockerCleanupTest.sh`)
+
+### Running against a mocked Delius instance
+Run wiremock standalone and configure for Delius mock endpoint
+
+- Download wiremock standalone: `http://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.6.0/wiremock-standalone-2.6.0.jar`
+
+- Override the Delius endpoint `PUSH_BASE_URL=http://localhost:8085/delius java -jar pollPush.jar`
+
+- Start wiremock `java -jar wiremock-standalone-2.6.0.jar --port 8085 &` 
+
+- Configure wiremock endpoint `curl -X POST -d @./src/test/resources/mappings/putCaseNote.json http://localhost:8085/__admin/mappings`
