@@ -54,12 +54,17 @@ class MongoStore @Inject() (connection: MongoConnection, @Named("dbName") dbName
   }.recover { case error: Throwable => SaveResult(caseNote, Some(error)) }
 
 
-  override def delete(caseNote: TargetCaseNote) = (caseNote match { case TargetCaseNote(_, _, Some(id)) =>
+  override def delete(caseNote: TargetCaseNote) = (caseNote match {
 
-    caseNotes.flatMap { collection =>
+    case TargetCaseNote(_, _, Some(id)) =>
 
-      collection.remove(BSONDocument("_id" -> BSONObjectID.parse(id).toOption.get)).map(DeleteResult(caseNote, _))
-    }
+      caseNotes.flatMap { collection =>
+
+        collection.remove(BSONDocument("_id" -> BSONObjectID.parse(id).toOption.get)).map(DeleteResult(caseNote, _))
+      }
+
+    case TargetCaseNote(header, _, None) => throw new Exception(s"$header DELETE ERROR")
+
   }).recover { case error: Throwable => DeleteResult(caseNote, Some(error)) }
 
 

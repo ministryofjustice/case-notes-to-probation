@@ -34,7 +34,7 @@ class Poller @Inject() (source: BulkSource, store: DataStore, @Named("timeout") 
 
         caseNotes.foreach { caseNote => pusher ! SaveResult(caseNote, None) } // Push recovered results, wait for timeout before pulling again as may complete recovery first
 
-        store.lastProcessedPull.onSuccess { case lastResult => context.system.scheduler.scheduleOnce(duration, self, lastResult) }
+        store.lastProcessedPull.foreach(context.system.scheduler.scheduleOnce(duration, self, _))
 
       } else {  // Nothing to recover, so start pulling from last processed date
 
@@ -67,7 +67,11 @@ class Poller @Inject() (source: BulkSource, store: DataStore, @Named("timeout") 
 
           if (caseNotes.nonEmpty) { // pullProcessed() called after all caseNotes pushed and purged in Pusher for nonEmpty caseNotes
 
-            store.pullReceived(until).onSuccess { case EmptyResult(Some(error)) => log.warning(s"RECEIVED ERROR: ${error.getMessage}") }
+            store.pullReceived(until).foreach {
+
+              case EmptyResult(Some(error)) => log.warning(s"RECEIVED ERROR: ${error.getMessage}")
+              case EmptyResult(None) =>
+            }
 
             for (caseNote <- caseNotes) pusher ! caseNote.toTarget
 
@@ -80,7 +84,7 @@ class Poller @Inject() (source: BulkSource, store: DataStore, @Named("timeout") 
 
     case EmptyResult(Some(error)) => log.warning(s"EMPTY RECEIVED ERROR: ${error.getMessage}")
 
-    case EmptyResult(None) => store.pullProcessed().onSuccess {
+    case EmptyResult(None) => store.pullProcessed().foreach {
 
       case EmptyResult(Some(error)) => log.warning(s"EMPTY PROCESSED ERROR: ${error.getMessage}")
 

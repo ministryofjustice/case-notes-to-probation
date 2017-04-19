@@ -9,7 +9,6 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, GivenWhenThen, Matchers}
-
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -318,7 +317,7 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
     runningService.get.terminate()
   }
 
-  private def runServerWithMockedServices() = runningService =  Some(Server.run(new MockedConfiguration(this, this, this, 5)))
+  private def runServerWithMockedServices() = runningService = Some(Server.run(new MockedConfiguration(this, this, this, 5)))
 
   private def storeCaseNoteInTargetNotes(caseNote: TargetCaseNote) = {
 
@@ -370,7 +369,7 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
     Future { DataResult(result, None) }
   }
 
-  override def pullReceived(dateTime: DateTime) =  {
+  override def pullReceived(dateTime: DateTime) = {
 
     whenReceived = Some(dateTime)
 

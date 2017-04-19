@@ -23,7 +23,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken:
 
   private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map(read[PullResult])
 
-  override def pull(from: DateTime, until: DateTime) = {
+  override def pull(from: DateTime, until: DateTime) =
 
     http.singleRequest(
       HttpRequest(
@@ -41,5 +41,4 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken:
         Unmarshal(entity).to[PullResult].map(_.copy(from = Some(from), until = Some(until)))
 
     }.recover { case error: Throwable => PullResult(Seq(), Some(from), Some(until), Some(error)) }
-  }
 }

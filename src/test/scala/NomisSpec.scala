@@ -11,7 +11,6 @@ import gov.uk.justice.digital.pollpush.traits.SourceToken
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization
 import org.scalatest.{BeforeAndAfterAll, FunSpec, GivenWhenThen, Matchers}
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
 

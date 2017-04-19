@@ -1,6 +1,5 @@
-import akka.http.scaladsl.model.DateTime
 import gov.uk.justice.digital.pollpush.data.TokenPayload
-import org.scalatest.{FunSpec, FunSuite, GivenWhenThen, Matchers}
+import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 import gov.uk.justice.digital.pollpush.services.JwtTokenGenerator
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization

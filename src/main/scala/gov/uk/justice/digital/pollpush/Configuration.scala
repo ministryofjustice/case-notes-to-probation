@@ -9,8 +9,6 @@ import gov.uk.justice.digital.pollpush.traits.{BulkSource, DataStore, SingleTarg
 import net.codingwell.scalaguice.ScalaModule
 import org.json4s.Formats
 import reactivemongo.api.{MongoConnection, MongoDriver}
-
-import scala.io.Source
 import scala.util.Properties
 
 class Configuration extends AbstractModule with ScalaModule {
