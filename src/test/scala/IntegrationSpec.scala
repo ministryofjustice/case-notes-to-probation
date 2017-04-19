@@ -33,7 +33,10 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
           lastProcessed should not be None  // Check that lastProcessedPull has been set in the database after pull
           storedNotesTotal.number shouldBe 0
 
-          verify(getRequestedFor(urlPathEqualTo("/nomisapi/offenders/events/case_notes")))
+          verify(
+            getRequestedFor(urlPathEqualTo("/nomisapi/offenders/events/case_notes")).
+              withHeader("Authorization", containing("Bearer"))
+          )
 
           verify(putRequestedFor(urlEqualTo("/delius/A1501AE/152799")))
           verify(putRequestedFor(urlEqualTo("/delius/A1403AE/152817")))

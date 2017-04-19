@@ -5,15 +5,17 @@ import akka.stream.ActorMaterializer
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
-import gov.uk.justice.digital.pollpush.data.{PullResult}
+import gov.uk.justice.digital.pollpush.data.PullResult
 import gov.uk.justice.digital.pollpush.services.NomisSource
+import gov.uk.justice.digital.pollpush.traits.SourceToken
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization
 import org.scalatest.{BeforeAndAfterAll, FunSpec, GivenWhenThen, Matchers}
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with Matchers {
+class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with Matchers with SourceToken {
 
   implicit val formats = Serialization.formats(NoTypeHints)
   implicit val system = ActorSystem()
@@ -25,7 +27,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(8082)
       val api = new WireMockServer(options.port(8082))
-      val source = new NomisSource("http://localhost:8082/nomisapi/offenders/events/case_notes")
+      val source = new NomisSource("http://localhost:8082/nomisapi/offenders/events/case_notes", this)
 
       Given("the source API")
       api.start()
@@ -35,8 +37,12 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       When("Case Notes are pulled from the API")
       val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
 
-      Then("the API receives a HTTP GET call and returns the Case Notes")
-      verify(getRequestedFor(urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z")))
+      Then("the API receives a HTTP GET call with Authorization and returns the Case Notes")
+      verify(
+        getRequestedFor(
+          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z")).
+          withHeader("Authorization", equalTo("Bearer FooBar"))
+      )
       result shouldBe PullResult(Seq(
         SourceCaseNoteBuilder.build(
           "A1501AE",
@@ -63,7 +69,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(8083)
       val api = new WireMockServer(options.port(8083))
-      val source = new NomisSource("http://localhost:8083/internalError")
+      val source = new NomisSource("http://localhost:8083/internalError", this)
 
       Given("the source API returns an 500 Internal Error")
       api.start()
@@ -84,4 +90,6 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
     system.terminate()
   }
+
+  override def generate() = "FooBar"
 }

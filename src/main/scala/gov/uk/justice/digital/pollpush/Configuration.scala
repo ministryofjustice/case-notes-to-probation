@@ -4,12 +4,13 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.AbstractModule
 import gov.uk.justice.digital.pollpush.Injection._
-import gov.uk.justice.digital.pollpush.services.{DeliusTarget, MongoStore, NomisSource}
-import gov.uk.justice.digital.pollpush.traits.{BulkSource, DataStore, SingleTarget}
+import gov.uk.justice.digital.pollpush.services.{DeliusTarget, JwtTokenGenerator, MongoStore, NomisSource}
+import gov.uk.justice.digital.pollpush.traits.{BulkSource, DataStore, SingleTarget, SourceToken}
 import net.codingwell.scalaguice.ScalaModule
 import org.json4s.Formats
 import reactivemongo.api.{MongoConnection, MongoDriver}
 
+import scala.io.Source
 import scala.util.Properties
 
 class Configuration extends AbstractModule with ScalaModule {
@@ -23,7 +24,9 @@ class Configuration extends AbstractModule with ScalaModule {
     "PUSH_BASE_URL" -> "http://localhost:8080/delius", // ?from=
     "PUSH_USERNAME" -> "username",
     "PUSH_PASSWORD" -> "password",
-    "POLL_SECONDS" -> "60"
+    "POLL_SECONDS" -> "60",
+    "NOMIS_TOKEN" -> "abcde12345",
+    "PRIVATE_KEY" -> ""
   )
 
   override final def configure() {
@@ -34,7 +37,9 @@ class Configuration extends AbstractModule with ScalaModule {
       "sourceUrl" -> "PULL_BASE_URL",
       "targetUrl" -> "PUSH_BASE_URL",
       "username" -> "PUSH_USERNAME",
-      "password" -> "PUSH_PASSWORD").mapValues(envOrDefault)
+      "password" -> "PUSH_PASSWORD",
+      "nomisToken" -> "NOMIS_TOKEN",
+      "privateKey" -> "PRIVATE_KEY").mapValues(envOrDefault)
 
     val numberMaps = Map(
       "timeout" -> "POLL_SECONDS").mapValues(envOrDefault(_).toInt)
@@ -57,5 +62,6 @@ class Configuration extends AbstractModule with ScalaModule {
     bind[DataStore].to[MongoStore]
     bind[BulkSource].to[NomisSource]
     bind[SingleTarget].to[DeliusTarget]
+    bind[SourceToken].to[JwtTokenGenerator]
   }
 }

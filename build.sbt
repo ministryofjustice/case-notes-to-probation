@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.0.5",
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.17",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
+  "com.pauldijou" %% "jwt-core-legacy" % "0.12.1",
   "org.reactivemongo" %% "reactivemongo" % "0.12.1",
 
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
