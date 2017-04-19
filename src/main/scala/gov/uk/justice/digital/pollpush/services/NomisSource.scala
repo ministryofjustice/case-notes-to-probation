@@ -12,9 +12,7 @@ import gov.uk.justice.digital.pollpush.data.PullResult
 import gov.uk.justice.digital.pollpush.traits.{BulkSource, SourceToken}
 import org.json4s.Formats
 import org.json4s.native.Serialization._
-
 import scala.concurrent.ExecutionContext.Implicits.global
-
 
 class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken: SourceToken)
                             (implicit val formats: Formats,
