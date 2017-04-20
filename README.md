@@ -56,3 +56,11 @@ Run wiremock standalone and configure for Delius mock endpoint
 - Start wiremock `java -jar wiremock-standalone-2.6.0.jar --port 8085 &` 
 
 - Configure wiremock endpoint `curl -X POST -d @./src/test/resources/mappings/putCaseNote.json http://localhost:8085/__admin/mappings`
+
+### Generating suitable keys
+
+- openssl ecparam -name prime256v1 -genkey -noout -out client.key
+- openssl ec -in client.key -pubout -out client.pub
+- openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in client.key -out client.pkcs8.key
+
+Use the whole output, as is, including header and line breaks if you like

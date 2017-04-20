@@ -15,8 +15,8 @@ class JwtTokenGeneratorSpec extends FunSpec with GivenWhenThen with Matchers {
     it("Can decode a generated token") {
 
       val nomisToken = "abcde12345"
-      val privateKey = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg0I/O+oZH/OAQVJHB8dvAD7gBMRUtwsFW75y7p1aflKSgCgYIKoZIzj0DAQehRANCAASAgCGtL4MyJc5xGfgIY/UP6EfHH09MsvOWeWL3tyod0QVia1yTrTQycjUc9sbgHZGxQJOi2fI6CBWZNBZ/MZso"
-      val publicKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgIAhrS+DMiXOcRn4CGP1D+hHxx9PTLLzlnli97cqHdEFYmtck600MnI1HPbG4B2RsUCTotnyOggVmTQWfzGbKA=="
+      val privateKey = "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgv6W6IfSP8OZZp3CU\n1CFl4xWHBMw0M5fLwJFkWyh0Ha6hRANCAATFcGap/UEOdNvsgUlJS5Qm9e6jclZo\n8qanO1ivSzKc4WzYObZNqIc1YwijC7z5B7z+ocH6zpNZRbpQe4jUiTCz\n-----END PRIVATE KEY-----"
+      val publicKey = "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExXBmqf1BDnTb7IFJSUuUJvXuo3JW\naPKmpztYr0synOFs2Dm2TaiHNWMIowu8+Qe8/qHB+s6TWUW6UHuI1Ikwsw==\n-----END PUBLIC KEY-----"
 
       Given("a token generator")
       val tokenGenerator = new JwtTokenGenerator(privateKey, nomisToken)
