@@ -6,6 +6,8 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
 import pdi.jwt.{Jwt, JwtAlgorithm}
 
+import scala.io.Source
+
 class JwtTokenGeneratorSpec extends FunSpec with GivenWhenThen with Matchers {
 
   implicit val formats = Serialization.formats(NoTypeHints)
@@ -15,8 +17,8 @@ class JwtTokenGeneratorSpec extends FunSpec with GivenWhenThen with Matchers {
     it("Can decode a generated token") {
 
       val nomisToken = "abcde12345"
-      val privateKey = "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgv6W6IfSP8OZZp3CU\n1CFl4xWHBMw0M5fLwJFkWyh0Ha6hRANCAATFcGap/UEOdNvsgUlJS5Qm9e6jclZo\n8qanO1ivSzKc4WzYObZNqIc1YwijC7z5B7z+ocH6zpNZRbpQe4jUiTCz\n-----END PRIVATE KEY-----"
-      val publicKey = "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExXBmqf1BDnTb7IFJSUuUJvXuo3JW\naPKmpztYr0synOFs2Dm2TaiHNWMIowu8+Qe8/qHB+s6TWUW6UHuI1Ikwsw==\n-----END PUBLIC KEY-----"
+      val privateKey = Source.fromResource("client.pkcs8.key").mkString
+      val publicKey = Source.fromResource("client.pub").mkString
 
       Given("a token generator")
       val tokenGenerator = new JwtTokenGenerator(privateKey, nomisToken)
