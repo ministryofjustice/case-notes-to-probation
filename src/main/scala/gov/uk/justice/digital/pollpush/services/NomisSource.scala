@@ -8,7 +8,7 @@ import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.ActorMaterializer
 import com.google.inject.Inject
 import com.google.inject.name.Named
-import gov.uk.justice.digital.pollpush.data.PullResult
+import gov.uk.justice.digital.pollpush.data.{PullResult, SourceCaseNote}
 import gov.uk.justice.digital.pollpush.traits.{BulkSource, SourceToken}
 import org.json4s.Formats
 import org.json4s.native.Serialization._
@@ -21,7 +21,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken:
 
   private val http = Http()
 
-  private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map(read[PullResult])
+  private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map(read[Seq[SourceCaseNote]])
 
   override def pull(from: DateTime, until: DateTime) =
 
@@ -38,7 +38,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken:
 
       case HttpResponse(_, _, entity, _) =>
 
-        Unmarshal(entity).to[PullResult].map(_.copy(from = Some(from), until = Some(until)))
+        Unmarshal(entity).to[Seq[SourceCaseNote]].map(PullResult(_, Some(from), Some(until), None))
 
     }.recover { case error: Throwable => PullResult(Seq(), Some(from), Some(until), Some(error)) }
 }

@@ -8,19 +8,11 @@ object SourceCaseNoteBuilder {
 
     SourceCaseNote(
       nomisId,
-      establishmentCode,
-      SourceCaseNoteOuter(
-        SourceCaseNoteInner(
-          noteId,
-          timestamp,
-          content,
-          SourceCaseNoteType(
-            noteType
-          ),
-          SourceCaseNoteStaff(
-            staffName
-          )
-        )
-      )
+      noteId.toInt,
+      content,
+      timestamp,
+      noteType,
+      staffName,
+      establishmentCode
     )
 }

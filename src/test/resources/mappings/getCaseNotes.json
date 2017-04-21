@@ -8,74 +8,44 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "jsonBody": {
-      "events": [
-        {
-          "type": "CASE_NOTE",
-          "id": 2564,
-          "timestamp": "2017-04-10T14:57:26.332Z",
-          "noms_id": "A1501AE",
-          "prison_id": "BMI",
-          "case_note": {
-            "case_note": {
-              "id": 152799,
-              "contact_datetime": "2017-04-10T14:55:00.000Z",
-              "source": {
-                "code": "INST",
-                "desc": "Prison"
-              },
-              "type": {
-                "code": "OBSERVE",
-                "desc": "Observations"
-              },
-              "sub_type": {
-                "code": "OBS_GEN",
-                "desc": "General Entry"
-              },
-              "staff_member": {
-                "id": 15397,
-                "name": "Brady, Phill",
-                "userid": "PHILL_GEN"
-              },
-              "text": "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
-              "amended": true
-            }
-          }
-        },
-        {
-          "type": "CASE_NOTE",
-          "id": 2581,
-          "timestamp": "2017-04-10T20:10:29.869Z",
-          "noms_id": "A1403AE",
-          "prison_id": "LEI",
-          "case_note": {
-            "case_note": {
-              "id": 152817,
-              "contact_datetime": "2017-04-10T00:00:00.000Z",
-              "source": {
-                "code": "AUTO",
-                "desc": "System"
-              },
-              "type": {
-                "code": "ALERT",
-                "desc": "Alert"
-              },
-              "sub_type": {
-                "code": "ACTIVE",
-                "desc": "Made Active"
-              },
-              "staff_member": {
-                "id": 15377,
-                "name": "Richardson, Trevor",
-                "userid": "TREV_GEN"
-              },
-              "text": "Alert Sexual Offence and Risk to Children made active.",
-              "amended": false
-            }
-          }
-        }
-      ]
-    },
+    "jsonBody": [
+      {
+        "noms_id": "A1501AE",
+        "id": 152799,
+        "content": "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
+        "timestamp": "2017-04-10T13:55:00.000Z",
+        "noteType": "Observations",
+        "staffName": "Brady, Phill",
+        "establishmentCode": "BMI"
+      },
+      {
+        "noms_id": "A1403AE",
+        "id": 152817,
+        "content": "Alert Sexual Offence and Risk to Children made active.",
+        "timestamp": "2017-04-09T23:00:00.000Z",
+        "noteType": "Alert",
+        "staffName": "Richardson, Trevor",
+        "establishmentCode": "LEI"
+      },
+      {
+        "noms_id": "A1301AB",
+        "id": 152837,
+        "content": "Des who?",
+        "timestamp": "2017-04-12T09:28:00.000Z",
+        "noteType": "General",
+        "staffName": "Brady, Phill",
+        "establishmentCode": "BMI"
+      },
+      {
+        "noms_id": "A1479AE",
+        "id": 152838,
+        "content": "Allocated to  course \"Tunnelling for beginners\"",
+        "timestamp": "2017-04-12T13:12:00.000Z",
+        "noteType": "Training",
+        "staffName": "Brady, Phill",
+        "establishmentCode": "BMI"
+      }
+    ],
     "fixedDelayMilliseconds": 2000
   }
 }
