@@ -6,7 +6,7 @@ machine:
 # Collect build artifacts
 general:
   artifacts:
-    - target/universal
+    - target/**/*.jar
   override:
     - sbt assembly
 
