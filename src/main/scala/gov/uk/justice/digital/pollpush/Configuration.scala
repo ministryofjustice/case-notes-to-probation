@@ -16,6 +16,7 @@ class Configuration extends AbstractModule with ScalaModule {
   private def envOrDefault(key: String) = Properties.envOrElse(key, envDefaults(key))
 
   protected def envDefaults = Map(
+    "DEBUG_LOG" -> "false",
     "MONGO_DB_URL" -> "mongodb://localhost:27017",
     "MONGO_DB_NAME" -> "pollpush",
     "PULL_BASE_URL" -> "http://localhost:8080/nomisapi/offenders/events/case_notes",
@@ -43,8 +44,12 @@ class Configuration extends AbstractModule with ScalaModule {
     val numberMaps = Map(
       "timeout" -> "POLL_SECONDS").mapValues(envOrDefault(_).toInt)
 
+    val booleanMaps = Map(
+      "debugLog" -> "DEBUG_LOG").mapValues(envOrDefault(_).toBoolean)
+
     for ((name, text) <- textMaps) bind[String].annotatedWithName(name).toInstance(text)
     for ((name, number) <- numberMaps) bind[Int].annotatedWithName(name).toInstance(number)
+    for ((name, boolean) <- booleanMaps) bind[Boolean].annotatedWithName(name).toInstance(boolean)
 
     bind[SourceToken].to[JwtTokenGenerator]
     bind[Formats].toProvider[FormatsProvider]

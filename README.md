@@ -32,6 +32,7 @@ Requires access to a MongoDB database instance to store and retrieve the last pr
 
 - `MONGO_DB_URL` (defaults to `mongodb://localhost:27017` i.e. a locally running MongoDB instance)
 - `MONGO_DB_NAME` (defaults to `pollpush`)
+- `DEBUG_LOG=true` (defaults to `false` for `INFO` level logging, set to `true` for `DEBUG` level)
 
 See `Configuration.scala` for a full list of configuration parameters.
 
@@ -59,8 +60,8 @@ Run wiremock standalone and configure for Delius mock endpoint
 
 ### Generating suitable keys
 
-- openssl ecparam -name prime256v1 -genkey -noout -out client.key
-- openssl ec -in client.key -pubout -out client.pub
-- openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in client.key -out client.pkcs8.key
+- `openssl ecparam -name prime256v1 -genkey -noout -out client.key`
+- `openssl ec -in client.key -pubout -out client.pub`
+- `openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in client.key -out client.pkcs8.key`
 
 Use the whole output, as is, including header and line breaks if you like
