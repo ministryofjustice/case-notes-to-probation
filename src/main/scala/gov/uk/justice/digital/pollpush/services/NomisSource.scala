@@ -10,6 +10,7 @@ import com.google.inject.Inject
 import com.google.inject.name.Named
 import gov.uk.justice.digital.pollpush.data.{PullResult, SourceCaseNote}
 import gov.uk.justice.digital.pollpush.traits.{BulkSource, SourceToken}
+import grizzled.slf4j.Logging
 import org.json4s.Formats
 import org.json4s.native.Serialization._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,11 +18,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken: SourceToken)
                             (implicit val formats: Formats,
                              implicit val system: ActorSystem,
-                             implicit val materializer: ActorMaterializer) extends BulkSource {
+                             implicit val materializer: ActorMaterializer) extends BulkSource with Logging {
 
   private val http = Http()
 
-  private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map(read[Seq[SourceCaseNote]])
+  private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map { json =>
+
+    logger.debug(s"Received from Nomis: $json")
+
+    read[Seq[SourceCaseNote]](json)
+  }
 
   override def pull(from: DateTime, until: DateTime) =
 
