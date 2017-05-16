@@ -29,22 +29,27 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken:
     read[Seq[SourceCaseNote]](json)
   }
 
-  override def pull(from: DateTime, until: DateTime) =
+  override def pull(from: DateTime, until: DateTime) = {
+
+    val uri = s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z"
+
+    logger.debug(s"Requesting from Nomis: $uri")
 
     http.singleRequest(
       HttpRequest(
         HttpMethods.GET,
-        Uri(s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z"),
+        Uri(uri),
         List(Authorization(OAuth2BearerToken(sourceToken.generate())))))
       .flatMap {
 
-      case HttpResponse(statusCode, _, _, _) if statusCode.isFailure =>
+        case HttpResponse(statusCode, _, _, _) if statusCode.isFailure =>
 
-        throw new Exception(statusCode.value)
+          throw new Exception(statusCode.value)
 
-      case HttpResponse(_, _, entity, _) =>
+        case HttpResponse(_, _, entity, _) =>
 
-        Unmarshal(entity).to[Seq[SourceCaseNote]].map(PullResult(_, Some(from), Some(until), None))
+          Unmarshal(entity).to[Seq[SourceCaseNote]].map(PullResult(_, Some(from), Some(until), None))
 
-    }.recover { case error: Throwable => PullResult(Seq(), Some(from), Some(until), Some(error)) }
+      }.recover { case error: Throwable => PullResult(Seq(), Some(from), Some(until), Some(error)) }
+  }
 }
