@@ -48,11 +48,13 @@ class Configuration extends AbstractModule with ScalaModule {
     val booleanMaps = Map(
       "debugLog" -> "DEBUG_LOG").mapValues(envOrDefault(_).toBoolean)
 
+    val csvMaps = Map(
+      "noteTypes" -> "PULL_NOTE_TYPES").mapValues(envOrDefault(_).split(','))
+
     for ((name, text) <- textMaps) bind[String].annotatedWithName(name).toInstance(text)
+    for ((name, csvs) <- csvMaps) bind[Seq[String]].annotatedWithName(name).toInstance(csvs)
     for ((name, number) <- numberMaps) bind[Int].annotatedWithName(name).toInstance(number)
     for ((name, boolean) <- booleanMaps) bind[Boolean].annotatedWithName(name).toInstance(boolean)
-
-    bind[Seq[String]].annotatedWithName("noteTypes").toInstance(envOrDefault("PULL_NOTE_TYPES").split(','))
 
     bind[SourceToken].to[JwtTokenGenerator]
     bind[Formats].toProvider[FormatsProvider]
