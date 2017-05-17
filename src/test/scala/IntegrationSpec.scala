@@ -1,4 +1,4 @@
-import Configuration.MongoEmbedConfiguration
+import Configuration.{IntegrationConfiguration, MongoEmbedConfiguration}
 import Helpers.MongoEmbedClient
 import akka.actor.ActorSystem
 import com.github.simplyscala.MongoEmbedDatabase
@@ -25,7 +25,7 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
         lastProcessed shouldBe None
 
         When("the case notes are received from source in around 2 seconds")
-        runServerWithMongoEmbed()
+        runServerWithMongoEmbed("regular,other")
 
         Then("the case notes are pushed to target simultaneously within 1 to 3 seconds each, and lastProcessed is set")
         eventually(tenSecondTimeout) { // Allow 2 seconds to pull and max of 3 seconds to push simultaneously, plus start up time
@@ -38,13 +38,15 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
               withHeader("Authorization", containing("Bearer"))
           )
 
+          verify(getRequestedFor(urlMatching(".*&noteType=regular&noteType=other.*")))
+
           verify(putRequestedFor(urlEqualTo("/delius/A1501AE/152799")))
           verify(putRequestedFor(urlEqualTo("/delius/A1403AE/152817")))
         }
       }
     }
 
-    it("recovers case notes previously pulled from source but noy yet pushed on startup and pushes to target") {
+    it("recovers case notes previously pulled from source but not yet pushed on startup and pushes to target") {
 
       withEmbedMongoFixture() { _ => // Fires up an embedded MongoDB on localhost:12345
 
@@ -88,7 +90,7 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
     runningService.get.terminate()
   }
 
-  private def runServerWithMongoEmbed() = runningService = Some(Server.run(new MongoEmbedConfiguration))
+  private def runServerWithMongoEmbed(pullNoteTypes: String = "") = runningService = Some(Server.run(new IntegrationConfiguration(pullNoteTypes)))
 
   private def lastProcessed = Await.result(store.lastProcessedPull, 10.seconds).dateTime
   private def storedNotesTotal = Await.result(store.count, 10.seconds)

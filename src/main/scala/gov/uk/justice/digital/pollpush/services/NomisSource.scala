@@ -15,12 +15,14 @@ import org.json4s.Formats
 import org.json4s.native.Serialization._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken: SourceToken)
+class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("noteTypes") noteTypes: Seq[String], sourceToken: SourceToken)
                             (implicit val formats: Formats,
                              implicit val system: ActorSystem,
                              implicit val materializer: ActorMaterializer) extends BulkSource with Logging {
 
   private val http = Http()
+
+  private val filter = noteTypes.map(s => s"&noteType=$s").mkString("")
 
   private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map { json =>
 
@@ -31,7 +33,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, sourceToken:
 
   override def pull(from: DateTime, until: DateTime) = {
 
-    val uri = s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z"
+    val uri = s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z$filter"
 
     logger.debug(s"Requesting from Nomis: $uri")
 

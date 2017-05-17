@@ -34,6 +34,10 @@ Requires access to a MongoDB database instance to store and retrieve the last pr
 - `MONGO_DB_NAME` (defaults to `pollpush`)
 - `DEBUG_LOG=true` (defaults to `false` for `INFO` level logging, set to `true` for `DEBUG` level)
 
+A white-list of filtered noteType to be requested from the source can be set as a comma-separated list:
+
+- `PULL_NOTE_TYPES=regular,observation` (defaults to an empty string which does not filter by noteType)
+
 See `Configuration.scala` for a full list of configuration parameters.
 
 ### Building and running with Docker

@@ -20,6 +20,7 @@ class Configuration extends AbstractModule with ScalaModule {
     "MONGO_DB_URL" -> "mongodb://localhost:27017",
     "MONGO_DB_NAME" -> "pollpush",
     "PULL_BASE_URL" -> "http://localhost:8080/nomisapi/offenders/events/case_notes",
+    "PULL_NOTE_TYPES" -> "",
     "PUSH_BASE_URL" -> "http://localhost:8080/delius", // ?from=
     "PUSH_USERNAME" -> "username",
     "PUSH_PASSWORD" -> "password",
@@ -50,6 +51,8 @@ class Configuration extends AbstractModule with ScalaModule {
     for ((name, text) <- textMaps) bind[String].annotatedWithName(name).toInstance(text)
     for ((name, number) <- numberMaps) bind[Int].annotatedWithName(name).toInstance(number)
     for ((name, boolean) <- booleanMaps) bind[Boolean].annotatedWithName(name).toInstance(boolean)
+
+    bind[Seq[String]].annotatedWithName("noteTypes").toInstance(envOrDefault("PULL_NOTE_TYPES").split(','))
 
     bind[SourceToken].to[JwtTokenGenerator]
     bind[Formats].toProvider[FormatsProvider]

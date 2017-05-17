@@ -22,11 +22,13 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
   describe("Pull from Nomis API") {
 
-    it("GETs case notes from the API") {
+    it("GETs case notes from the API (with no noteType whitelist filter)") {
 
-      configureFor(8082)
-      val api = new WireMockServer(options.port(8082))
-      val source = new NomisSource("http://localhost:8082/nomisapi/offenders/events/case_notes", this)
+      val testPort = 8082
+
+      configureFor(testPort)
+      val api = new WireMockServer(options.port(testPort))
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq(), this)
 
       Given("the source API")
       api.start()
@@ -36,7 +38,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       When("Case Notes are pulled from the API")
       val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
 
-      Then("the API receives a HTTP GET call with Authorization and returns the Case Notes")
+      Then("the API receives a HTTP GET call with Authorization, from_datetime and returns the Case Notes")
       verify(
         getRequestedFor(
           urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z")).
@@ -80,11 +82,61 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       api.stop()
     }
 
+    it("GETs case notes with a noteType whitelist filter (singular)") {
+
+      val testPort = 8083
+
+      configureFor(testPort)
+      val api = new WireMockServer(options.port(testPort))
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq("regular"), this)
+
+      Given("the source API")
+      api.start()
+      val rightNow = DateTime.now
+      val minuteAgo = rightNow.minus(6000)
+
+      When("Case Notes are pulled from the API")
+      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+
+      Then("the API receives a HTTP GET call with Authorization, from_datetime, and noteType whitelist")
+      verify(
+        getRequestedFor(
+          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z&noteType=regular")).
+          withHeader("Authorization", equalTo("Bearer FooBar"))
+      )
+    }
+
+    it("GETs case notes with a noteType whitelist filter (multiple)") {
+
+      val testPort = 8084
+
+      configureFor(testPort)
+      val api = new WireMockServer(options.port(testPort))
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq("scheduled", "observation"), this)
+
+      Given("the source API")
+      api.start()
+      val rightNow = DateTime.now
+      val minuteAgo = rightNow.minus(6000)
+
+      When("Case Notes are pulled from the API")
+      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+
+      Then("the API receives a HTTP GET call with Authorization, from_datetime, and noteType whitelist")
+      verify(
+        getRequestedFor(
+          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z&noteType=scheduled&noteType=observation")).
+          withHeader("Authorization", equalTo("Bearer FooBar"))
+      )
+    }
+
     it("reports a failure HTTP response code as an error") {
 
-      configureFor(8083)
-      val api = new WireMockServer(options.port(8083))
-      val source = new NomisSource("http://localhost:8083/internalError", this)
+      val testPort = 8085
+
+      configureFor(testPort)
+      val api = new WireMockServer(options.port(testPort))
+      val source = new NomisSource(s"http://localhost:$testPort/internalError", Seq(), this)
 
       Given("the source API returns an 500 Internal Error")
       api.start()
