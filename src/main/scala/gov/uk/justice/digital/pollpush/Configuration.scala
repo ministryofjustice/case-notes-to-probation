@@ -15,6 +15,8 @@ class Configuration extends AbstractModule with ScalaModule {
 
   private def envOrDefault(key: String) = Properties.envOrElse(key, envDefaults(key))
 
+  private def bindNamedValue[T: Manifest](kvp: (String, T)) = bind[T].annotatedWithName(kvp._1).toInstance(kvp._2)
+
   protected def envDefaults = Map(
     "DEBUG_LOG" -> "false",
     "MONGO_DB_URL" -> "mongodb://localhost:27017",
@@ -32,7 +34,7 @@ class Configuration extends AbstractModule with ScalaModule {
 
   override final def configure() {
 
-    val textMaps = Map(
+    Map(
       "mongoUri" -> "MONGO_DB_URL",
       "dbName" -> "MONGO_DB_NAME",
       "sourceUrl" -> "PULL_BASE_URL",
@@ -40,29 +42,25 @@ class Configuration extends AbstractModule with ScalaModule {
       "username" -> "PUSH_USERNAME",
       "password" -> "PUSH_PASSWORD",
       "nomisToken" -> "NOMIS_TOKEN",
-      "privateKey" -> "PRIVATE_KEY").mapValues(envOrDefault)
+      "privateKey" -> "PRIVATE_KEY").mapValues(envOrDefault).foreach(bindNamedValue(_))
 
-    val numberMaps = Map(
-      "timeout" -> "POLL_SECONDS").mapValues(envOrDefault(_).toInt)
+    Map(
+      "timeout" -> "POLL_SECONDS").mapValues(envOrDefault(_).toInt).foreach(bindNamedValue(_))
 
-    val booleanMaps = Map(
-      "debugLog" -> "DEBUG_LOG").mapValues(envOrDefault(_).toBoolean)
+    Map(
+      "debugLog" -> "DEBUG_LOG").mapValues(envOrDefault(_).toBoolean).foreach(bindNamedValue(_))
 
-    val csvMaps = Map(
-      "noteTypes" -> "PULL_NOTE_TYPES").mapValues(envOrDefault(_).split(','))
+    Map(
+      "noteTypes" -> "PULL_NOTE_TYPES").mapValues(envOrDefault(_).split(',').toSeq).foreach(bindNamedValue(_))
 
-    for ((name, text) <- textMaps) bind[String].annotatedWithName(name).toInstance(text)
-    for ((name, csvs) <- csvMaps) bind[Seq[String]].annotatedWithName(name).toInstance(csvs)
-    for ((name, number) <- numberMaps) bind[Int].annotatedWithName(name).toInstance(number)
-    for ((name, boolean) <- booleanMaps) bind[Boolean].annotatedWithName(name).toInstance(boolean)
-
-    bind[SourceToken].to[JwtTokenGenerator]
     bind[Formats].toProvider[FormatsProvider]
     bind[MongoConnection].toProvider[MongoConnectionProvider]
     bind[ActorMaterializer].toProvider[ActorMaterializerProvider]
 
     bind[ActorSystem].toProvider[ActorSystemProvider].asEagerSingleton()
     bind[MongoDriver].toProvider[MongoDriverProvider].asEagerSingleton()
+
+    bind[SourceToken].to[JwtTokenGenerator]
 
     configureOverridable()
   }
