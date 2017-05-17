@@ -101,7 +101,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       Then("the API receives a HTTP GET call with Authorization, from_datetime, and noteType whitelist")
       verify(
         getRequestedFor(
-          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z&noteType=regular")).
+          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z&note_type=regular")).
           withHeader("Authorization", equalTo("Bearer FooBar"))
       )
     }
@@ -125,7 +125,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       Then("the API receives a HTTP GET call with Authorization, from_datetime, and noteType whitelist")
       verify(
         getRequestedFor(
-          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z&noteType=scheduled&noteType=observation")).
+          urlEqualTo(s"/nomisapi/offenders/events/case_notes?from_datetime=${minuteAgo.toIsoDateTimeString}.000Z&note_type=scheduled&note_type=observation")).
           withHeader("Authorization", equalTo("Bearer FooBar"))
       )
     }

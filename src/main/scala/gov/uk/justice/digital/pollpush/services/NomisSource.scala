@@ -22,7 +22,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("note
 
   private val http = Http()
 
-  private val filter = noteTypes.map(s => s"&noteType=$s").mkString("")
+  private val filter = noteTypes.map(s => s"&note_type=$s").mkString("")
 
   private implicit val unmarshaller = Unmarshaller.stringUnmarshaller.forContentTypes(MediaTypes.`application/json`).map { json =>
 

@@ -38,7 +38,7 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
               withHeader("Authorization", containing("Bearer"))
           )
 
-          verify(getRequestedFor(urlMatching(".*&noteType=regular&noteType=other.*")))
+          verify(getRequestedFor(urlMatching(".*&note_type=regular&note_type=other.*")))
 
           verify(putRequestedFor(urlEqualTo("/delius/A1501AE/152799")))
           verify(putRequestedFor(urlEqualTo("/delius/A1403AE/152817")))
