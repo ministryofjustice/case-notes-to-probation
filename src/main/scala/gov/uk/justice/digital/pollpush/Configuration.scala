@@ -15,7 +15,12 @@ class Configuration extends AbstractModule with ScalaModule {
 
   private def envOrDefault(key: String) = Properties.envOrElse(key, envDefaults(key))
 
-  private def bindNamedValue[T: Manifest](kvp: (String, T)) = bind[T].annotatedWithName(kvp._1).toInstance(kvp._2)
+  private def bindNamedValue[T: Manifest](name: String, value: T) = bind[T].annotatedWithName(name).toInstance(value)
+
+  private def bindConfiguration[T: Manifest](map: Map[String, String], transform: String => T) =
+
+    for ((name, value) <- map.mapValues(envOrDefault).mapValues(transform)) bindNamedValue(name, value)
+
 
   protected def envDefaults = Map(
     "DEBUG_LOG" -> "false",
@@ -34,24 +39,40 @@ class Configuration extends AbstractModule with ScalaModule {
 
   override final def configure() {
 
-    Map(
-      "mongoUri" -> "MONGO_DB_URL",
-      "dbName" -> "MONGO_DB_NAME",
-      "sourceUrl" -> "PULL_BASE_URL",
-      "targetUrl" -> "PUSH_BASE_URL",
-      "username" -> "PUSH_USERNAME",
-      "password" -> "PUSH_PASSWORD",
-      "nomisToken" -> "NOMIS_TOKEN",
-      "privateKey" -> "PRIVATE_KEY").mapValues(envOrDefault).foreach(bindNamedValue(_))
+    bindConfiguration(
+      Map(
+        "mongoUri" -> "MONGO_DB_URL",
+        "dbName" -> "MONGO_DB_NAME",
+        "sourceUrl" -> "PULL_BASE_URL",
+        "targetUrl" -> "PUSH_BASE_URL",
+        "username" -> "PUSH_USERNAME",
+        "password" -> "PUSH_PASSWORD",
+        "nomisToken" -> "NOMIS_TOKEN",
+        "privateKey" -> "PRIVATE_KEY"
+      ),
+      identity
+    )
 
-    Map(
-      "timeout" -> "POLL_SECONDS").mapValues(envOrDefault(_).toInt).foreach(bindNamedValue(_))
+    bindConfiguration(
+      Map(
+        "timeout" -> "POLL_SECONDS"
+      ),
+      s => s.toInt
+    )
 
-    Map(
-      "debugLog" -> "DEBUG_LOG").mapValues(envOrDefault(_).toBoolean).foreach(bindNamedValue(_))
+    bindConfiguration(
+      Map(
+        "debugLog" -> "DEBUG_LOG"
+      ),
+      s => s.toBoolean
+    )
 
-    Map(
-      "noteTypes" -> "PULL_NOTE_TYPES").mapValues(envOrDefault(_).split(',').toSeq).foreach(bindNamedValue(_))
+    bindConfiguration(
+      Map(
+        "noteTypes" -> "PULL_NOTE_TYPES"
+      ),
+      s => s.split(',').toSeq
+    )
 
     bind[Formats].toProvider[FormatsProvider]
     bind[MongoConnection].toProvider[MongoConnectionProvider]
