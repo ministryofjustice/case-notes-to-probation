@@ -79,7 +79,7 @@ class MongoSpec extends FunSpec with GivenWhenThen with Matchers with MongoEmbed
     }
   }
 
-  private val caseNote1 = TargetCaseNote(TargetCaseNoteHeader("4444", "GGGG"), TargetCaseNoteBody("Normal", "A case note", "time", "David Essex", "HHH"))
+  private val caseNote1 = TargetCaseNote(TargetCaseNoteHeader("4444", "GGGG"), TargetCaseNoteBody("Normal", "A case note", "time", "time", "David Essex", "HHH"))
   private val tenSeconds = 10.seconds
   private val startOf2017 = DateTime.apply(2017, 1, 1)
 }

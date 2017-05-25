@@ -69,8 +69,8 @@ class IntegrationSpec extends FunSpec with BeforeAndAfter with GivenWhenThen wit
     }
   }
 
-  private val caseNote1 = TargetCaseNote(TargetCaseNoteHeader("2222", "BBBB"), TargetCaseNoteBody("Other", "Example note", "time", "David Bowie", "CCC"))
-  private val caseNote2 = TargetCaseNote(TargetCaseNoteHeader("3333", "DDDD"), TargetCaseNoteBody("Regular", "Kind og note", "time", "David Brent", "FFF"))
+  private val caseNote1 = TargetCaseNote(TargetCaseNoteHeader("2222", "BBBB"), TargetCaseNoteBody("Other", "Example note", "time", "time", "David Bowie", "CCC"))
+  private val caseNote2 = TargetCaseNote(TargetCaseNoteHeader("3333", "DDDD"), TargetCaseNoteBody("Regular", "Kind og note", "time", "time", "David Brent", "FFF"))
 
   private val store = MongoEmbedClient.store()
 

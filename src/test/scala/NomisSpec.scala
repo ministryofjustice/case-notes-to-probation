@@ -51,6 +51,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
           "Observations",
           "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
           "2017-04-10T13:55:00.000Z",
+          "2017-04-10T13:55:00.000Z",
           "Brady, Phill",
           "BMI"),
         SourceCaseNoteBuilder.build(
@@ -59,6 +60,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
           "Alert",
           "Alert Sexual Offence and Risk to Children made active.",
           "2017-04-09T23:00:00.000Z",
+          "2017-04-10T13:55:00.000Z",
           "Richardson, Trevor",
           "LEI"),
         SourceCaseNoteBuilder.build(
@@ -67,6 +69,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
           "General",
           "Des who?",
           "2017-04-12T09:28:00.000Z",
+          "2017-04-10T13:55:00.000Z",
           "Brady, Phill",
           "BMI"),
         SourceCaseNoteBuilder.build(
@@ -75,6 +78,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
           "Training",
           "Allocated to  course \"Tunnelling for beginners\"",
           "2017-04-12T13:12:00.000Z",
+          "2017-04-10T13:55:00.000Z",
           "Brady, Phill",
           "BMI")
       ), Some(minuteAgo), Some(rightNow), None)

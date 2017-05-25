@@ -276,8 +276,8 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
     }
   }
 
-  private val caseNote1 = SourceCaseNoteBuilder.build("1234", "5678", "observation", "some notes", "time", "Dave Smith", "XYZ")
-  private val caseNote2 = SourceCaseNoteBuilder.build("5678", "9999", "regular", "more notes", "time", "Johnny Jones", "ABA")
+  private val caseNote1 = SourceCaseNoteBuilder.build("1234", "5678", "observation", "some notes", "time", "time", "Dave Smith", "XYZ")
+  private val caseNote2 = SourceCaseNoteBuilder.build("5678", "9999", "regular", "more notes", "time", "time", "Johnny Jones", "ABA")
 
   private val twoCaseNotes = Seq(caseNote1, caseNote2)
 

@@ -13,7 +13,8 @@
         "noms_id": "A1501AE",
         "id": 152799,
         "content": "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
-        "timestamp": "2017-04-10T13:55:00.000Z",
+        "contactTimestamp": "2017-04-10T13:55:00.000Z",
+        "raisedTimestamp": "2017-04-10T13:55:00.000Z",
         "noteType": "Observations",
         "staffName": "Brady, Phill",
         "establishmentCode": "BMI"
@@ -22,7 +23,8 @@
         "noms_id": "A1403AE",
         "id": 152817,
         "content": "Alert Sexual Offence and Risk to Children made active.",
-        "timestamp": "2017-04-09T23:00:00.000Z",
+        "contactTimestamp": "2017-04-09T23:00:00.000Z",
+        "raisedTimestamp": "2017-04-10T13:55:00.000Z",
         "noteType": "Alert",
         "staffName": "Richardson, Trevor",
         "establishmentCode": "LEI"
@@ -31,7 +33,8 @@
         "noms_id": "A1301AB",
         "id": 152837,
         "content": "Des who?",
-        "timestamp": "2017-04-12T09:28:00.000Z",
+        "contactTimestamp": "2017-04-12T09:28:00.000Z",
+        "raisedTimestamp": "2017-04-10T13:55:00.000Z",
         "noteType": "General",
         "staffName": "Brady, Phill",
         "establishmentCode": "BMI"
@@ -40,7 +43,8 @@
         "noms_id": "A1479AE",
         "id": 152838,
         "content": "Allocated to  course \"Tunnelling for beginners\"",
-        "timestamp": "2017-04-12T13:12:00.000Z",
+        "contactTimestamp": "2017-04-12T13:12:00.000Z",
+        "raisedTimestamp": "2017-04-10T13:55:00.000Z",
         "noteType": "Training",
         "staffName": "Brady, Phill",
         "establishmentCode": "BMI"

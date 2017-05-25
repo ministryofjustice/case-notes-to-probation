@@ -4,13 +4,14 @@ import gov.uk.justice.digital.pollpush.data._
 
 object SourceCaseNoteBuilder {
 
-  def build(nomisId: String, noteId: String, noteType: String, content: String, timestamp: String, staffName: String, establishmentCode: String) =
+  def build(nomisId: String, noteId: String, noteType: String, content: String, contactTimestamp: String, raisedTimestamp: String, staffName: String, establishmentCode: String) =
 
     SourceCaseNote(
       nomisId,
       noteId.toInt,
       content,
-      timestamp,
+      contactTimestamp,
+      raisedTimestamp,
       noteType,
       staffName,
       establishmentCode
