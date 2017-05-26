@@ -1,6 +1,6 @@
 package gov.uk.justice.digital.pollpush.data
 
-case class SourceCaseNote(noms_id: String, id: Int, content: String, contactTimestamp: String, raisedTimestamp: String, noteType: String, staffName: String, establishmentCode: String) {
+case class SourceCaseNote(noms_id: String, id: Int, content: String, contactTimestamp: String, notificationTimestamp: String, noteType: String, staffName: String, establishmentCode: String) {
 
   def toTarget = TargetCaseNote(
     TargetCaseNoteHeader(noms_id, id.toString),
@@ -8,7 +8,7 @@ case class SourceCaseNote(noms_id: String, id: Int, content: String, contactTime
       noteType,
       content,
       contactTimestamp,
-      raisedTimestamp,
+      notificationTimestamp,
       staffName,
       establishmentCode
     )
