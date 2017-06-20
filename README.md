@@ -22,7 +22,7 @@ Configuration parameters can be supplied via environment variables, e.g.:
 
 ### Development notes
 
-Developed in [Scala 2.12](http://www.scala-lang.org/news/2.12.0), using [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/) for HTTP server and client functionality, and [Akka Actors](http://doc.akka.io/docs/akka/current/scala/actors.html) to provide a highly scalable multi-threaded state machine.
+Developed in [Scala 2.12](http://www.scala-lang.org/news/2.12.0), using [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/) for HTTP client functionality, and [Akka Actors](http://doc.akka.io/docs/akka/current/scala/actors.html) to provide a highly scalable multi-threaded state machine.
 
 The pull/push functionality is unit tested via dependency-injected mock APIs. The source and target REST APIs are also directly tested via WireMock HTTP Servers that mock the HTTP endpoints, and an integration test also connects to an embedded MongoDB server.
 
