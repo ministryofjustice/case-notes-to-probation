@@ -11,7 +11,7 @@ Build commands:
 
 - Build and run tests `sbt test`
 - Run locally `sbt run`
-- Build deployable pollPush.jar  `sbt assembly`
+- Build deployable pollPush.jar `sbt assembly`
 
 Running deployable fat jar:
 - `java -jar pollPush.jar`
@@ -21,6 +21,8 @@ Configuration parameters can be supplied via environment variables, e.g.:
 - `POLL_SECONDS=60 java -jar pollPush.jar`
 
 ### Development notes
+
+Developed in [Scala 2.12](http://www.scala-lang.org/news/2.12.0), using [Akka HTTP](http://doc.akka.io/docs/akka-http/current/scala/http/) for HTTP server and client functionality, and [Akka Actors](http://doc.akka.io/docs/akka/current/scala/actors.html) to provide a highly scalable multi-threaded state machine.
 
 The pull/push functionality is unit tested via dependency-injected mock APIs. The source and target REST APIs are also directly tested via WireMock HTTP Servers that mock the HTTP endpoints, and an integration test also connects to an embedded MongoDB server.
 
