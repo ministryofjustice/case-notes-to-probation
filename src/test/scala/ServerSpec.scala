@@ -274,6 +274,25 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
         targetNotes.length shouldBe 0
       }
     }
+
+    it("does not purge a pushed case note if pushing fails due to a runtime exceeded client thread pool and retries the push") {
+
+      Given("pushing to the target system throws an runtime exception because the client thread pool is full")
+      sourceNotes = twoCaseNotes
+      pushImplementation = storeCaseNoteThrowsRuntimeExceptionExceeded
+
+      When("the service runs")
+      runServerWithMockedServices()
+
+      Then("the two target notes are re-pushed 3 times each or more, and the notes remain stored in the database while re-pushing")
+
+      eventually(fiveSecondTimeout) {
+
+        targetNotes.length should be > 6
+        storedNotes.length shouldBe 2
+        whenReceived should not be None
+      }
+    }
   }
 
   private val caseNote1 = SourceCaseNoteBuilder.build("1234", "5678", "observation", "some notes", "time", "time", "Dave Smith", "XYZ")
@@ -327,6 +346,13 @@ class ServerSpec extends FunSpec with BeforeAndAfter with GivenWhenThen with Eve
   }
 
   private def storeCaseNoteInfiniteWait(caseNote: TargetCaseNote) = Promise[PushResult]().future
+
+  private def storeCaseNoteThrowsRuntimeExceptionExceeded(caseNote: TargetCaseNote) = {
+
+    targetNotes = targetNotes :+ Some(caseNote)
+
+    Future { PushResult(caseNote, Some(StatusCodes.NoContent), "", Some(new RuntimeException("Exceeded configured max-open-requests value of"))) }
+  }
 
   override def pull(from: DateTime, until: DateTime) = {
 

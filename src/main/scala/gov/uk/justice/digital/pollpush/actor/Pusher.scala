@@ -7,6 +7,7 @@ import gov.uk.justice.digital.pollpush.data._
 import gov.uk.justice.digital.pollpush.traits.{DataStore, SingleTarget}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Pusher @Inject() (target: SingleTarget, store: DataStore) extends Actor with ActorLogging {
 
@@ -26,15 +27,26 @@ class Pusher @Inject() (target: SingleTarget, store: DataStore) extends Actor wi
 
     case pushResult @ PushResult(caseNote, _, body, _) =>
 
-      (pushResult.result, pushResult.error) match {
+      ((pushResult.result, pushResult.error) match {
+
+        case (_, Some(error: RuntimeException)) if error.getMessage.contains("Exceeded configured max-open-requests value of") =>
+
+          log.info(s"Re-pushing Case Note: ${caseNote.header} as client connection pool is full")
+          target.push(caseNote).pipeTo(self)
 
         case (_, Some(error)) => log.warning(s"${caseNote.header} PUSH ERROR: ${error.getMessage}")
         case (Some(result), None) => log.info(s"${caseNote.header} ${result.value} $body")
         case _ => log.warning("PUSH ERROR: No result or error")
-      }
 
-      log.info(s"Purging Case Note: ${caseNote.header} ...")
-      store.delete(caseNote).pipeTo(self)
+      }) match {
+
+        case noFuture: Unit =>
+
+          log.info(s"Purging Case Note: ${caseNote.header} ...")
+          store.delete(caseNote).pipeTo(self)
+
+        case _ => // A Future is returned by target.push, don't purge from store for Re-push
+      }
 
     case deleteResult @ DeleteResult(caseNote, _) =>
 
