@@ -23,4 +23,4 @@ libraryDependencies ++= Seq(
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % "test"
 )
 
-assemblyJarName in assembly := "pollPush.jar"
+assemblyJarName in assembly := "pollPush-" + version.value + ".jar"
