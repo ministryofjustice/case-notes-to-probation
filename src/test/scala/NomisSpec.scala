@@ -28,7 +28,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(testPort)
       val api = new WireMockServer(options.port(testPort))
-      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq(), this)
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq(""), this)
 
       Given("the source API")
       api.start()
