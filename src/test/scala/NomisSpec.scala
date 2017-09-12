@@ -28,7 +28,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(testPort)
       val api = new WireMockServer(options.port(testPort))
-      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq(""), this)
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq(""), this, 0)
 
       Given("the source API")
       api.start()
@@ -92,7 +92,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(testPort)
       val api = new WireMockServer(options.port(testPort))
-      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq("regular"), this)
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq("regular"), this, 0)
 
       Given("the source API")
       api.start()
@@ -116,7 +116,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(testPort)
       val api = new WireMockServer(options.port(testPort))
-      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq("scheduled", "observation"), this)
+      val source = new NomisSource(s"http://localhost:$testPort/nomisapi/offenders/events/case_notes", Seq("scheduled", "observation"), this, 0)
 
       Given("the source API")
       api.start()
@@ -140,7 +140,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
 
       configureFor(testPort)
       val api = new WireMockServer(options.port(testPort))
-      val source = new NomisSource(s"http://localhost:$testPort/internalError", Seq(), this)
+      val source = new NomisSource(s"http://localhost:$testPort/internalError", Seq(), this, 0)
 
       Given("the source API returns an 500 Internal Error")
       api.start()

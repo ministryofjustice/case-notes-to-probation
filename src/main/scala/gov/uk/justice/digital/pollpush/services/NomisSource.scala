@@ -15,7 +15,7 @@ import org.json4s.Formats
 import org.json4s.native.Serialization._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("noteTypes") noteTypes: Seq[String], sourceToken: SourceToken)
+class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("noteTypes") noteTypes: Seq[String], sourceToken: SourceToken, @Named("slack") slack: Int)
                             (implicit val formats: Formats,
                              implicit val system: ActorSystem,
                              implicit val materializer: ActorMaterializer) extends BulkSource with Logging {
@@ -33,7 +33,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("note
 
   override def pull(from: DateTime, until: DateTime) = {
 
-    val uri = s"$sourceUrl?from_datetime=${from.toIsoDateTimeString}.000Z$filter"
+    val uri = s"$sourceUrl?from_datetime=${from.minus(slack * 1000).toIsoDateTimeString}.000Z$filter"
 
     logger.debug(s"Requesting from Nomis: $uri")
 

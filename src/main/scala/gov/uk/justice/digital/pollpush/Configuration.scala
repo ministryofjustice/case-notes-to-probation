@@ -32,6 +32,7 @@ class Configuration extends AbstractModule with ScalaModule {
     "PUSH_USERNAME" -> "username",
     "PUSH_PASSWORD" -> "password",
     "POLL_SECONDS" -> "60",
+    "SLACK_SECONDS" -> "0",
     "NOMIS_TOKEN" -> "abcde12345",
     "PRIVATE_KEY" -> "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg0I/O+oZH/OAQVJHB8dvAD7gBMRUtwsFW75y7p1aflKSgCgYIKoZIzj0DAQehRANCAASAgCGtL4MyJc5xGfgIY/UP6EfHH09MsvOWeWL3tyod0QVia1yTrTQycjUc9sbgHZGxQJOi2fI6CBWZNBZ/MZso",
     "PUBLIC_KEY" -> "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgIAhrS+DMiXOcRn4CGP1D+hHxx9PTLLzlnli97cqHdEFYmtck600MnI1HPbG4B2RsUCTotnyOggVmTQWfzGbKA=="
@@ -55,7 +56,8 @@ class Configuration extends AbstractModule with ScalaModule {
 
     bindConfiguration(
       Map(
-        "timeout" -> "POLL_SECONDS"
+        "timeout" -> "POLL_SECONDS",
+        "slack" -> "SLACK_SECONDS"
       ),
       s => s.toInt
     )
