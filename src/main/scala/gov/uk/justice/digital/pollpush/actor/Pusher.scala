@@ -35,7 +35,8 @@ class Pusher @Inject() (target: SingleTarget, store: DataStore) extends Actor wi
           target.push(caseNote).pipeTo(self)
 
         case (_, Some(error)) => log.warning(s"${caseNote.header} PUSH ERROR: ${error.getMessage}")
-        case (Some(result), None) => log.info(s"${caseNote.header} ${result.value} $body")
+        case (Some(result), None) => log.info(s"Push for ${caseNote.header} (note type ${caseNote.body.noteType} " +
+          s"and establishment code ${caseNote.body.establishmentCode}) returned ${result.value} $body")
         case _ => log.warning("PUSH ERROR: No result or error")
 
       }) match {
