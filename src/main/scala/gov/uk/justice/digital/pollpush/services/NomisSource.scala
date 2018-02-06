@@ -44,8 +44,9 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("note
         List(Authorization(OAuth2BearerToken(sourceToken.generate())))))
       .flatMap {
 
-        case HttpResponse(statusCode, _, _, _) if statusCode.isFailure =>
+        case response @ HttpResponse(statusCode, _, _, _) if statusCode.isFailure =>
 
+          response.discardEntityBytes()
           throw new Exception(statusCode.value)
 
         case HttpResponse(_, _, entity, _) =>
