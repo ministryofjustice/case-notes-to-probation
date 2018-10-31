@@ -36,7 +36,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       val minuteAgo = rightNow.minus(6000)
 
       When("Case Notes are pulled from the API")
-      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+      val result = Await.result(source.pull(minuteAgo, rightNow), 10.seconds)
 
       Then("the API receives a HTTP GET call with Authorization, from_datetime and returns the Case Notes")
       verify(
@@ -100,7 +100,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       val minuteAgo = rightNow.minus(6000)
 
       When("Case Notes are pulled from the API")
-      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+      val result = Await.result(source.pull(minuteAgo, rightNow), 10.seconds)
 
       Then("the API receives a HTTP GET call with Authorization, from_datetime, and noteType whitelist")
       verify(
@@ -124,7 +124,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       val minuteAgo = rightNow.minus(6000)
 
       When("Case Notes are pulled from the API")
-      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+      val result = Await.result(source.pull(minuteAgo, rightNow), 10.seconds)
 
       Then("the API receives a HTTP GET call with Authorization, from_datetime, and noteType whitelist")
       verify(
@@ -148,7 +148,7 @@ class NomisSpec extends FunSpec with BeforeAndAfterAll with GivenWhenThen with M
       val minuteAgo = rightNow.minus(6000)
 
       When("a Case Notes pull from the API is attempted")
-      val result = Await.result(source.pull(minuteAgo, rightNow), 5.seconds)
+      val result = Await.result(source.pull(minuteAgo, rightNow), 10.seconds)
 
       Then("the 500 error is reported")
       result.error.get.toString should include("500")

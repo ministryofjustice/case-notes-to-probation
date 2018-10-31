@@ -2,7 +2,7 @@ name := "pollpush"
 
 organization := "gov.uk.justice.digital"
 
-version := "0.1.07"
+version := "0.1.08"
 
 scalaVersion := "2.12.2"
 

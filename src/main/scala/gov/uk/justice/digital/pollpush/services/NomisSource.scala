@@ -51,7 +51,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("note
 
         case HttpResponse(_, _, entity, _) =>
 
-          Unmarshal(entity).to[Seq[SourceCaseNote]].map(PullResult(_, Some(from), Some(until), None))
+          Unmarshal(entity.withoutSizeLimit()).to[Seq[SourceCaseNote]].map(PullResult(_, Some(from), Some(until), None))
 
       }.recover { case error: Throwable => PullResult(Seq(), Some(from), Some(until), Some(error)) }
   }
