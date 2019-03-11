@@ -11,8 +11,6 @@ jobs:
         <<: *defaults
         steps:
             - checkout
-            - attach_workspace:
-                at: ~/casenotes
             - restore_cache:
                 keys:
                   - casenotes-{{ checksum "build.sbt" }}
@@ -21,18 +19,6 @@ jobs:
                 name: Compile
                 command: |
                   sbt compile < /dev/null
-            - persist_to_workspace:
-                  root: .
-                  paths: .
-    unitTests:
-        <<: *defaults
-        steps:
-            - attach_workspace:
-                at: ~/casenotes
-            - restore_cache:
-                keys:
-                  - casenotes-{{ checksum "build.sbt" }}
-                  - casenotes-
             - run:
                 name: Unit tests
                 command: |
@@ -42,21 +28,12 @@ jobs:
             - store_artifacts:
                 path: ./target/test-reports/
                 destination: reports
-    artifacts:
-        <<: *defaults
-        steps:
-            - attach_workspace:
-                  at: ~/casenotes
-            - restore_cache:
-                keys:
-                  - v2-casenotes-{{ checksum "build.sbt" }}
-                  - v2-casenotes-
             - run:
                 name: Run sbt assembly
                 command: |
                   sbt 'set test in assembly := {}' assembly < /dev/null
             - save_cache:
-                key: v2-casenotes-{{ checksum "build.sbt" }}
+                key: casenotes-{{ checksum "build.sbt" }}
                 paths:
                   - ~/.ivy2/cache
                   - ~/.sbt
@@ -65,10 +42,6 @@ jobs:
                 command: |
                   mkdir -p ./target/artifacts
                   mv target/**/*.jar ./target/artifacts/
-            - persist_to_workspace:
-                root: ./target/artifacts/
-                paths:
-                  - ./*.jar
             - store_artifacts:
                 path: target/artifacts
                 destination: jars
@@ -78,9 +51,3 @@ workflows:
     build-deploy-test:
         jobs:
             - build
-            - unitTests:
-                requires:
-                    - build
-            - artifacts:
-                requires:
-                    - unitTests
