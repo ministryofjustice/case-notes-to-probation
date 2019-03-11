@@ -1,0 +1,53 @@
+defaults: &defaults
+  working_directory: ~/casenotes
+  docker:
+    - image: circleci/openjdk:8
+
+version: 2
+general:
+  branches:
+jobs:
+    build:
+        <<: *defaults
+        steps:
+            - checkout
+            - restore_cache:
+                keys:
+                  - casenotes-{{ checksum "build.sbt" }}
+                  - casenotes-
+            - run:
+                name: Compile
+                command: |
+                  sbt compile < /dev/null
+            - run:
+                name: Unit tests
+                command: |
+                  sbt test < /dev/null
+            - store_test_results:
+                path: ./target/test-reports/
+            - store_artifacts:
+                path: ./target/test-reports/
+                destination: reports
+            - run:
+                name: Run sbt assembly
+                command: |
+                  sbt 'set test in assembly := {}' assembly < /dev/null
+            - save_cache:
+                key: casenotes-{{ checksum "build.sbt" }}
+                paths:
+                  - ~/.ivy2/cache
+                  - ~/.sbt
+            - run:
+                name: Save Fat Jar
+                command: |
+                  mkdir -p ./target/artifacts
+                  mv target/**/*.jar ./target/artifacts/
+            - store_artifacts:
+                path: target/artifacts
+                destination: jars
+
+workflows:
+    version: 2
+    build-deploy-test:
+        jobs:
+            - build
