@@ -35,7 +35,7 @@ class NomisSource @Inject() (@Named("sourceUrl") sourceUrl: String, @Named("note
 
     val uri = s"$sourceUrl?from_datetime=${from.minus(slack * 1000).toIsoDateTimeString}.000Z$filter"
 
-    logger.debug(s"Requesting from Nomis: $uri (with $slack slack seconds)")
+    logger.info(s"Requesting from Nomis: $uri (with $slack slack seconds)")
 
     http.singleRequest(
       HttpRequest(
