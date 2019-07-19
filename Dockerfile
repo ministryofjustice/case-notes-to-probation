@@ -1,4 +1,4 @@
-FROM java
+FROM mojdigitalstudio/hmpps-base-java:latest
 
 MAINTAINER Nick Talbot <nick.talbot@digital.justice.gov.uk>
 
