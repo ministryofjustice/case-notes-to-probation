@@ -1,0 +1,10 @@
+FROM mojdigitalstudio/hmpps-base-java:latest
+# Build time variables
+ARG CASENOTES_VERSION
+ENV CASENOTES_VERSION=$CASENOTES_VERSION
+
+MAINTAINER Nick Talbot <nick.talbot@digital.justice.gov.uk>
+
+COPY target/scala-2.12/pollPush-${CASENOTES_VERSION}.jar /home/tools/pollPush.jar
+
+ENTRYPOINT ["/usr/bin/java", "-jar", "/home/tools/pollPush.jar"]

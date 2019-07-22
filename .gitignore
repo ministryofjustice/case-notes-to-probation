@@ -1,3 +1,5 @@
 target/
 .idea/
-*/.key
+src/test/resources/*.key
+src/test/resources/*.pub
+ecr.repo

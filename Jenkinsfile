@@ -10,22 +10,27 @@ pipeline {
     agent { label "jenkins_slave" }
 
     environment {
-        docker_image = "hmpps/casenotes"
+        docker_image = "hmpps/new-tech-casenotes"
         aws_region = 'eu-west-2'
         ecr_repo = ''
         CASENOTES_VERSION = get_casenotes_version()
     }
 
+    options { 
+        disableConcurrentBuilds() 
+    }
+
     stages {
-        // stage ('Notify build started') {
-        //     steps {
-        //         slackSend(message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)")
-        //     }
-        // }
+        stage ('Notify build started') {
+            steps {
+                slackSend(message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)")
+            }
+        }
 
         stage ('Initialize') {
             steps {
                 sh '''
+                    #!/bin/bash +x
                     echo "PATH = ${PATH}"
                     echo "CASENOTES_VERSION = ${CASENOTES_VERSION}"
                 '''
@@ -35,10 +40,9 @@ pipeline {
        stage('Verify Prerequisites') {
            steps {
                sh '''
+                    #!/bin/bash +x
                     echo "Testing AWS Connectivity and Credentials"
                     aws sts get-caller-identity
-                    echo "Testing sbt is installed"
-                    sbt -h
                '''
            }
        }
@@ -46,9 +50,9 @@ pipeline {
        stage('SBT Assembly') {
            steps {
                 sh '''
-                    sbt assembly
+                    #!/bin/bash +x
+                    make sbt-build;
                 '''
-            // TODO will need to stash the resultant artefact here and pass to docker build stage                
            }
        }
 
@@ -57,17 +61,14 @@ pipeline {
                 sh '''
                     #!/bin/bash +x
                     make ecr-login
+                    ls -ail
                 '''
                 // Stash the ecr repo to save a repeat aws api call
-                stash includes: './ecr.repo', name: 'ecr.repo'
+                stash includes: 'ecr.repo', name: 'ecr.repo'
             }
         }
         stage('Build Docker image') {
            steps {
-# this path will need changing
-                dir('./docker'){
-                    unstash 'artefacts'
-                }
                 unstash 'ecr.repo'
                 sh '''
                     #!/bin/bash +x
@@ -115,13 +116,15 @@ pipeline {
     }
     post {
         always {
+            // Add a sleep to allow docker step to fully release file locks on failed run
+            sleep(time: 3, unit: "SECONDS")
             deleteDir()
         }
-        // success {
-        //     slackSend(message: "Build successful -${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'good')
-        // }
-        // failure {
-        //     slackSend(message: "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'danger')
-        // }
+        success {
+            slackSend(message: "Build successful -${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'good')
+        }
+        failure {
+            slackSend(message: "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'danger')
+        }
     }
 }
