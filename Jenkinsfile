@@ -74,7 +74,6 @@ pipeline {
                 // unstash 'pollPush-${CASENOTES_VERSION}.jar'
                 sh '''
                     #!/bin/bash +x
-                    ls -ail; \
                     make build casenotes_version=${CASENOTES_VERSION}
                 '''
             }
