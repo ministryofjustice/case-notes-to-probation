@@ -58,7 +58,6 @@ pipeline {
                     docker run --rm -v $(pwd):/home/tools/data \
                         hseeberger/scala-sbt:8u212_1.2.8_2.12.8 \
                         bash -c " \
-                            cd /build && \
                             sbt test:compile && \
                             sbt clean test && \
                             sbt assembly";
