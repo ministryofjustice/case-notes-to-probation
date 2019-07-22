@@ -1,5 +1,5 @@
 target/
 .idea/
-*/client*.key
-*/client*.pub
+src/test/resources/*.key
+src/test/resources/*.pub
 ecr.repo
