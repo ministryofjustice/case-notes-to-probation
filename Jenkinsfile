@@ -21,11 +21,11 @@ pipeline {
     }
 
     stages {
-        // stage ('Notify build started') {
-        //     steps {
-        //         slackSend(message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)")
-        //     }
-        // }
+        stage ('Notify build started') {
+            steps {
+                slackSend(message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)")
+            }
+        }
 
         stage ('Initialize') {
             steps {
@@ -53,7 +53,6 @@ pipeline {
                     #!/bin/bash +x
                     make sbt-build;
                 '''
-                // stash includes: 'target/scala-2.12/pollPush-${CASENOTES_VERSION}.jar', name: 'pollPush-${CASENOTES_VERSION}.jar'
            }
        }
 
@@ -71,7 +70,6 @@ pipeline {
         stage('Build Docker image') {
            steps {
                 unstash 'ecr.repo'
-                // unstash 'pollPush-${CASENOTES_VERSION}.jar'
                 sh '''
                     #!/bin/bash +x
                     make build casenotes_version=${CASENOTES_VERSION}
@@ -119,14 +117,14 @@ pipeline {
     post {
         always {
             // Add a sleep to allow docker step to fully release file locks on failed run
-            sleep(time: 10, unit: "SECONDS")
+            sleep(time: 3, unit: "SECONDS")
             deleteDir()
         }
-        // success {
-        //     slackSend(message: "Build successful -${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'good')
-        // }
-        // failure {
-        //     slackSend(message: "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'danger')
-        // }
+        success {
+            slackSend(message: "Build successful -${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'good')
+        }
+        failure {
+            slackSend(message: "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'danger')
+        }
     }
 }
