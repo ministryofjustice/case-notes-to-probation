@@ -119,7 +119,7 @@ pipeline {
     post {
         always {
             // Add a sleep to allow docker step to fully release file locks on failed run
-            sleep(time: 1, unit: "SECONDS")
+            sleep(time: 10, unit: "SECONDS")
             deleteDir()
         }
         // success {

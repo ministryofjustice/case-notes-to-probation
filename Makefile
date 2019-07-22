@@ -18,7 +18,7 @@ sbt-build:
 	$(info Generating Test Keys)
 	pushd ./src/test/resources && $(build_dir)/generate_keys.sh
 	$(Info Running sbt task)
-	docker run --rm -v $(build_dir):/build -w /build $(sbt_builder_image) bash -c "sbt -v test:compile clean "
+	docker run --rm -v $(build_dir):/build -w /build $(sbt_builder_image) bash -c "sbt -v test:compile clean test"
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region ${aws_region})
