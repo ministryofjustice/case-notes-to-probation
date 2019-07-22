@@ -53,7 +53,7 @@ pipeline {
                     #!/bin/bash +x
                     make sbt-build;
                 '''
-                stash includes: 'target/scala-2.12/pollPush-${CASENOTES_VERSION}.jar', name: 'pollPush-${CASENOTES_VERSION}.jar'
+                // stash includes: 'target/scala-2.12/pollPush-${CASENOTES_VERSION}.jar', name: 'pollPush-${CASENOTES_VERSION}.jar'
            }
        }
 
@@ -70,7 +70,7 @@ pipeline {
         stage('Build Docker image') {
            steps {
                 unstash 'ecr.repo'
-                unstash 'pollPush-${CASENOTES_VERSION}.jar'
+                // unstash 'pollPush-${CASENOTES_VERSION}.jar'
                 sh '''
                     #!/bin/bash +x
                     ls -ail; \
@@ -118,6 +118,8 @@ pipeline {
     }
     post {
         always {
+            // Add a sleep to allow docker step to fully release file locks on failed run
+            sleep(time: 1, unit: "SECONDS")
             deleteDir()
         }
         // success {
