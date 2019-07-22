@@ -65,7 +65,7 @@ pipeline {
                     ls -ail
                 '''
                 // Stash the ecr repo to save a repeat aws api call
-                stash includes: './ecr.repo', name: 'ecr.repo'
+                stash includes: 'ecr.repo', name: 'ecr.repo'
             }
         }
         stage('Build Docker image') {
