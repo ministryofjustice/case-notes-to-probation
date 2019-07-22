@@ -19,7 +19,7 @@ ecr-login:
 build: ecr_repo = $(shell cat ./ecr.repo)
 build:
 	$(info Build of repo $(ecr_repo))
-	docker build -t $(ecr_repo) --build-arg casenotes_VERSION=${casenotes_version}  .
+	docker build -t $(ecr_repo) --build-arg casenotes_VERSION=${casenotes_version}  -f Dockerfile.aws .
 
 tag: ecr_repo = $(shell cat ./ecr.repo)
 tag:
