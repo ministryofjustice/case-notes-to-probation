@@ -62,6 +62,7 @@ pipeline {
                 sh '''
                     #!/bin/bash +x
                     make ecr-login
+                    ls -ail
                 '''
                 // Stash the ecr repo to save a repeat aws api call
                 stash includes: './ecr.repo', name: 'ecr.repo'
