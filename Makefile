@@ -1,7 +1,7 @@
 i.PHONY: all ecr-login build tag test push clean-remote clean-local
 
 aws_region := eu-west-2
-image := hmpps/casenotes
+image := hmpps/new-tech-casenotes
 
 # casenotes_version should be passed from command line
 all:
@@ -19,7 +19,7 @@ ecr-login:
 build: ecr_repo = $(shell cat ./ecr.repo)
 build:
 	$(info Build of repo $(ecr_repo))
-	docker build -t $(ecr_repo) --build-arg casenotes_VERSION=${casenotes_version}  -f Dockerfile.aws .
+	docker build -t $(ecr_repo) --build-arg CASENOTES_VERSION=${casenotes_version}  -f docker/Dockerfile.aws .
 
 tag: ecr_repo = $(shell cat ./ecr.repo)
 tag:
@@ -28,7 +28,7 @@ tag:
 
 test: ecr_repo = $(shell cat ./ecr.repo)
 test:
-	bash -c "GOSS_FILES_STRATEGY=cp GOSS_FILES_PATH="./docker/tests/" GOSS_SLEEP=5 dgoss run -e casenotes_BUILDTESTMODE=true $(ecr_repo):latest"
+	bash -c "GOSS_FILES_STRATEGY=cp GOSS_FILES_PATH="./docker/tests/" GOSS_SLEEP=5 dgoss run $(ecr_repo):latest"
 
 push: ecr_repo = $(shell cat ./ecr.repo)
 push:
@@ -41,6 +41,7 @@ clean-remote:
 
 clean-local: ecr_repo = $(shell cat ./ecr.repo)
 clean-local:
-	docker rmi ${ecr_repo}:latest
-	docker rmi ${ecr_repo}:${casenotes_version}
-	rm -f ./ecr.repo
+	-docker rmi ${ecr_repo}:latest
+	-docker rmi ${ecr_repo}:${casenotes_version}
+	-rm -f ./ecr.repo
+	-rm -f ./src/test/resources/*.key

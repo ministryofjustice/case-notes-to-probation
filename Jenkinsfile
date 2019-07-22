@@ -10,7 +10,7 @@ pipeline {
     agent { label "jenkins_slave" }
 
     environment {
-        docker_image = "hmpps/casenotes"
+        docker_image = "hmpps/new-tech-casenotes"
         aws_region = 'eu-west-2'
         ecr_repo = ''
         CASENOTES_VERSION = get_casenotes_version()
@@ -26,6 +26,7 @@ pipeline {
         stage ('Initialize') {
             steps {
                 sh '''
+                    #!/bin/bash +x
                     echo "PATH = ${PATH}"
                     echo "CASENOTES_VERSION = ${CASENOTES_VERSION}"
                 '''
@@ -35,10 +36,9 @@ pipeline {
        stage('Verify Prerequisites') {
            steps {
                sh '''
+                    #!/bin/bash +x
                     echo "Testing AWS Connectivity and Credentials"
                     aws sts get-caller-identity
-                    echo "Testing sbt is installed"
-                    sbt -h
                '''
            }
        }
@@ -46,8 +46,19 @@ pipeline {
        stage('SBT Assembly') {
            steps {
                 sh '''
-                    sbt assembly
-                '''               
+                    #!/bin/bash +x
+                    pushd src/test/resources; 
+                    /build/generate_keys.sh; 
+                    popd; 
+                    docker run --rm -v $(pwd):/home/tools/data \
+                        hseeberger/scala-sbt:8u212_1.2.8_2.12.8 \
+                        bash -c " \
+                            cd /build && \
+                            sbt test:compile && \
+                            sbt clean test && \
+                            sbt assembly";
+                '''
+                stash includes: 'target/scala-2.12/pollPush-${CASENOTES_VERSION}.jar', name: 'pollPush-${CASENOTES_VERSION}.jar'
            }
        }
 
@@ -64,8 +75,10 @@ pipeline {
         stage('Build Docker image') {
            steps {
                 unstash 'ecr.repo'
+                unstash 'pollPush-${CASENOTES_VERSION}.jar'
                 sh '''
                     #!/bin/bash +x
+                    ls -ail; \
                     make build casenotes_version=${CASENOTES_VERSION}
                 '''
             }
