@@ -16,6 +16,10 @@ pipeline {
         CASENOTES_VERSION = get_casenotes_version()
     }
 
+    options { 
+        disableConcurrentBuilds() 
+    }
+
     stages {
         // stage ('Notify build started') {
         //     steps {
