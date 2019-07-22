@@ -51,16 +51,7 @@ pipeline {
            steps {
                 sh '''
                     #!/bin/bash +x
-                    env
-                    pushd src/test/resources; 
-                    $WORKSPACE/generate_keys.sh; 
-                    popd; 
-                    docker run --rm -v $(pwd):/home/tools/data \
-                        hseeberger/scala-sbt:8u212_1.2.8_2.12.8 \
-                        bash -c " \
-                            sbt test:compile && \
-                            sbt clean test && \
-                            sbt assembly";
+                    make sbt-build;
                 '''
                 stash includes: 'target/scala-2.12/pollPush-${CASENOTES_VERSION}.jar', name: 'pollPush-${CASENOTES_VERSION}.jar'
            }
