@@ -48,7 +48,7 @@ pipeline {
                 sh '''
                     sbt assembly
                 '''
-# TODO will need to stash the resultant artefact here and pass to docker build stage                
+            // TODO will need to stash the resultant artefact here and pass to docker build stage                
            }
        }
 
