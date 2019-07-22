@@ -19,7 +19,7 @@ sbt-build:
 	pushd ./src/test/resources && $(build_dir)/generate_keys.sh
 	$(Info Running sbt task)
 	# Build container runs as root - need to fix up perrms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/build -w /build $(sbt_builder_image) bash -c "sbt -v test:compile clean test; chmod -R 0777 project/ target/"
+	docker run --rm -v $(build_dir):/build -w /build $(sbt_builder_image) bash -c "sbt -v clean assembly; chmod -R 0777 project/ target/"
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region ${aws_region})
