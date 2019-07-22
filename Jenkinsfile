@@ -47,9 +47,9 @@ pipeline {
            steps {
                 sh '''
                     #!/bin/bash +x
-                    
+                    env
                     pushd src/test/resources; 
-                    ${env.WORKSPACE}/generate_keys.sh; 
+                    $WORKSPACE/generate_keys.sh; 
                     popd; 
                     docker run --rm -v $(pwd):/home/tools/data \
                         hseeberger/scala-sbt:8u212_1.2.8_2.12.8 \
