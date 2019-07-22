@@ -47,8 +47,7 @@ pipeline {
            steps {
                 sh '''
                     sbt assembly
-                '''
-            // TODO will need to stash the resultant artefact here and pass to docker build stage                
+                '''               
            }
        }
 
@@ -64,10 +63,6 @@ pipeline {
         }
         stage('Build Docker image') {
            steps {
-# this path will need changing
-                dir('./docker'){
-                    unstash 'artefacts'
-                }
                 unstash 'ecr.repo'
                 sh '''
                     #!/bin/bash +x
