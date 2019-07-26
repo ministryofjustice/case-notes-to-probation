@@ -72,3 +72,9 @@ Run wiremock standalone and configure for Delius mock endpoint
 
 Use the whole output, as is, including header and line breaks if you like
 
+### AWS Migration
+For building and generating docker container on the new AWS platform, a Jenkinsfile is provided with accompanying Makefile
+A dedicated Dockerfile and tests are included in docker/ as the test engine is specific to the AWS environment and the base
+image uses the HMPPS base java image, rather than the public java image.
+
+Once migration is complete, this setup can be consolidated. 

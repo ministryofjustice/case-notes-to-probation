@@ -1,0 +1,14 @@
+package:
+  openjdk8-jre:
+    installed: true
+file:
+  # Check for presence of casenotes jar file
+  /home/tools/pollPush.jar:
+    exists: true
+    filetype: file
+    mode: "0777"
+    owner: root
+    group: root
+process:
+  java:
+    running: true
