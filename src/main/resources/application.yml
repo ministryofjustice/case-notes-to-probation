@@ -1,0 +1,91 @@
+info.app:
+  name: HMPPS Case Notes Pull Posh API
+  version: 1.0
+
+spring:
+  application:
+    name: pollpush
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/pollpush
+
+server:
+  port: 8082
+  servlet:
+    context-path: /
+  use-forward-headers: true
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol_header: x-forwarded-proto
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.security: INFO
+    uk.gov.justice.digital: DEBUG
+  uris:
+    exclude.regex: "/health|/info|/ping|/webjars/.*|/v2/api-docs"
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: 'info, health, ping'
+  endpoint:
+    health:
+      cache:
+        time-to-live: 2000ms
+      show-details: always
+    info:
+      cache:
+        time-to-live: 2000ms
+
+oauth:
+  endpoint.url: https://gateway.t3.nomis-api.hmpps.dsd.io/auth
+  token.url: ${oauth.endpoint.url}/oauth/token
+  client:
+    id: dev
+    secret: clientsecret
+
+casenotes:
+  endpoint.url: https://dev.offender-case-notes.service.justice.gov.uk
+  client:
+    client-id: ${oauth.client.id}
+    client-secret: ${oauth.client.secret}
+    access-token-uri: ${oauth.token.url}
+    authentication-scheme: header
+    client-authentication-scheme: header
+
+delius:
+  endpoint.url: http://localhost:8096/delius
+
+graceful:
+  shutdown.enabled: true
+
+azure:
+  application-insights.web.enable-W3C: true
+
+jwt:
+  public.key: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBc09QQXRzUUFEZGJSdS9FSDZMUDUNCkJNMS9tRjQwVkRCbjEyaEpTWFBQZDVXWUswSExZMjBWTTdBeHhSOW1uWUNGNlNvMVd0N2ZHTnFVeC9XeWVtQnANCklKTnJzLzdEendnM3V3aVF1Tmg0ektSK0VHeFdiTHdpM3l3N2xYUFV6eFV5QzV4dDg4ZS83dk8rbHoxb0NuaXoNCmpoNG14TkFtczZaWUY3cWZuaEpFOVd2V1B3TExrb2prWnUxSmR1c0xhVm93TjdHVEdOcE1FOGR6ZUprYW0wZ3ANCjRveEhRR2hNTjg3SzZqcVgzY0V3TzZEdmhlbWc4d2hzOTZuelFsOG4yTEZ2QUsydXA5UHJyOUdpMkxGZ1R0N0sNCnFYQTA2a0M0S2d3MklSMWVGZ3pjQmxUT0V3bXpqcmU2NUhvTmFKQnI5dU5aelY1c0lMUE1jenpoUWovZk1oejMNCi9RSURBUUFCDQotLS0tLUVORCBQVUJMSUMgS0VZLS0tLS0=
+
+poll:
+  milliseconds: 60000
+
+pull:
+  note.types: NEG
+
+push:
+  username: user
+  password: pass
