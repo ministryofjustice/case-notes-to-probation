@@ -1,0 +1,58 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/case-notes/events"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "latestEventDate": "3019-01-01T10:11:12",
+      "events": [
+        {
+          "nomsId": "A1501AE",
+          "id": 152799,
+          "content": "Prisoner appears to have grown an extra arm ...[PHILL_GEN updated the case notes on 10-04-2017 14:57:26] Prisoner appears to have grown an extra arm and an extra leg",
+          "contactTimestamp": "2017-04-10T13:55:00.000Z",
+          "notificationTimestamp": "2017-04-10T13:55:00.000Z",
+          "noteType": "Observations",
+          "staffName": "Brady, Phill",
+          "establishmentCode": "BMI"
+        },
+        {
+          "nomsId": "A1403AE",
+          "id": 152817,
+          "content": "Alert Sexual Offence and Risk to Children made active.",
+          "contactTimestamp": "2017-04-09T23:00:00.000Z",
+          "notificationTimestamp": "2017-04-10T13:55:00.000Z",
+          "noteType": "Alert",
+          "staffName": "Richardson, Trevor",
+          "establishmentCode": "LEI"
+        },
+        {
+          "nomsId": "A1301AB",
+          "id": 152837,
+          "content": "Des who?",
+          "contactTimestamp": "2017-04-12T09:28:00.000Z",
+          "notificationTimestamp": "2017-04-10T13:55:00.000Z",
+          "noteType": "General",
+          "staffName": "Brady, Phill",
+          "establishmentCode": "BMI"
+        },
+        {
+          "nomsId": "A1479AE",
+          "id": "abcde-123456",
+          "content": "Allocated to  course \"Tunnelling for beginners\"",
+          "contactTimestamp": "2017-04-12T13:12:00.000Z",
+          "notificationTimestamp": "2017-04-10T13:55:00.000Z",
+          "noteType": "Training",
+          "staffName": "Brady, Phill",
+          "establishmentCode": "BMI"
+        }
+      ]
+    },
+    "fixedDelayMilliseconds": 2000
+  }
+}
