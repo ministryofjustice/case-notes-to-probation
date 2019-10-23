@@ -1,71 +1,35 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
-import com.nhaarman.mockito_kotlin.*
-import org.assertj.core.api.Assertions.assertThat
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
-import org.springframework.web.client.RestTemplate
-import uk.gov.justice.digital.hmpps.pollpush.repository.*
+import org.springframework.security.oauth2.client.OAuth2RestTemplate
 
 @RunWith(MockitoJUnitRunner::class)
 class DeliusServiceTest {
-  private val caseNotesRepository: CaseNotesRepository = mock()
-  private val timeStampsRepository: TimeStampsRepository = mock()
-  private val restTemplate: RestTemplate = mock()
+  private val restTemplate: OAuth2RestTemplate = mock()
 
   private lateinit var service: DeliusService
 
   @Before
   fun before() {
-    service = DeliusService(restTemplate, caseNotesRepository, timeStampsRepository)
+    service = DeliusService(restTemplate)
   }
 
   @Test
-  fun `should call delius with correct values`() {
-    val caseNote = createCaseNote()
-    whenever(caseNotesRepository.findAll()).thenReturn(listOf((caseNote)))
+  fun `test put case note calls rest template`() {
+    val expectedNote = createDeliusCaseNote()
 
-    service.retrieveAndPostCaseNotes()
+    service.postCaseNote(expectedNote)
 
-    verify(restTemplate).put("/{nomsId}/{caseNoteId}", caseNote.body, "12345", "noteId")
+    verify(restTemplate).put("/{nomsId}/{caseNoteId}", expectedNote.body, "AB123D", "1234")
   }
 
-  @Test
-  fun `should delete note after processing`() {
-    val caseNote = createCaseNote()
-    whenever(caseNotesRepository.findAll()).thenReturn(listOf((caseNote)))
-
-    service.retrieveAndPostCaseNotes()
-
-    verify(caseNotesRepository).delete(caseNote)
-  }
-
-  @Test
-  fun `should delete note even if saving fails`() {
-    val caseNote = createCaseNote()
-    whenever(caseNotesRepository.findAll()).thenReturn(listOf((caseNote)))
-    doThrow(RuntimeException("something went wrong")).whenever(restTemplate).put(anyString(), any<CaseNotes>(), anyString(), anyString())
-
-    service.retrieveAndPostCaseNotes()
-
-    verify(caseNotesRepository).delete(caseNote)
-  }
-
-  @Test
-  fun `should then save processing time to mongo`() {
-    service.retrieveAndPostCaseNotes()
-
-    verify(timeStampsRepository).save<TimeStamps>(check {
-      assertThat(it.id).isEqualTo("pullProcessed")
-    })
-  }
-
-  private fun createCaseNote(): CaseNotes = CaseNotes(
-      header = CaseNoteHeader("12345", "noteId"),
+  private fun createDeliusCaseNote() = DeliusCaseNote(
+      header = CaseNoteHeader("AB123D", "1234"),
       body = CaseNoteBody(
           noteType = "NEG IEP_WARN",
           content = "note content",

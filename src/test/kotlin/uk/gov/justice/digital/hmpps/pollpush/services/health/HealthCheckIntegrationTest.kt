@@ -14,9 +14,8 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    System.out.println(response.body)
-    assertThatJson(response.body).node("details.OAuthApiHealth.details.HttpStatus").isEqualTo("OK")
-    assertThatJson(response.body).node("details.caseNotesApiHealth.details.HttpStatus").isEqualTo("OK")
+    assertThatJson(response.body).node("components.OAuthApiHealth.details.HttpStatus").isEqualTo("OK")
+    assertThatJson(response.body).node("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("OK")
     assertThatJson(response.body).node("status").isEqualTo("UP")
     assertThat(response.statusCodeValue).isEqualTo(200)
   }
@@ -27,8 +26,8 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("details.OAuthApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
-    assertThatJson(response.body).node("details.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
+    assertThatJson(response.body).node("components.OAuthApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
+    assertThatJson(response.body).node("components.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
   }
@@ -39,8 +38,8 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("details.OAuthApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
-    assertThatJson(response.body).node("details.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
+    assertThatJson(response.body).node("components.OAuthApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
+    assertThatJson(response.body).node("components.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
   }
