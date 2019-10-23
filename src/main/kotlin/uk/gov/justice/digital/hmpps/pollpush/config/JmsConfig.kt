@@ -41,7 +41,7 @@ open class JmsConfig {
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
   open fun awsSqsClient(@Value("\${sqs.aws.access.key.id}") accessKey: String?,
                         @Value("\${sqs.aws.secret.access.key}") secretKey: String?,
-                        @Value("\${camel.component.aws-sqs.configuration.region}") region: String?): AmazonSQS =
+                        @Value("\${sqs.endpoint.region}") region: String?): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
           .withRegion(region)
