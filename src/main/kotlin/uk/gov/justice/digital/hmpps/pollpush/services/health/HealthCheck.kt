@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.pollpush.services.health
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.HealthIndicator
@@ -8,14 +7,14 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
-abstract class HealthCheck(val restTemplate: RestTemplate) : HealthIndicator {
+abstract class HealthCheck(private val restTemplate: RestTemplate) : HealthIndicator {
 
   override fun health(): Health {
-    try {
+    return try {
       val responseEntity = restTemplate.getForEntity("/ping", String::class.java)
-      return Health.up().withDetail("HttpStatus", responseEntity.statusCode).build()
+      Health.up().withDetail("HttpStatus", responseEntity.statusCode).build()
     } catch (e: RestClientException) {
-      return Health.down(e).build()
+      Health.down(e).build()
     }
   }
 }
@@ -25,6 +24,6 @@ class CaseNotesApiHealth
 constructor(@Qualifier("caseNotesApiHealthRestTemplate") restTemplate: RestTemplate) : HealthCheck(restTemplate)
 
 @Component
-class OAuthApiHealth @Autowired
+class OAuthApiHealth
 constructor(@Qualifier("oauthApiRestTemplate") restTemplate: RestTemplate) : HealthCheck(restTemplate)
 

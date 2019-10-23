@@ -1,115 +1,75 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
-import org.springframework.boot.web.client.RootUriTemplateHandler
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.OAuth2RestTemplate
-import uk.gov.justice.digital.hmpps.pollpush.dto.CaseNoteEvent
-import uk.gov.justice.digital.hmpps.pollpush.dto.CaseNoteEvents
-import uk.gov.justice.digital.hmpps.pollpush.repository.*
-import java.net.URI
 import java.time.LocalDateTime
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class CaseNotesServiceTest {
-  private val caseNotesRepository: CaseNotesRepository = mock()
-  private val timeStampsRepository: TimeStampsRepository = mock()
   private val restTemplate: OAuth2RestTemplate = mock()
 
   private lateinit var service: CaseNotesService
 
   @Before
   fun before() {
-    service = CaseNotesService(restTemplate, 10, "NEG, POS", caseNotesRepository, timeStampsRepository)
+    service = CaseNotesService(restTemplate)
   }
 
   @Test
-  fun `should call case notes with date from repository`() {
-    whenever(timeStampsRepository.findById(anyString())).thenReturn(Optional.of(TimeStamps("id", "2019-03-23T11:22:00")))
-    whenever(restTemplate.uriTemplateHandler).thenReturn(RootUriTemplateHandler("http://root"))
-    whenever(restTemplate.exchange(any<URI>(), any(), isNull(), any<ParameterizedTypeReference<CaseNoteEvents>>()))
-        .thenReturn(ResponseEntity<CaseNoteEvents>(CaseNoteEvents(listOf(createEvent()), LocalDateTime.now().plusMinutes(1)), HttpStatus.OK))
+  fun `test get case note calls rest template`() {
+    val expectedNote = createCaseNote()
+    whenever(restTemplate.getForEntity<CaseNote>(anyString(), any(), anyString(), anyString())).thenReturn(ResponseEntity.ok(expectedNote))
 
-    service.readAndSaveCaseNotes()
+    val note = service.getCaseNote("AB123D", "1234")
 
-    verify(restTemplate).exchange<CaseNoteEvents>(check<URI> {
-      assertThat(it.toString()).isEqualTo("http://root/case-notes/events?createdDate=2019-03-23T11:22&limit=10&type=NEG&type=POS")
-    }, eq(HttpMethod.GET), isNull(), any<ParameterizedTypeReference<CaseNoteEvents>>())
+    assertThat(note).isEqualTo(expectedNote)
+
+    verify(restTemplate).getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, "AB123D", "1234")
   }
 
   @Test
-  fun `should handle no body gracefully`() {
-    whenever(timeStampsRepository.findById(anyString())).thenReturn(Optional.of(TimeStamps("id", "2019-03-23T11:22:00")))
-    whenever(restTemplate.uriTemplateHandler).thenReturn(RootUriTemplateHandler("http://root"))
-    whenever(restTemplate.exchange(any<URI>(), any(), isNull(), any<ParameterizedTypeReference<CaseNoteEvents>>()))
-        .thenReturn(ResponseEntity<CaseNoteEvents>(HttpStatus.OK))
-
-    service.readAndSaveCaseNotes()
-
-    // will go straight to exception catch block
-    verify(caseNotesRepository, never()).saveAll(any())
-    verify(timeStampsRepository, never()).save(any())
+  fun `test amendments built when none exist`() {
+    assertThat(createCaseNote().getNoteTextWithAmendments()).isEqualTo("note content")
   }
 
   @Test
-  fun `will call save if result found`() {
-    whenever(timeStampsRepository.findById(anyString())).thenReturn(Optional.of(TimeStamps("id", "2019-03-23T11:22:00")))
-    whenever(restTemplate.uriTemplateHandler).thenReturn(RootUriTemplateHandler("http://root"))
-    val latestEventDate = LocalDateTime.now().plusMinutes(1)
-    whenever(restTemplate.exchange(any<URI>(), any(), isNull(), any<ParameterizedTypeReference<CaseNoteEvents>>()))
-        .thenReturn(ResponseEntity<CaseNoteEvents>(CaseNoteEvents(listOf(createEvent()), latestEventDate), HttpStatus.OK))
+  fun `test amendments built`() {
+    val note = CaseNote(
+        caseNoteId = "noteId",
+        offenderIdentifier = "offenderId",
+        type = "NEG",
+        subType = "IEP_WARN",
+        creationDateTime = LocalDateTime.parse("2019-04-16T11:22:33"),
+        occurrenceDateTime = LocalDateTime.parse("2019-03-23T11:22:00"),
+        authorName = "Some Name",
+        text = "HELLO",
+        locationId = "LEI",
+        amendments = listOf(
+            CaseNoteAmendment(LocalDateTime.parse("2019-03-01T22:21:20"), "some user", "some amendment"),
+            CaseNoteAmendment(LocalDateTime.parse("2019-04-02T22:21:20"), "Another Author", "another amendment")))
 
-    service.readAndSaveCaseNotes()
-
-    verify(caseNotesRepository).saveAll<CaseNotes>(check {
-      assertThat(it).hasSize(1)
-      val (_, header, body) = it.elementAt(0)
-      assertThat(header).isEqualTo(CaseNoteHeader("12345", "noteId"))
-      assertThat(body).isEqualTo(CaseNoteBody(
-          noteType = "NEG IEP_WARN",
-          content = "note content",
-          contactTimeStamp = "2019-03-23T11:22:00.000Z",
-          systemTimeStamp = "2019-04-16T11:22:33.000Z",
-          staffName = "Some Name",
-          establishmentCode = "LEI"))
-    })
-    verify(timeStampsRepository).save(TimeStamps("pullReceived", latestEventDate.toString()))
+    assertThat(note.getNoteTextWithAmendments()).isEqualTo("HELLO ...[some user updated the case notes on 2019/03/01 22:21:20] some amendment ...[Another Author updated the case notes on 2019/04/02 22:21:20] another amendment")
   }
 
-  @Test
-  fun `will make multiple calls to retrieve all the case notes`() {
-    whenever(timeStampsRepository.findById(anyString())).thenReturn(Optional.of(TimeStamps("id", "2019-03-23T11:22:00")))
-    whenever(restTemplate.uriTemplateHandler).thenReturn(RootUriTemplateHandler("http://root"))
-    whenever(restTemplate.exchange(any<URI>(), any(), isNull(), any<ParameterizedTypeReference<CaseNoteEvents>>()))
-        .thenReturn(ResponseEntity<CaseNoteEvents>(CaseNoteEvents(listOf(createEvent()), LocalDateTime.now().minusDays(2)), HttpStatus.OK))
-        .thenReturn(ResponseEntity<CaseNoteEvents>(CaseNoteEvents(listOf(createEvent()), LocalDateTime.now().minusDays(1)), HttpStatus.OK))
-        .thenReturn(ResponseEntity<CaseNoteEvents>(CaseNoteEvents(listOf(createEvent()), LocalDateTime.now().plusMinutes(1)), HttpStatus.OK))
-
-    service.readAndSaveCaseNotes()
-
-    verify(caseNotesRepository, times(3)).saveAll(any())
-    verify(timeStampsRepository, times(3)).save(any())
-  }
-
-  private fun createEvent(): CaseNoteEvent = CaseNoteEvent(
-      nomsId = "12345",
-      id = "noteId",
-      content = "note content",
-      contactTimestamp = LocalDateTime.parse("2019-03-23T11:22"),
-      notificationTimestamp = LocalDateTime.parse("2019-04-16T11:22:33"),
-      staffName = "Some Name",
-      establishmentCode = "LEI",
-      noteType = "NEG IEP_WARN"
-  )
+  private fun createCaseNote() = CaseNote(
+      caseNoteId = "noteId",
+      offenderIdentifier = "offenderId",
+      type = "NEG",
+      subType = "IEP_WARN",
+      creationDateTime = LocalDateTime.parse("2019-04-16T11:22:33"),
+      occurrenceDateTime = LocalDateTime.parse("2019-03-23T11:22:00"),
+      authorName = "Some Name",
+      text = "note content",
+      locationId = "LEI",
+      amendments = listOf())
 }

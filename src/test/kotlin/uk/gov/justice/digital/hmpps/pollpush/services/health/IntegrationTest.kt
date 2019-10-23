@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.pollpush.services.health
 
+import com.amazonaws.services.sqs.AmazonSQS
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -23,8 +25,13 @@ import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.OAuthMockSe
 @ActiveProfiles("test")
 @ContextConfiguration
 abstract class IntegrationTest {
+  @Suppress("unused")
   @Autowired
   lateinit var restTemplate: TestRestTemplate
+
+  @Suppress("unused")
+  @MockBean
+  private lateinit var amazonSQS: AmazonSQS
 
   @Value("\${token}")
   private val token: String? = null
