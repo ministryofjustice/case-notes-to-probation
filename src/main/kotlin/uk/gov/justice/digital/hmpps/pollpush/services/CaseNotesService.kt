@@ -14,7 +14,7 @@ open class CaseNotesService(@param:Qualifier("caseNotesApiRestTemplate") private
   }
 }
 
-data class CaseNote(val caseNoteId: String,
+data class CaseNote(val eventId: Int,
                     val offenderIdentifier: String,
                     val type: String,
                     val subType: String,

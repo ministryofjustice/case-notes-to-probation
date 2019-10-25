@@ -29,7 +29,7 @@ class DeliusServiceTest {
   }
 
   private fun createDeliusCaseNote() = DeliusCaseNote(
-      header = CaseNoteHeader("AB123D", "1234"),
+      header = CaseNoteHeader("AB123D", 1234),
       body = CaseNoteBody(
           noteType = "NEG IEP_WARN",
           content = "note content",
