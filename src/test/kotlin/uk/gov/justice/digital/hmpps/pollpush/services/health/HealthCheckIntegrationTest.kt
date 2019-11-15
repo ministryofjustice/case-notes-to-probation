@@ -16,6 +16,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     assertThatJson(response.body).node("components.OAuthApiHealth.details.HttpStatus").isEqualTo("OK")
     assertThatJson(response.body).node("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("OK")
+    assertThatJson(response.body).node("components.deliusApiHealth.details.HttpStatus").isEqualTo("OK")
     assertThatJson(response.body).node("status").isEqualTo("UP")
     assertThat(response.statusCodeValue).isEqualTo(200)
   }
@@ -28,6 +29,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     assertThatJson(response.body).node("components.OAuthApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
     assertThatJson(response.body).node("components.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
+    assertThatJson(response.body).node("components.deliusApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException\$NotFound: 404 Not Found")
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
   }
@@ -40,6 +42,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     assertThatJson(response.body).node("components.OAuthApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
     assertThatJson(response.body).node("components.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
+    assertThatJson(response.body).node("components.deliusApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418")
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
   }
@@ -51,6 +54,11 @@ class HealthCheckIntegrationTest : IntegrationTest() {
         .withStatus(status)))
 
     caseNotesMockServer.stubFor(get("/ping").willReturn(aResponse()
+        .withHeader("Content-Type", "application/json")
+        .withBody(if (status == 200) "pong" else "some error")
+        .withStatus(status)))
+
+    deliusMockServer.stubFor(get("/ping").willReturn(aResponse()
         .withHeader("Content-Type", "application/json")
         .withBody(if (status == 200) "pong" else "some error")
         .withStatus(status)))

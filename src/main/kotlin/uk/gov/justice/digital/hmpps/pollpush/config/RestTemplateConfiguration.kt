@@ -10,36 +10,40 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-open class RestTemplateConfiguration(private val caseNotesApiDetails: ClientCredentialsResourceDetails,
+open class RestTemplateConfiguration(private val apiDetails: ClientCredentialsResourceDetails,
                                      @Value("\${delius.endpoint.url}") private val deliusRootUri: String,
                                      @Value("\${casenotes.endpoint.url}") private val caseNotesRootUri: String,
-                                     @Value("\${oauth.endpoint.url}") private val oauthRootUri: String,
-                                     @Value("\${delius.username}") private val deliusUsername: String,
-                                     @Value("\${delius.password}") private val deliusPassword: String) {
-  @Bean(name = ["deliusApiRestTemplate"])
-  open fun deliusRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-      restTemplateBuilder
-          .rootUri(deliusRootUri)
-          .basicAuthentication(deliusUsername, deliusPassword)
-          .build()
-
+                                     @Value("\${oauth.endpoint.url}") private val oauthRootUri: String) {
   @Bean(name = ["oauthApiRestTemplate"])
   open fun oauthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
       getRestTemplate(restTemplateBuilder, oauthRootUri)
+
+  @Bean(name = ["deliusApiRestTemplate"])
+  open fun deliusRestTemplate(): OAuth2RestTemplate {
+
+    val deliusApiRestTemplate = OAuth2RestTemplate(apiDetails)
+    RootUriTemplateHandler.addTo(deliusApiRestTemplate, deliusRootUri)
+
+    return deliusApiRestTemplate
+  }
+
+  @Bean(name = ["deliusApiHealthRestTemplate"])
+  open fun deliusHealthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
+      getRestTemplate(restTemplateBuilder, deliusRootUri)
 
   @Bean(name = ["caseNotesApiHealthRestTemplate"])
   open fun caseNotesHealthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
       getRestTemplate(restTemplateBuilder, caseNotesRootUri)
 
-  private fun getRestTemplate(restTemplateBuilder: RestTemplateBuilder, uri: String?): RestTemplate =
-      restTemplateBuilder.rootUri(uri).build()
-
   @Bean(name = ["caseNotesApiRestTemplate"])
   open fun caseNotesApiRestTemplate(): OAuth2RestTemplate {
 
-    val caseNotesApiRestTemplate = OAuth2RestTemplate(caseNotesApiDetails)
+    val caseNotesApiRestTemplate = OAuth2RestTemplate(apiDetails)
     RootUriTemplateHandler.addTo(caseNotesApiRestTemplate, caseNotesRootUri)
 
     return caseNotesApiRestTemplate
   }
+
+  private fun getRestTemplate(restTemplateBuilder: RestTemplateBuilder, uri: String?): RestTemplate =
+      restTemplateBuilder.rootUri(uri).build()
 }

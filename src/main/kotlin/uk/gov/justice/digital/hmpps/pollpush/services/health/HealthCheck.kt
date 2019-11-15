@@ -24,6 +24,10 @@ class CaseNotesApiHealth
 constructor(@Qualifier("caseNotesApiHealthRestTemplate") restTemplate: RestTemplate) : HealthCheck(restTemplate)
 
 @Component
+class DeliusApiHealth
+constructor(@Qualifier("deliusApiHealthRestTemplate") restTemplate: RestTemplate) : HealthCheck(restTemplate)
+
+@Component
 class OAuthApiHealth
 constructor(@Qualifier("oauthApiRestTemplate") restTemplate: RestTemplate) : HealthCheck(restTemplate)
 

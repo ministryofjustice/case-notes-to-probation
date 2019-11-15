@@ -2,9 +2,7 @@ graceful:
   shutdown.enabled: false
 
 sqs:
-  provider: localstack
   endpoint.url: http://localhost:4576
-  endpoint.region: eu-west-1
 
 oauth:
   endpoint.url: http://localhost:9090/auth
@@ -14,5 +12,3 @@ casenotes:
 
 delius:
   endpoint.url: http://localhost:8096/delius
-  username: user
-  password: pass

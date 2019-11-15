@@ -1,10 +1,10 @@
 info.app:
-  name: HMPPS Case Notes Pull Push API
+  name: HMPPS Case Notes To Probation API
   version: 1.0
 
 spring:
   application:
-    name: case-notes-poll-push
+    name: case-notes-to-probation
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
@@ -15,7 +15,7 @@ server:
   port: 8082
   servlet:
     context-path: /
-  use-forward-headers: true
+  forward-headers-strategy: native
   tomcat:
     remote-ip-header: x-forwarded-for
     protocol_header: x-forwarded-proto
@@ -65,3 +65,4 @@ jwt:
 sqs:
   provider: aws
   queue.name: case_note_queue
+  endpoint.region: eu-west-2

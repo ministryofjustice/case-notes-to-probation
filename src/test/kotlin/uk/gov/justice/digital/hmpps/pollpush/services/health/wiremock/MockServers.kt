@@ -6,6 +6,10 @@ import com.github.tomakehurst.wiremock.http.HttpHeaders
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.google.gson.GsonBuilder
 
+class CaseNotesMockServer : WireMockRule(8093)
+
+class DeliusMockServer : WireMockRule(8096)
+
 class OAuthMockServer : WireMockRule(8090) {
   private val gson = GsonBuilder().create()
 

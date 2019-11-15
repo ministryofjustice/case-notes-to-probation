@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 open class DeliusService(@param:Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate) {
   open fun postCaseNote(caseNote: DeliusCaseNote) {
     val (header, body) = caseNote
-    restTemplate.put("/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
+    restTemplate.put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
   }
 }
 

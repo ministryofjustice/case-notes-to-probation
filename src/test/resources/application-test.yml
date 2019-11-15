@@ -12,9 +12,7 @@ oauth:
   endpoint.url: http://localhost:8090/auth
 
 delius:
-  endpoint.url: http://localhost:8096/delius
-  username: bob
-  password: joe
+  endpoint.url: http://localhost:8096
 
 management.endpoint:
   health.cache.time-to-live: 0

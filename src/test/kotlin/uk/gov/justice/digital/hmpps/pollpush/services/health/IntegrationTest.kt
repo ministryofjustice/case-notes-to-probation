@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.CaseNotesMockServer
+import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.DeliusMockServer
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.OAuthMockServer
 
 @RunWith(SpringJUnit4ClassRunner::class)
@@ -44,6 +45,10 @@ abstract class IntegrationTest {
     @get:ClassRule
     @JvmStatic
     val caseNotesMockServer = CaseNotesMockServer()
+
+    @get:ClassRule
+    @JvmStatic
+    val deliusMockServer = DeliusMockServer()
   }
 
   init {
@@ -56,6 +61,7 @@ abstract class IntegrationTest {
   fun resetStubs() {
     oauthMockServer.resetAll()
     caseNotesMockServer.resetAll()
+    deliusMockServer.resetAll()
 
     oauthMockServer.stubGrantToken()
   }
