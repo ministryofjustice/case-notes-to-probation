@@ -6,7 +6,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
-import javax.jms.JMSException
 
 
 @Service
@@ -18,7 +17,6 @@ open class CaseNoteListenerPusher(private val caseNotesService: CaseNotesService
   }
 
   @JmsListener(destination = "\${sqs.queue.name}")
-  @Throws(JMSException::class)
   open fun pushCaseNoteToDelius(requestJson: String?) {
     val (Message) = gson.fromJson<Message>(requestJson, Message::class.java)
     val (offenderIdDisplay, caseNoteId) = gson.fromJson<CaseNoteMessage>(Message, CaseNoteMessage::class.java)
