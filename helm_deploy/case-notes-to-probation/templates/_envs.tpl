@@ -13,11 +13,14 @@ env:
   - name: JWT_PUBLIC_KEY
     value: "{{ .Values.env.JWT_PUBLIC_KEY }}"
 
-  - name: ELITE2_API_BASE_URL
-    value: "{{ .Values.env.ELITE2_API_BASE_URL }}"
+  - name: OAUTH_ENDPOINT_URL
+    value: "{{ .Values.env.OAUTH_ENDPOINT_URL }}"
 
-  - name: OAUTH_API_BASE_URL
-    value: "{{ .Values.env.OAUTH_API_BASE_URL }}"
+  - name: CASENOTES_ENDPOINT_URL
+    value: "{{ .Values.env.CASENOTES_ENDPOINT_URL }}"
+
+  - name: DELIUS_ENDPOINT_URL
+    value: "{{ .Values.env.DELIUS_ENDPOINT_URL }}"
 
   - name: APPLICATION_INSIGHTS_IKEY
     valueFrom:

@@ -22,6 +22,16 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   }
 
   @Test
+  fun `Health ping page is accessible`() {
+    subPing(200)
+
+    val response = restTemplate.getForEntity("/health/ping", String::class.java)
+
+    assertThatJson(response.body).node("status").isEqualTo("UP")
+    assertThat(response.statusCodeValue).isEqualTo(200)
+  }
+
+  @Test
   fun `Health page reports down`() {
     subPing(404)
 

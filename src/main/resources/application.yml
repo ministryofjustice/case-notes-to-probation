@@ -31,7 +31,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: 'info, health, ping'
+        include: 'info, health'
   endpoint:
     health:
       cache:
