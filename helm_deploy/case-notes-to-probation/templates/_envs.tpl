@@ -13,6 +13,9 @@ env:
   - name: JWT_PUBLIC_KEY
     value: "{{ .Values.env.JWT_PUBLIC_KEY }}"
 
+  - name: SPRING_PROFILES_ACTIVE
+    value: "logstash"
+
   - name: OAUTH_ENDPOINT_URL
     value: "{{ .Values.env.OAUTH_ENDPOINT_URL }}"
 
@@ -27,6 +30,18 @@ env:
       secretKeyRef:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
+
+  - name: CASENOTES_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: CASENOTES_CLIENT_ID
+
+  - name: CASENOTES_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: CASENOTES_CLIENT_SECRET
 
   - name: SQS_AWS_ACCESS_KEY_ID
     valueFrom:
