@@ -48,7 +48,7 @@ class CaseNoteListenerPusherTest {
   }
 
   private fun createCaseNote() = CaseNote(
-      caseNoteId = "noteId",
+      eventId = 1234,
       offenderIdentifier = "offenderId",
       type = "NEG",
       subType = "IEP_WARN",
@@ -60,7 +60,7 @@ class CaseNoteListenerPusherTest {
       amendments = listOf())
 
   private fun createDeliusCaseNote() = DeliusCaseNote(
-      header = CaseNoteHeader("offenderId", "noteId"),
+      header = CaseNoteHeader("offenderId", 1234),
       body = CaseNoteBody(
           noteType = "NEG IEP_WARN",
           content = "note content",

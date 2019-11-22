@@ -22,7 +22,7 @@ open class CaseNoteListenerPusher(private val caseNotesService: CaseNotesService
     val (offenderIdDisplay, caseNoteId) = gson.fromJson<CaseNoteMessage>(Message, CaseNoteMessage::class.java)
 
     val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
-    log.debug("Found case note {} in case notes service, now pushing to delius", caseNoteId)
+    log.debug("Found case note {} in case notes service, now pushing to delius with event id {}", caseNoteId, caseNote.eventId)
     deliusService.postCaseNote(DeliusCaseNote(caseNote))
   }
 }

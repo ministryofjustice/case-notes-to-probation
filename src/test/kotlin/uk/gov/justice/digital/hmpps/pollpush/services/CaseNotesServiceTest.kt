@@ -45,7 +45,7 @@ class CaseNotesServiceTest {
   @Test
   fun `test amendments built`() {
     val note = CaseNote(
-        caseNoteId = "noteId",
+        eventId = -2,
         offenderIdentifier = "offenderId",
         type = "NEG",
         subType = "IEP_WARN",
@@ -62,7 +62,7 @@ class CaseNotesServiceTest {
   }
 
   private fun createCaseNote() = CaseNote(
-      caseNoteId = "noteId",
+      eventId = 12345,
       offenderIdentifier = "offenderId",
       type = "NEG",
       subType = "IEP_WARN",
