@@ -61,6 +61,26 @@ class CaseNotesServiceTest {
     assertThat(note.getNoteTextWithAmendments()).isEqualTo("HELLO ...[some user updated the case notes on 2019/03/01 22:21:20] some amendment ...[Another Author updated the case notes on 2019/04/02 22:21:20] another amendment")
   }
 
+  @Test
+  fun `test staff user translated`() {
+    assertThat(createCaseNote().getAuthorNameWithComma()).isEqualTo("Name, Some")
+  }
+
+  @Test
+  fun `test staff user with multiple spaces translated`() {
+    assertThat(createCaseNote().copy(authorName = "Some Long Name").getAuthorNameWithComma()).isEqualTo("Name, Some Long")
+  }
+
+  @Test
+  fun `test staff user with no spaces translated`() {
+    assertThat(createCaseNote().copy(authorName = "SomeLongName").getAuthorNameWithComma()).isEqualTo("SomeLongName, SomeLongName")
+  }
+
+  @Test
+  fun `test staff user in correct format unchanged`() {
+    assertThat(createCaseNote().copy(authorName = "Smith, John").getAuthorNameWithComma()).isEqualTo("Smith, John")
+  }
+
   private fun createCaseNote() = CaseNote(
       eventId = 12345,
       offenderIdentifier = "offenderId",
