@@ -31,6 +31,14 @@ data class CaseNote(val eventId: Int,
       text + amendments.joinToString(separator = "") { a ->
         " ...[${a.authorName} updated the case notes on ${dtf.format(a.creationDateTime)}] ${a.additionalNoteText}"
       }
+
+  fun getAuthorNameWithComma(): String {
+    // delius will throw a 400 bad request if it can't find a comma in the author name
+    if (authorName.contains(',')) return authorName
+
+    // didn't find a comma, so split and change from forename surname to surname, forename
+    return "${authorName.substringAfterLast(" ")}, ${authorName.substringBeforeLast(" ")}"
+  }
 }
 
 data class CaseNoteAmendment(val creationDateTime: LocalDateTime, val authorName: String, val additionalNoteText: String)

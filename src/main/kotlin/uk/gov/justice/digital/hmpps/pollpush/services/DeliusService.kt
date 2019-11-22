@@ -26,7 +26,7 @@ data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
           content = cn.getNoteTextWithAmendments(),
           contactTimeStamp = dtf.format(cn.occurrenceDateTime),
           systemTimeStamp = dtf.format(cn.creationDateTime),
-          staffName = cn.authorName,
+          staffName = cn.getAuthorNameWithComma(),
           establishmentCode = cn.locationId))
 }
 
