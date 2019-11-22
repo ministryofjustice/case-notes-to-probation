@@ -31,13 +31,13 @@ env:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
 
-  - name: CASENOTES_CLIENT_ID
+  - name: OAUTH_CLIENT_ID
     valueFrom:
       secretKeyRef:
         name: {{ template "app.name" . }}
         key: CASENOTES_CLIENT_ID
 
-  - name: CASENOTES_CLIENT_SECRET
+  - name: OAUTH_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
         name: {{ template "app.name" . }}
