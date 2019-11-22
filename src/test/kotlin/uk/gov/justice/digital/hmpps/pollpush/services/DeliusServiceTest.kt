@@ -25,11 +25,11 @@ class DeliusServiceTest {
 
     service.postCaseNote(expectedNote)
 
-    verify(restTemplate).put("/{nomsId}/{caseNoteId}", expectedNote.body, "AB123D", "1234")
+    verify(restTemplate).put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", expectedNote.body, "AB123D", 1234)
   }
 
   private fun createDeliusCaseNote() = DeliusCaseNote(
-      header = CaseNoteHeader("AB123D", "1234"),
+      header = CaseNoteHeader("AB123D", 1234),
       body = CaseNoteBody(
           noteType = "NEG IEP_WARN",
           content = "note content",

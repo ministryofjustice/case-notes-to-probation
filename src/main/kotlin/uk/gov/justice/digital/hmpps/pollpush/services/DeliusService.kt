@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 open class DeliusService(@param:Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate) {
   open fun postCaseNote(caseNote: DeliusCaseNote) {
     val (header, body) = caseNote
-    restTemplate.put("/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
+    restTemplate.put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
   }
 }
 
@@ -20,7 +20,7 @@ data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
     val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   }
 
-  constructor(cn: CaseNote) : this(header = CaseNoteHeader(cn.offenderIdentifier, cn.caseNoteId),
+  constructor(cn: CaseNote) : this(header = CaseNoteHeader(cn.offenderIdentifier, cn.eventId),
       body = CaseNoteBody(
           noteType = "${cn.type} ${cn.subType}",
           content = cn.getNoteTextWithAmendments(),
@@ -30,7 +30,7 @@ data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
           establishmentCode = cn.locationId))
 }
 
-data class CaseNoteHeader(val nomisId: String, val noteId: String)
+data class CaseNoteHeader(val nomisId: String, val noteId: Int)
 data class CaseNoteBody(val noteType: String,
                         val content: String,
                         val contactTimeStamp: String,

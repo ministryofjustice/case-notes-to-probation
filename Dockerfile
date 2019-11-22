@@ -1,7 +1,22 @@
-FROM java
+FROM openjdk:11-slim
+LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-MAINTAINER Nick Talbot <nick.talbot@digital.justice.gov.uk>
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY target/scala-2.12/pollPush-*.jar /root/pollPush.jar
+ENV TZ=Europe/London
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
 
-ENTRYPOINT ["/usr/bin/java", "-jar", "/root/pollPush.jar"]
+RUN addgroup --gid 2000 --system appgroup && \
+    adduser --uid 2000 --system appuser --gid 2000
+
+WORKDIR /app
+
+COPY --chown=appuser:appgroup build/libs/case-notes-to-probation*.jar /app/app.jar
+COPY --chown=appuser:appgroup build/libs/applicationinsights-agent*.jar /app/agent.jar
+COPY --chown=appuser:appgroup AI-Agent.xml /app
+
+USER 2000
+
+ENTRYPOINT ["java", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
