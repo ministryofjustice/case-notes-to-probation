@@ -38,6 +38,10 @@ data class CaseNote(val eventId: Int,
       else
       // didn't find a comma, so split and change from forename surname to surname, forename
         "${authorName.substringAfterLast(" ")}, ${authorName.substringBeforeLast(" ")}"
+
+  fun calculateModicationDateTime(): LocalDateTime =
+      if (amendments.isEmpty()) creationDateTime
+      else amendments.sortedBy { creationDateTime }.last().creationDateTime
 }
 
 data class CaseNoteAmendment(val creationDateTime: LocalDateTime, val authorName: String, val additionalNoteText: String)
