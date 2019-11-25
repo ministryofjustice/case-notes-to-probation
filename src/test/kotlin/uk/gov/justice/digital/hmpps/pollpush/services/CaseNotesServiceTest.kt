@@ -44,21 +44,11 @@ class CaseNotesServiceTest {
 
   @Test
   fun `test amendments built`() {
-    val note = CaseNote(
-        eventId = -2,
-        offenderIdentifier = "offenderId",
-        type = "NEG",
-        subType = "IEP_WARN",
-        creationDateTime = LocalDateTime.parse("2019-04-16T11:22:33"),
-        occurrenceDateTime = LocalDateTime.parse("2019-03-23T11:22:00"),
-        authorName = "Some Name",
-        text = "HELLO",
-        locationId = "LEI",
-        amendments = listOf(
-            CaseNoteAmendment(LocalDateTime.parse("2019-03-01T22:21:20"), "some user", "some amendment"),
-            CaseNoteAmendment(LocalDateTime.parse("2019-04-02T22:21:20"), "Another Author", "another amendment")))
+    val note = createCaseNote().copy(text = "HELLO", amendments = listOf(
+        CaseNoteAmendment(LocalDateTime.parse("2019-05-01T22:21:20"), "some user", "some amendment"),
+        CaseNoteAmendment(LocalDateTime.parse("2019-06-02T22:21:20"), "Another Author", "another amendment")))
 
-    assertThat(note.getNoteTextWithAmendments()).isEqualTo("HELLO ...[some user updated the case notes on 2019/03/01 22:21:20] some amendment ...[Another Author updated the case notes on 2019/04/02 22:21:20] another amendment")
+    assertThat(note.getNoteTextWithAmendments()).isEqualTo("HELLO ...[some user updated the case notes on 2019/05/01 22:21:20] some amendment ...[Another Author updated the case notes on 2019/06/02 22:21:20] another amendment")
   }
 
   @Test
@@ -80,6 +70,20 @@ class CaseNotesServiceTest {
   fun `test staff user in correct format unchanged`() {
     assertThat(createCaseNote().copy(authorName = "Smith, John").getAuthorNameWithComma()).isEqualTo("Smith, John")
   }
+
+  @Test
+  fun `test creation date time without amendments`() {
+    assertThat(createCaseNote().calculateModicationDateTime()).isEqualTo(LocalDateTime.parse("2019-04-16T11:22:33"))
+  }
+
+  @Test
+  fun `test creation date time latest amendment`() {
+    val note = createCaseNote().copy(amendments = listOf(
+        CaseNoteAmendment(LocalDateTime.parse("2019-05-01T22:21:20"), "some user", "some amendment"),
+        CaseNoteAmendment(LocalDateTime.parse("2019-06-02T22:21:20"), "Another Author", "another amendment")))
+    assertThat(note.calculateModicationDateTime()).isEqualTo(LocalDateTime.parse("2019-06-02T22:21:20"))
+  }
+
 
   private fun createCaseNote() = CaseNote(
       eventId = 12345,

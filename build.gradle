@@ -38,13 +38,6 @@ def todaysDate = LocalDate.now().format('yyyy-MM-dd')
 def today = Instant.now()
 version = System.getenv('CI') ? "${todaysDate}.${System.getenv('CIRCLE_BUILD_NUM')}" : todaysDate
 
-jar {
-  baseName = rootProject.name
-  manifest {
-    attributes 'Implementation-Title': rootProject.name, 'Implementation-Version': version
-  }
-}
-
 springBoot {
   buildInfo {
     properties {
