@@ -15,7 +15,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: "nginx"
   hosts:
-    - host: case-notes-to-probation.service.justice.gov.uk
+    - host: case-notes-to-probation.prison.service.justice.gov.uk
       cert_secret: case-notes-to-probation-cert
   path: /
 
