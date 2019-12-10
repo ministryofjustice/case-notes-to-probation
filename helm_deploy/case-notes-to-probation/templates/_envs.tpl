@@ -25,6 +25,9 @@ env:
   - name: DELIUS_ENDPOINT_URL
     value: "{{ .Values.env.DELIUS_ENDPOINT_URL }}"
 
+  - name: DELIUS_ENABLED
+    value: "{{ .Values.env.DELIUS_ENABLED }}"
+
   - name: APPLICATION_INSIGHTS_IKEY
     valueFrom:
       secretKeyRef:
