@@ -18,14 +18,18 @@ open class CaseNoteListenerPusher(private val caseNotesService: CaseNotesService
 
   @JmsListener(destination = "\${sqs.queue.name}")
   open fun pushCaseNoteToDelius(requestJson: String?) {
-    val (Message) = gson.fromJson<Message>(requestJson, Message::class.java)
-    val (offenderIdDisplay, caseNoteId) = gson.fromJson<CaseNoteMessage>(Message, CaseNoteMessage::class.java)
+    val (Message, MessageId) = gson.fromJson<Message>(requestJson, Message::class.java)
+    val (offenderIdDisplay, caseNoteId, eventType) = gson.fromJson<CaseNoteMessage>(Message, CaseNoteMessage::class.java)
 
-    val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
-    log.debug("Found case note {} in case notes service, now pushing to delius with event id {}", caseNoteId, caseNote.eventId)
-    deliusService.postCaseNote(DeliusCaseNote(caseNote))
+    if (caseNoteId.isNullOrEmpty()) {
+      log.warn("Ignoring null case note id for message with id {} and type {}", MessageId, eventType)
+    } else {
+      val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
+      log.debug("Found case note {} of type {} {} in case notes service, now pushing to delius with event id {}", caseNoteId, caseNote.type, caseNote.subType, caseNote.eventId)
+      deliusService.postCaseNote(DeliusCaseNote(caseNote))
+    }
   }
 }
 
-data class Message(val Message: String)
-data class CaseNoteMessage(val offenderIdDisplay: String, val caseNoteId: String)
+data class Message(val Message: String, val MessageId: String)
+data class CaseNoteMessage(val offenderIdDisplay: String, val caseNoteId: String?, val eventType: String)

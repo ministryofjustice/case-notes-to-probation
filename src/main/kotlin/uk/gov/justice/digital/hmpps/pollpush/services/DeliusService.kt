@@ -1,15 +1,27 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.time.format.DateTimeFormatter
 
 @Service
-open class DeliusService(@param:Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate) {
+open class DeliusService(@Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate,
+                         @Value("\${delius.enabled}") private val deliusEnabled: Boolean) {
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   open fun postCaseNote(caseNote: DeliusCaseNote) {
     val (header, body) = caseNote
-    restTemplate.put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
+    if (deliusEnabled) {
+      restTemplate.put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
+    } else {
+      log.info("Delius integration disabled, so not pushing case note ${header.noteId} of type ${body.noteType} for ${header.nomisId}")
+    }
   }
 }
 

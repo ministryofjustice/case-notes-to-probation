@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Before
@@ -28,6 +29,20 @@ class CaseNoteListenerPusherTest {
     "contentType": {"Type": "String", "Value": "text/plain;charset=UTF-8"}, 
     "timestamp": {"Type": "Number.java.lang.Long", "Value": "1571666478344"}}}""".trimIndent()
 
+  private val invalidCaseNoteEvent = """{
+    "Type" : "Notification",
+    "MessageId" : "bb282d3c-71fd-58a2-b973-7b582f2f54a4",
+    "TopicArn" : "arn:aws:sns:eu-west-2:joe:cloud-platform-Digital-Prison-Services-fred",
+    "Message" : "{\"eventId\":\"123456\",\"eventType\":\"ALERT\",\"eventDatetime\":\"2019-12-06T13:49:30.725568\",\"rootOffenderId\":234567,\"offenderIdDisplay\":\"AB1234D\",\"agencyLocationId\":\"LPI\"}",
+    "Timestamp" : "2019-12-06T13:50:10.638Z",
+    "MessageAttributes" : {
+      "eventType" : {"Type":"String","Value":"ALERT"},
+      "id" : {"Type":"String","Value":"495b34d5-d0ae-d698-3c38-fce3e15c6918"},
+      "contentType" : {"Type":"String","Value":"text/plain;charset=UTF-8"},
+      "timestamp" : {"Type":"Number.java.lang.Long","Value":"1575640210634"}
+    }
+  }""".trimIndent()
+
   @Before
   fun before() {
     pusher = CaseNoteListenerPusher(caseNotesService, deliusService)
@@ -45,6 +60,12 @@ class CaseNoteListenerPusherTest {
     whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote())
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
     verify(deliusService).postCaseNote(createDeliusCaseNote())
+  }
+
+  @Test
+  fun `case note service not called with hydrated invalid event`() {
+    pusher.pushCaseNoteToDelius(invalidCaseNoteEvent)
+    verify(caseNotesService, never()).getCaseNote(anyString(), anyString())
   }
 
   private fun createCaseNote() = CaseNote(

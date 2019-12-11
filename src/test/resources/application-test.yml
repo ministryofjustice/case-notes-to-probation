@@ -12,6 +12,7 @@ oauth:
   endpoint.url: http://localhost:8090/auth
 
 delius:
+  enabled: true
   endpoint.url: http://localhost:8096
 
 management.endpoint:
