@@ -41,7 +41,7 @@ data class CaseNote(val eventId: Int,
 
   fun calculateModicationDateTime(): LocalDateTime =
       if (amendments.isEmpty()) creationDateTime
-      else amendments.sortedBy { creationDateTime }.last().creationDateTime
+      else amendments.mapNotNull { it.creationDateTime }.sorted().lastOrNull() ?: creationDateTime
 }
 
-data class CaseNoteAmendment(val creationDateTime: LocalDateTime, val authorName: String, val additionalNoteText: String)
+data class CaseNoteAmendment(val creationDateTime: LocalDateTime?, val authorName: String, val additionalNoteText: String)

@@ -84,6 +84,21 @@ class CaseNotesServiceTest {
     assertThat(note.calculateModicationDateTime()).isEqualTo(LocalDateTime.parse("2019-06-02T22:21:20"))
   }
 
+  @Test
+  fun `test creation date time missing from one amendment`() {
+    val note = createCaseNote().copy(amendments = listOf(
+        CaseNoteAmendment(LocalDateTime.parse("2019-05-01T22:21:20"), "some user", "some amendment"),
+        CaseNoteAmendment(null, "Another Author", "another amendment")))
+    assertThat(note.calculateModicationDateTime()).isEqualTo(LocalDateTime.parse("2019-05-01T22:21:20"))
+  }
+
+  @Test
+  fun `test creation date time missing all amendment`() {
+    val note = createCaseNote().copy(amendments = listOf(
+        CaseNoteAmendment(null, "some user", "some amendment"),
+        CaseNoteAmendment(null, "Another Author", "another amendment")))
+    assertThat(note.calculateModicationDateTime()).isEqualTo(LocalDateTime.parse("2019-04-16T11:22:33"))
+  }
 
   private fun createCaseNote() = CaseNote(
       eventId = 12345,
