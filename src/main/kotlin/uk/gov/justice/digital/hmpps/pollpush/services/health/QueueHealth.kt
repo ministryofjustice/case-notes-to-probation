@@ -19,14 +19,19 @@ class QueueHealth(@Autowired private val amazonSQS: AmazonSQS,
     }
 
     override fun health(): Health {
-        val url = try {
-            amazonSQS.getQueueUrl(queueName)
-        } catch(e: Exception) {
-            log.error("Unable to retrieve queue url for queue {} due to exception", queueName, e)
+        val queueAttributes = try {
+            val url = amazonSQS.getQueueUrl(queueName)
+            amazonSQS.getQueueAttributes(GetQueueAttributesRequest(url.queueUrl))
+        } catch (e: Exception) {
+            log.error("Unable to retrieve queue attributes for queue '{}' due to exception:", queueName, e)
             return Health.Builder().down().build()
         }
-        val response = amazonSQS.getQueueAttributes(GetQueueAttributesRequest(url.queueUrl))
-        return Health.Builder().up().build()
+        val details = mapOf(
+                "MessagesOnQueue" to queueAttributes.attributes["ApproximateNumberOfMessages"].toString(),
+                "MessageInFlight" to queueAttributes.attributes["ApproximateNumberOfMessagesNotVisible"].toString()
+                )
+        log.info("Found attributes for queue '{}': {}", queueName, details)
+        return Health.Builder().up().withDetails(details).build()
     }
 
 }
