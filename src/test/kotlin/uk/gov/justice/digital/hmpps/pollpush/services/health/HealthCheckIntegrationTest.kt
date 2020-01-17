@@ -5,9 +5,15 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.util.ReflectionTestUtils
 
 
 class HealthCheckIntegrationTest : IntegrationTest() {
+
+  @Autowired
+  lateinit private var queueHealth: QueueHealth
+
   @Test
   fun `Health page reports ok`() {
     subPing(200)
@@ -54,6 +60,29 @@ class HealthCheckIntegrationTest : IntegrationTest() {
     assertThatJson(response.body).node("components.caseNotesApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418: [some error]")
     assertThatJson(response.body).node("components.deliusApiHealth.details.error").isEqualTo("org.springframework.web.client.HttpClientErrorException: 418 418: [some error]")
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
+    assertThat(response.statusCodeValue).isEqualTo(503)
+  }
+
+  @Test
+  fun `Queue Health page reports ok`() {
+    subPing(200)
+
+    val response = restTemplate.getForEntity("/health", String::class.java)
+
+    assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("UP")
+    assertThatJson(response.body).node("status").isEqualTo("UP")
+    assertThat(response.statusCodeValue).isEqualTo(200)
+  }
+
+  @Test
+  fun `Queue does not exist reports down`() {
+    ReflectionTestUtils.setField(queueHealth, "queueName", "missing_queue")
+    subPing(200)
+
+    val response = restTemplate.getForEntity("/health", String::class.java)
+
+    assertThatJson(response.body).node("status").isEqualTo("DOWN")
+    assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
   }
 

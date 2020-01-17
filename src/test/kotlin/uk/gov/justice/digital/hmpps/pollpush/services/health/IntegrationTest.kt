@@ -7,31 +7,30 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.CaseNotesMockServer
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.DeliusMockServer
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.OAuthMockServer
+import kotlin.properties.Delegates
 
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@ContextConfiguration
+@ActiveProfiles("test,test-queue")
+//@ActiveProfiles("test") TODO remove this - used for testing permanent localstack instance
 abstract class IntegrationTest {
   @Suppress("unused")
   @Autowired
   lateinit var restTemplate: TestRestTemplate
 
-  @Suppress("unused")
-  @MockBean
+  @Autowired
   private lateinit var amazonSQS: AmazonSQS
 
   @Value("\${token}")

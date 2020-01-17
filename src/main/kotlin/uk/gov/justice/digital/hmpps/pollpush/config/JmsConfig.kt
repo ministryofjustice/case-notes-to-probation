@@ -2,8 +2,7 @@ package uk.gov.justice.digital.hmpps.pollpush.config
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration
 import com.amazon.sqs.javamessaging.SQSConnectionFactory
-import com.amazonaws.auth.AWSStaticCredentialsProvider
-import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.*
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.services.sqs.AmazonSQS
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder
@@ -53,5 +52,6 @@ open class JmsConfig {
                           @Value("\${sqs.endpoint.region}") region: String?): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withEndpointConfiguration(EndpointConfiguration(serviceEndpoint, region))
+          .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
           .build()
 }
