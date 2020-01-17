@@ -24,6 +24,6 @@ admin-token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbnRlcm5hbFVzZXIiOmZhbHNlLC
 
 sqs:
   provider: embedded-localstack
-#  provider: localstack  TODO remove this - just in for testing against permanent localstack intsance
   endpoint.url: http://localhost:4576
   queue.name: case_notes_queue
+  dlq.name: case_notes_dlq

@@ -12,7 +12,7 @@ import org.springframework.test.util.ReflectionTestUtils
 class HealthCheckIntegrationTest : IntegrationTest() {
 
   @Autowired
-  lateinit private var queueHealth: QueueHealth
+  private lateinit var queueHealth: QueueHealth
 
   @Test
   fun `Health page reports ok`() {
@@ -76,6 +76,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
   @Test
   fun `Queue does not exist reports down`() {
+    val realQueueName = ReflectionTestUtils.getField(queueHealth, "queueName")
     ReflectionTestUtils.setField(queueHealth, "queueName", "missing_queue")
     subPing(200)
 
@@ -84,7 +85,10 @@ class HealthCheckIntegrationTest : IntegrationTest() {
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
     assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
+    ReflectionTestUtils.setField(queueHealth, "queueName", realQueueName)
   }
+
+  // TODO add tests for DLQ status - currently unable to add RedrivePolicy attribute to localstack DLQ
 
   private fun subPing(status: Int) {
     oauthMockServer.stubFor(get("/auth/ping").willReturn(aResponse()
