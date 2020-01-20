@@ -15,7 +15,7 @@ open class TestQueueConfig(
                            @Value("\${sqs.dlq.name}") private val dlqName: String) {
     @Bean
     open fun queueUrl(): String {
-        sqsClient.createQueue(CreateQueueRequest(queueName))//.withAttributes(mapOf("RedrivePolicy" to "{\\\"deadLetterTargetArn\\\":\\\"arn:aws:sqs:eu-west-2:000000000000:case_notes_dlq\\\",\\\"maxReceiveCount\\\":\\\"1000\\\"}")))
+        sqsClient.createQueue(CreateQueueRequest(queueName))
         sqsClient.createQueue(CreateQueueRequest(dlqName))
         return sqsClient.getQueueUrl(queueName).queueUrl
     }
