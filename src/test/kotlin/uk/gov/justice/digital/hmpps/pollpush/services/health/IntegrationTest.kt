@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -27,8 +28,8 @@ abstract class IntegrationTest {
   @Autowired
   lateinit var restTemplate: TestRestTemplate
 
-  @Autowired
-  private lateinit var amazonSQS: AmazonSQS
+  @SpyBean
+  protected lateinit var awsSqsClient: AmazonSQS
 
   @Value("\${token}")
   private val token: String? = null

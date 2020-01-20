@@ -16,14 +16,14 @@ class QueueHealthTest {
 
     private val someQueueName = "some queue name"
     private val someQueueUrl = "some queue url"
-    private val someDlqName = "some dlq name"
-    private val someDlqUrl = "some dlq url"
+    private val someDLQName = "some DLQ name"
+    private val someDLQUrl = "some DLQ url"
     private val someMessagesOnQueueCount = "123"
     private val someMessagesInFlightCount = "456"
-    private val someMessagesOnDlqCount = "789"
+    private val someMessagesOnDLQCount = "789"
     private val amazonSqs: AmazonSQS = mock()
-    private val amazonSqsDlq: AmazonSQS = mock()
-    private val queueHealth: QueueHealth = QueueHealth(amazonSqs, amazonSqsDlq, someQueueName, someDlqName)
+    private val amazonSqsDLQ: AmazonSQS = mock()
+    private val queueHealth: QueueHealth = QueueHealth(amazonSqs, amazonSqsDLQ, someQueueName, someDLQName)
 
     @Test
     fun `health - queue found - UP`() {
@@ -56,7 +56,7 @@ class QueueHealthTest {
     }
 
     @Test
-    fun `health - failed to get attributes - DOWN`() {
+    fun `health - failed to get main queue attributes - DOWN`() {
         whenever(amazonSqs.getQueueUrl(anyString())).thenReturn(someGetQueueUrlResult())
         whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenThrow(RuntimeException::class.java)
 
@@ -66,53 +66,71 @@ class QueueHealthTest {
     }
 
     @Test
-    fun `health - dlq attributes returned - included in health status`() {
+    fun `health - DLQ UP - reports DLQ UP`() {
         whenever(amazonSqs.getQueueUrl(someQueueName)).thenReturn(someGetQueueUrlResult())
-        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDlq())
-        whenever(amazonSqsDlq.getQueueUrl(someDlqName)).thenReturn(someGetQueueUrlResultForDlq())
-        whenever(amazonSqsDlq.getQueueAttributes(someGetQueueAttributesRequestForDlq())).thenReturn(someGetQueueAttributesResultForDlq())
+        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDLQ())
+        whenever(amazonSqsDLQ.getQueueUrl(someDLQName)).thenReturn(someGetQueueUrlResultForDLQ())
+        whenever(amazonSqsDLQ.getQueueAttributes(someGetQueueAttributesRequestForDLQ())).thenReturn(someGetQueueAttributesResultForDLQ())
 
         val health = queueHealth.health()
 
-        assertThat(health.status).isEqualTo(Status.UP)
-        assertThat(health.details["dlq_status"]).isEqualTo("UP")
-        assertThat(health.details["MessagesOnDlq"]).isEqualTo(someMessagesOnDlqCount)
+        assertThat(health.details["dlqStatus"]).isEqualTo("UP")
     }
 
     @Test
-    fun `health - no RedrivePolicy attribute - DLQ DOWN`() {
+    fun `health - DLQ attributes returned - included in health status`() {
+        whenever(amazonSqs.getQueueUrl(someQueueName)).thenReturn(someGetQueueUrlResult())
+        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDLQ())
+        whenever(amazonSqsDLQ.getQueueUrl(someDLQName)).thenReturn(someGetQueueUrlResultForDLQ())
+        whenever(amazonSqsDLQ.getQueueAttributes(someGetQueueAttributesRequestForDLQ())).thenReturn(someGetQueueAttributesResultForDLQ())
+
+        val health = queueHealth.health()
+
+        assertThat(health.details["MessagesOnDLQ"]).isEqualTo(someMessagesOnDLQCount)
+    }
+
+    @Test
+    fun `health - DLQ DOWN - main queue health still UP`() {
         whenever(amazonSqs.getQueueUrl(someQueueName)).thenReturn(someGetQueueUrlResult())
         whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResult())
 
         val health = queueHealth.health()
 
         assertThat(health.status).isEqualTo(Status.UP)
-        assertThat(health.details["dlq_status"]).isEqualTo("DOWN")
+        assertThat(health.details["dlqStatus"]).isEqualTo("DOWN")
     }
 
     @Test
-    fun `health - dlq not found - DLQ DOWN`() {
+    fun `health - no RedrivePolicy attribute on main queue - DLQ DOWN`() {
         whenever(amazonSqs.getQueueUrl(someQueueName)).thenReturn(someGetQueueUrlResult())
-        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDlq())
-        whenever(amazonSqsDlq.getQueueUrl(someDlqName)).thenThrow(QueueDoesNotExistException::class.java)
+        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResult())
 
         val health = queueHealth.health()
 
-        assertThat(health.status).isEqualTo(Status.UP)
-        assertThat(health.details["dlq_status"]).isEqualTo("DOWN")
+        assertThat(health.details["dlqStatus"]).isEqualTo("DOWN")
     }
 
     @Test
-    fun `health - dlq failed to get attributes - DLQ DOWN`() {
+    fun `health - DLQ not found - DLQ DOWN`() {
         whenever(amazonSqs.getQueueUrl(someQueueName)).thenReturn(someGetQueueUrlResult())
-        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDlq())
-        whenever(amazonSqsDlq.getQueueUrl(someDlqName)).thenReturn(someGetQueueUrlResultForDlq())
-        whenever(amazonSqsDlq.getQueueAttributes(someGetQueueAttributesRequestForDlq())).thenThrow(RuntimeException::class.java)
+        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDLQ())
+        whenever(amazonSqsDLQ.getQueueUrl(someDLQName)).thenThrow(QueueDoesNotExistException::class.java)
 
         val health = queueHealth.health()
 
-        assertThat(health.status).isEqualTo(Status.UP)
-        assertThat(health.details["dlq_status"]).isEqualTo("DOWN")
+        assertThat(health.details["dlqStatus"]).isEqualTo("DOWN")
+    }
+
+    @Test
+    fun `health - DLQ failed to get attributes - DLQ DOWN`() {
+        whenever(amazonSqs.getQueueUrl(someQueueName)).thenReturn(someGetQueueUrlResult())
+        whenever(amazonSqs.getQueueAttributes(someGetQueueAttributesRequest())).thenReturn(someGetQueueAttributesResultWithDLQ())
+        whenever(amazonSqsDLQ.getQueueUrl(someDLQName)).thenReturn(someGetQueueUrlResultForDLQ())
+        whenever(amazonSqsDLQ.getQueueAttributes(someGetQueueAttributesRequestForDLQ())).thenThrow(RuntimeException::class.java)
+
+        val health = queueHealth.health()
+
+        assertThat(health.details["dlqStatus"]).isEqualTo("DOWN")
     }
 
     private fun someGetQueueAttributesRequest() = GetQueueAttributesRequest(someQueueUrl)
@@ -120,15 +138,15 @@ class QueueHealthTest {
     private fun someGetQueueAttributesResult() = GetQueueAttributesResult().withAttributes(
             mapOf("ApproximateNumberOfMessages" to someMessagesOnQueueCount,
                     "ApproximateNumberOfMessagesNotVisible" to someMessagesInFlightCount))
-    private fun someGetQueueAttributesResultWithDlq() = GetQueueAttributesResult().withAttributes(
+    private fun someGetQueueAttributesResultWithDLQ() = GetQueueAttributesResult().withAttributes(
             mapOf("ApproximateNumberOfMessages" to someMessagesOnQueueCount,
                     "ApproximateNumberOfMessagesNotVisible" to someMessagesInFlightCount,
                     "RedrivePolicy" to "any redrive policy"))
 
-    private fun someGetQueueAttributesRequestForDlq() = GetQueueAttributesRequest(someDlqUrl)
-    private fun someGetQueueUrlResultForDlq(): GetQueueUrlResult = GetQueueUrlResult().withQueueUrl(someDlqUrl)
-    private fun someGetQueueAttributesResultForDlq() = GetQueueAttributesResult().withAttributes(
-            mapOf("ApproximateNumberOfMessages" to someMessagesOnDlqCount))
+    private fun someGetQueueAttributesRequestForDLQ() = GetQueueAttributesRequest(someDLQUrl)
+    private fun someGetQueueUrlResultForDLQ(): GetQueueUrlResult = GetQueueUrlResult().withQueueUrl(someDLQUrl)
+    private fun someGetQueueAttributesResultForDLQ() = GetQueueAttributesResult().withAttributes(
+            mapOf("ApproximateNumberOfMessages" to someMessagesOnDLQCount))
 
 }
 

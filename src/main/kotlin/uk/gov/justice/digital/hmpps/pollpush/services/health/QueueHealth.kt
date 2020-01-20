@@ -34,16 +34,16 @@ class QueueHealth(@Autowired private val awsSqsClient: AmazonSQS,
                 "MessageInFlight" to queueAttributes.attributes["ApproximateNumberOfMessagesNotVisible"].toString()
         )
 
-        details.putAll(getDlqDetails(queueAttributes))
+        details.putAll(getDlqHealth(queueAttributes))
         log.info("Found details for queue '{}': {}", queueName, details)
 
         return Health.Builder().up().withDetails(details.toMap()).build()
     }
 
-    private fun getDlqDetails(mainQueueAttributes: GetQueueAttributesResult): Map<String, String> {
+    private fun getDlqHealth(mainQueueAttributes: GetQueueAttributesResult): Map<String, String> {
         if (!mainQueueAttributes.attributes.containsKey("RedrivePolicy")) {
             log.info("Queue '{}' is missing a RedrivePolicy attribute indicating it does not have a dead letter queue", queueName)
-            return mapOf("dlq_status" to "DOWN")
+            return mapOf("dlqStatus" to "DOWN")
         }
 
         val dlqAttributes = try {
@@ -51,12 +51,12 @@ class QueueHealth(@Autowired private val awsSqsClient: AmazonSQS,
             awsSqsDlqClient.getQueueAttributes(GetQueueAttributesRequest(url.queueUrl))
         } catch (e: Exception) {
             log.info("Unable to retrieve dead letter queue attributes for queue '{}' due to exception:", queueName, e)
-            return mapOf("dlq_status" to "DOWN")
+            return mapOf("dlqStatus" to "DOWN")
         }
 
         return mapOf(
-                "dlq_status" to "UP",
-                "MessagesOnDlq" to dlqAttributes.attributes["ApproximateNumberOfMessages"].toString()
+                "dlqStatus" to "UP",
+                "MessagesOnDLQ" to dlqAttributes.attributes["ApproximateNumberOfMessages"].toString()
         )
     }
 
