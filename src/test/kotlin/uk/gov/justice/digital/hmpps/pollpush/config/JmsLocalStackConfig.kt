@@ -17,16 +17,16 @@ open class JmsLocalStackConfig(private val localStackContainer: LocalStackContai
   @Bean
   open fun awsSqsClient(): AmazonSQS {
     return AmazonSQSClientBuilder.standard()
-            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
-            .withCredentials(localStackContainer.defaultCredentialsProvider)
-            .build()
+        .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+        .withCredentials(localStackContainer.defaultCredentialsProvider)
+        .build()
   }
 
   @Bean
   open fun awsSqsDlqClient(): AmazonSQS {
     return AmazonSQSClientBuilder.standard()
-            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
-            .withCredentials(localStackContainer.defaultCredentialsProvider)
-            .build()
+        .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+        .withCredentials(localStackContainer.defaultCredentialsProvider)
+        .build()
   }
 }

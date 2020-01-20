@@ -6,6 +6,8 @@ sqs:
   endpoint:
     url: http://localhost:4576
     region: eu-west-2
+  queue.name: case_notes_queue
+  dlq.name: case_notes_dlq
 
 oauth:
   endpoint.url: http://localhost:9090/auth

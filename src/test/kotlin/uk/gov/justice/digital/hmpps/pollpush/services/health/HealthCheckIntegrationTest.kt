@@ -106,7 +106,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Test
   fun `Queue health ok and dlq health ok, reports everything up`() {
     subPing(200)
-    mockQueueWithRedrivePolicyAttributes()
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
@@ -119,7 +118,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Test
   fun `Dlq health reports interesting attributes`() {
     subPing(200)
-    mockQueueWithRedrivePolicyAttributes()
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
@@ -129,6 +127,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Test
   fun `Dlq down does not bring main health or queue health down`() {
     subPing(200)
+    mockQueueWithoutRedrivePolicyAttributes()
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
@@ -141,6 +140,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Test
   fun `Main queue has no redrive policy reports dlq down`() {
     subPing(200)
+    mockQueueWithoutRedrivePolicyAttributes()
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
@@ -151,7 +151,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Test
   fun `Dlq not found reports dlq down`() {
     subPing(200)
-    mockQueueWithRedrivePolicyAttributes()
     val realDlqName = ReflectionTestUtils.getField(queueHealth, "queueName")
     ReflectionTestUtils.setField(queueHealth, "dlqName", "missing_queue")
 
@@ -180,15 +179,11 @@ class HealthCheckIntegrationTest : IntegrationTest() {
         .withStatus(status)))
   }
 
-  private fun getQueueAttributesWithRedrivePolicy(): GetQueueAttributesResult =
-    GetQueueAttributesResult().withAttributes(
-            mapOf(QueueAttributeName.RedrivePolicy.toString() to "{\"deadLetterTargetArn\":\"arn:aws:sqs:eu-west-2:000000000000:case_notes_dlq\",\"maxReceiveCount\":\"1000\"}"))
-
-  private fun mockQueueWithRedrivePolicyAttributes() {
+  private fun mockQueueWithoutRedrivePolicyAttributes() {
     val queueName = ReflectionTestUtils.getField(queueHealth, "queueName") as String
     val queueUrl = awsSqsClient.getQueueUrl(queueName)
     whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(queueUrl.queueUrl).withAttributeNames(listOf(QueueAttributeName.All.toString()))))
-        .thenReturn(getQueueAttributesWithRedrivePolicy())
+        .thenReturn(GetQueueAttributesResult())
   }
 
 }

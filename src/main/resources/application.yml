@@ -64,9 +64,7 @@ jwt:
 
 sqs:
   provider: aws
-  queue.name: case_note_queue
   endpoint.region: eu-west-2
-  dlq.name: case_note_dlq
 
 delius:
   enabled: true
