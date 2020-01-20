@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.pollpush.services.health
 
 import com.amazonaws.services.sqs.model.GetQueueAttributesRequest
 import com.amazonaws.services.sqs.model.GetQueueAttributesResult
+import com.amazonaws.services.sqs.model.QueueAttributeName
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.nhaarman.mockito_kotlin.whenever
@@ -78,6 +79,16 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   }
 
   @Test
+  fun `Queue Health page reports interesting attributes`() {
+    subPing(200)
+
+    val response = restTemplate.getForEntity("/health", String::class.java)
+
+    assertThatJson(response.body).node("components.queueHealth.details.${QueueAttributes.MESSAGES_ON_QUEUE.healthName}").isEqualTo(0)
+    assertThatJson(response.body).node("components.queueHealth.details.${QueueAttributes.MESSAGES_IN_FLIGHT.healthName}").isEqualTo(0)
+  }
+
+  @Test
   fun `Queue does not exist reports down`() {
     val realQueueName = ReflectionTestUtils.getField(queueHealth, "queueName") as String
     ReflectionTestUtils.setField(queueHealth, "queueName", "missing_queue")
@@ -101,8 +112,18 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     assertThatJson(response.body).node("status").isEqualTo("UP")
     assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("UP")
-    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo("UP")
+    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.UP.description)
     assertThat(response.statusCodeValue).isEqualTo(200)
+  }
+
+  @Test
+  fun `Dlq health reports interesting attributes`() {
+    subPing(200)
+    mockQueueWithRedrivePolicyAttributes()
+
+    val response = restTemplate.getForEntity("/health", String::class.java)
+
+    assertThatJson(response.body).node("components.queueHealth.details.${QueueAttributes.MESSAGES_ON_DLQ.healthName}").isEqualTo(0)
   }
 
   @Test
@@ -113,7 +134,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     assertThatJson(response.body).node("status").isEqualTo("UP")
     assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("UP")
-    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo("DOWN")
+    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_ATTACHED.description)
     assertThat(response.statusCodeValue).isEqualTo(200)
   }
 
@@ -123,7 +144,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo("DOWN")
+    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_ATTACHED.description)
     assertThat(response.statusCodeValue).isEqualTo(200)
   }
 
@@ -136,7 +157,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo("DOWN")
+    assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_FOUND.description)
     assertThat(response.statusCodeValue).isEqualTo(200)
 
     ReflectionTestUtils.setField(queueHealth, "dlqName", realDlqName)
@@ -161,12 +182,13 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
   private fun getQueueAttributesWithRedrivePolicy(): GetQueueAttributesResult =
     GetQueueAttributesResult().withAttributes(
-            mapOf("RedrivePolicy" to "{\"deadLetterTargetArn\":\"arn:aws:sqs:eu-west-2:000000000000:case_notes_dlq\",\"maxReceiveCount\":\"1000\"}"))
+            mapOf(QueueAttributeName.RedrivePolicy.toString() to "{\"deadLetterTargetArn\":\"arn:aws:sqs:eu-west-2:000000000000:case_notes_dlq\",\"maxReceiveCount\":\"1000\"}"))
 
   private fun mockQueueWithRedrivePolicyAttributes() {
     val queueName = ReflectionTestUtils.getField(queueHealth, "queueName") as String
     val queueUrl = awsSqsClient.getQueueUrl(queueName)
-    whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(queueUrl.queueUrl))).thenReturn(getQueueAttributesWithRedrivePolicy())
+    whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(queueUrl.queueUrl).withAttributeNames(listOf(QueueAttributeName.All.toString()))))
+        .thenReturn(getQueueAttributesWithRedrivePolicy())
   }
 
 }

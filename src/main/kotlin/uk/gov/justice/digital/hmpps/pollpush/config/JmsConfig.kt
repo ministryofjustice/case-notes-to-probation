@@ -26,9 +26,9 @@ open class JmsConfig {
 
   @Bean
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-  open fun jmsListenerContainerFactory(awsSqs: AmazonSQS): DefaultJmsListenerContainerFactory {
+  open fun jmsListenerContainerFactory(awsSqsClient: AmazonSQS): DefaultJmsListenerContainerFactory {
     val factory = DefaultJmsListenerContainerFactory()
-    factory.setConnectionFactory(SQSConnectionFactory(ProviderConfiguration(), awsSqs))
+    factory.setConnectionFactory(SQSConnectionFactory(ProviderConfiguration(), awsSqsClient))
     factory.setDestinationResolver(DynamicDestinationResolver())
     factory.setConcurrency("1")
     factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE)
@@ -56,18 +56,18 @@ open class JmsConfig {
           .withRegion(region)
           .build()
 
-  @Bean
+  @Bean("awsSqsClient")
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
-  open fun awsSqsClient(@Value("\${sqs.endpoint.url}") serviceEndpoint: String?,
+  open fun awsSqsClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String?,
                         @Value("\${sqs.endpoint.region}") region: String?): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withEndpointConfiguration(EndpointConfiguration(serviceEndpoint, region))
           .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
           .build()
 
-  @Bean
+  @Bean("awsSqsDlqClient")
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
-  open fun awsSqsDlqClient(@Value("\${sqs.endpoint.url}") serviceEndpoint: String?,
+  open fun awsSqsDlqClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String?,
                            @Value("\${sqs.endpoint.region}") region: String?): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withEndpointConfiguration(EndpointConfiguration(serviceEndpoint, region))

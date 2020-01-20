@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Profile
 @Configuration
 @Profile("test-queue")
 open class TestQueueConfig(
-                           private val sqsClient: AmazonSQS,
-                           @Value("\${sqs.queue.name}") private val queueName: String,
-                           @Value("\${sqs.dlq.name}") private val dlqName: String) {
+    private val awsSqsClient: AmazonSQS,
+    @Value("\${sqs.queue.name}") private val queueName: String,
+    @Value("\${sqs.dlq.name}") private val dlqName: String) {
     @Bean
     open fun queueUrl(): String {
-        sqsClient.createQueue(CreateQueueRequest(queueName))
-        sqsClient.createQueue(CreateQueueRequest(dlqName))
-        return sqsClient.getQueueUrl(queueName).queueUrl
+        awsSqsClient.createQueue(CreateQueueRequest(queueName))
+        awsSqsClient.createQueue(CreateQueueRequest(dlqName))
+        return awsSqsClient.getQueueUrl(queueName).queueUrl
     }
 
 }

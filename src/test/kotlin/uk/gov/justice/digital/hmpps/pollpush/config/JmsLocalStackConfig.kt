@@ -15,7 +15,15 @@ import org.testcontainers.containers.localstack.LocalStackContainer
 open class JmsLocalStackConfig(private val localStackContainer: LocalStackContainer) {
 
   @Bean
-  open fun awsLocalTestClient(): AmazonSQS {
+  open fun awsSqsClient(): AmazonSQS {
+    return AmazonSQSClientBuilder.standard()
+            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+            .withCredentials(localStackContainer.defaultCredentialsProvider)
+            .build()
+  }
+
+  @Bean
+  open fun awsSqsDlqClient(): AmazonSQS {
     return AmazonSQSClientBuilder.standard()
             .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
             .withCredentials(localStackContainer.defaultCredentialsProvider)

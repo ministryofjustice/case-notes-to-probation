@@ -2,7 +2,10 @@ graceful:
   shutdown.enabled: false
 
 sqs:
-  endpoint.url: http://localhost:4576
+  provider: localstack
+  endpoint:
+    url: http://localhost:4576
+    region: eu-west-2
 
 oauth:
   endpoint.url: http://localhost:9090/auth
