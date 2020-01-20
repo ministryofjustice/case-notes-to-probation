@@ -80,13 +80,15 @@ image uses the HMPPS base java image, rather than the public java image.
 Once migration is complete, this setup can be consolidated. 
 
 ### Running against localstack
-Localstack has been introduced for some integration tests, and it is also possible to run the application against localstack.
+Localstack has been introduced for some integration tests and it is also possible to run the application against localstack.
 
 * Checkout localstack from [GitHub](https://github.com/localstack/localstack)
 * Make sure you have docker, docker-compose and aws CLI installed
-* In the root of the project, run command `docker-compose up` to bring up localstack
-* Create the queues required with the following command (note that AWS keys are ignored but cannot be empty):
+* In the root of the localstack project, run command `docker-compose up` to bring up localstack
+* In another session, create the queues required with the following command (note that AWS keys are ignored but cannot be empty):
 `AWS_ACCESS_KEY_ID=foobar AWS_SECRET_ACCESS_KEY=foobar AWS_DEFAULT_REGION=eu-west-2 aws --endpoint-url=http://localhost:4576 sqs create-queue --queue-name case_note_dlq`
 `AWS_ACCESS_KEY_ID=foobar AWS_SECRET_ACCESS_KEY=foobar AWS_DEFAULT_REGION=eu-west-2 aws --endpoint-url=http://localhost:4576 sqs create-queue --queue-name case_note_queue --attributes '{"RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:eu-west-2:123456789012:case_note_dlq\",\"maxReceiveCount\":\"5\"}" }' `
 * Start the Spring Boot app with profile `localstack`
 * You can now use the aws CLI to send messages to the queue
+* The queue's health status should appear at the local healtheck: http://localhost:8082/health
+ 
