@@ -8,15 +8,31 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.nhaarman.mockito_kotlin.whenever
 import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.test.util.ReflectionTestUtils
-
+import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.*
 
 class HealthCheckIntegrationTest : IntegrationTest() {
 
   @Autowired
   private lateinit var queueHealth: QueueHealth
+
+  @Autowired
+  @Value("\${sqs.queue.name}")
+  private lateinit var queueName: String
+
+  @Autowired
+  @Value("\${sqs.dlq.name}")
+  private lateinit var dlqName: String
+
+  @After
+  fun tearDown() {
+    ReflectionTestUtils.setField(queueHealth, "queueName", queueName)
+    ReflectionTestUtils.setField(queueHealth, "dlqName", dlqName)
+  }
 
   @Test
   fun `Health page reports ok`() {
@@ -84,13 +100,12 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("components.queueHealth.details.${QueueAttributes.MESSAGES_ON_QUEUE.healthName}").isEqualTo(0)
-    assertThatJson(response.body).node("components.queueHealth.details.${QueueAttributes.MESSAGES_IN_FLIGHT.healthName}").isEqualTo(0)
+    assertThatJson(response.body).node("components.queueHealth.details.${MESSAGES_ON_QUEUE.healthName}").isEqualTo(0)
+    assertThatJson(response.body).node("components.queueHealth.details.${MESSAGES_IN_FLIGHT.healthName}").isEqualTo(0)
   }
 
   @Test
   fun `Queue does not exist reports down`() {
-    val realQueueName = ReflectionTestUtils.getField(queueHealth, "queueName") as String
     ReflectionTestUtils.setField(queueHealth, "queueName", "missing_queue")
     subPing(200)
 
@@ -99,8 +114,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
     assertThatJson(response.body).node("status").isEqualTo("DOWN")
     assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("DOWN")
     assertThat(response.statusCodeValue).isEqualTo(503)
-
-    ReflectionTestUtils.setField(queueHealth, "queueName", realQueueName)
   }
 
   @Test
@@ -121,7 +134,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("components.queueHealth.details.${QueueAttributes.MESSAGES_ON_DLQ.healthName}").isEqualTo(0)
+    assertThatJson(response.body).node("components.queueHealth.details.${MESSAGES_ON_DLQ.healthName}").isEqualTo(0)
   }
 
   @Test
@@ -151,15 +164,12 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Test
   fun `Dlq not found reports dlq down`() {
     subPing(200)
-    val realDlqName = ReflectionTestUtils.getField(queueHealth, "queueName")
     ReflectionTestUtils.setField(queueHealth, "dlqName", "missing_queue")
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
     assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_FOUND.description)
     assertThat(response.statusCodeValue).isEqualTo(200)
-
-    ReflectionTestUtils.setField(queueHealth, "dlqName", realDlqName)
   }
 
   private fun subPing(status: Int) {

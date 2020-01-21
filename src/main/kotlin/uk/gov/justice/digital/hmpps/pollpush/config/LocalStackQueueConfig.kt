@@ -10,20 +10,20 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 @Profile("localstack")
-open class LocalstackQueueConfig(
+open class LocalStackQueueConfig(
     private val awsSqsClient: AmazonSQS,
     @Value("\${sqs.queue.name}") private val queueName: String,
     @Value("\${sqs.dlq.name}") private val dlqName: String) {
 
-    @Bean
-    open fun queueUrl(): String {
-      val result = awsSqsClient.createQueue(CreateQueueRequest(dlqName))
-      val dlqArn = awsSqsClient.getQueueAttributes(result.queueUrl, listOf(QueueAttributeName.QueueArn.toString()))
-      awsSqsClient.createQueue(CreateQueueRequest(queueName).withAttributes(
-          mapOf(QueueAttributeName.RedrivePolicy.toString() to
-              """{"deadLetterTargetArn":"${dlqArn.attributes["QueueArn"]}","maxReceiveCount":"5"}""")
-      ))
-        return awsSqsClient.getQueueUrl(queueName).queueUrl
-    }
+  @Bean
+  open fun queueUrl(): String {
+    val result = awsSqsClient.createQueue(CreateQueueRequest(dlqName))
+    val dlqArn = awsSqsClient.getQueueAttributes(result.queueUrl, listOf(QueueAttributeName.QueueArn.toString()))
+    awsSqsClient.createQueue(CreateQueueRequest(queueName).withAttributes(
+        mapOf(QueueAttributeName.RedrivePolicy.toString() to
+            """{"deadLetterTargetArn":"${dlqArn.attributes["QueueArn"]}","maxReceiveCount":"5"}""")
+    ))
+    return awsSqsClient.getQueueUrl(queueName).queueUrl
+  }
 
 }

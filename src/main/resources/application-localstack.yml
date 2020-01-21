@@ -3,9 +3,7 @@ graceful:
 
 sqs:
   provider: localstack
-  endpoint:
-    url: http://localhost:4576
-    region: eu-west-2
+  endpoint.url: http://localhost:4576
   queue.name: case_note_queue
   dlq.name: case_note_dlq
 
