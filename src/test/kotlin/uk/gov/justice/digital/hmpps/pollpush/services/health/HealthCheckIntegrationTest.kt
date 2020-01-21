@@ -138,16 +138,16 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   }
 
   @Test
-  fun `Dlq down does not bring main health or queue health down`() {
+  fun `Dlq down brings main health and queue health down`() {
     subPing(200)
     mockQueueWithoutRedrivePolicyAttributes()
 
     val response = restTemplate.getForEntity("/health", String::class.java)
 
-    assertThatJson(response.body).node("status").isEqualTo("UP")
-    assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("UP")
+    assertThatJson(response.body).node("status").isEqualTo("DOWN")
+    assertThatJson(response.body).node("components.queueHealth.status").isEqualTo("DOWN")
     assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_ATTACHED.description)
-    assertThat(response.statusCodeValue).isEqualTo(200)
+    assertThat(response.statusCodeValue).isEqualTo(503)
   }
 
   @Test
@@ -158,7 +158,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
     val response = restTemplate.getForEntity("/health", String::class.java)
 
     assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_ATTACHED.description)
-    assertThat(response.statusCodeValue).isEqualTo(200)
+    assertThat(response.statusCodeValue).isEqualTo(503)
   }
 
   @Test
@@ -169,7 +169,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
     val response = restTemplate.getForEntity("/health", String::class.java)
 
     assertThatJson(response.body).node("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_FOUND.description)
-    assertThat(response.statusCodeValue).isEqualTo(200)
+    assertThat(response.statusCodeValue).isEqualTo(503)
   }
 
   private fun subPing(status: Int) {

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.HealthIndicator
 import org.springframework.stereotype.Component
-
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.*
 
 enum class DlqStatus(val description: String) {
@@ -51,16 +50,16 @@ class QueueHealth(@Autowired @Qualifier("awsSqsClient") private val awsSqsClient
         MESSAGES_IN_FLIGHT.healthName to queueAttributes.attributes[MESSAGES_IN_FLIGHT.awsName]?.toInt()
     )
 
-    details.putAll(getDlqHealth(queueAttributes))
-    log.info("Found details for queue '{}': {}", queueName, details)
+    val health = Health.Builder().up().withDetails(details).addDlqHealth(queueAttributes).build()
 
-    return Health.Builder().up().withDetails(details.toMap()).build()
+    log.info("Found health details for queue '{}': {}", queueName, health)
+    return health
   }
 
-  private fun getDlqHealth(mainQueueAttributes: GetQueueAttributesResult): Map<String, Any?> {
+  private fun Health.Builder.addDlqHealth(mainQueueAttributes: GetQueueAttributesResult): Health.Builder {
     if (!mainQueueAttributes.attributes.containsKey("RedrivePolicy")) {
       log.info("Queue '{}' is missing a RedrivePolicy attribute indicating it does not have a dead letter queue", queueName)
-      return mapOf("dlqStatus" to DlqStatus.NOT_ATTACHED.description)
+      return this.down().withDetail("dlqStatus", DlqStatus.NOT_ATTACHED.description)
     }
 
     val dlqAttributes = try {
@@ -68,16 +67,14 @@ class QueueHealth(@Autowired @Qualifier("awsSqsClient") private val awsSqsClient
       awsSqsDlqClient.getQueueAttributes(getQueueAttributesRequest(url))
     } catch (e: QueueDoesNotExistException) {
       log.info("Unable to retrieve dead letter queue URL for queue '{}' due to exception:", queueName, e)
-      return mapOf("dlqStatus" to DlqStatus.NOT_FOUND.description)
+      return this.down(e).withDetail("dlqStatus", DlqStatus.NOT_FOUND.description)
     } catch (e: Exception) {
       log.info("Unable to retrieve dead letter queue attributes for queue '{}' due to exception:", queueName, e)
-      return mapOf("dlqStatus" to DlqStatus.NOT_AVAILABLE.description)
+      return this.down(e).withDetail("dlqStatus", DlqStatus.NOT_AVAILABLE.description)
     }
 
-    return mapOf(
-        "dlqStatus" to DlqStatus.UP.description,
-        MESSAGES_ON_DLQ.healthName to dlqAttributes.attributes[MESSAGES_ON_DLQ.awsName]?.toInt()
-    )
+    return this.withDetail("dlqStatus", DlqStatus.UP.description)
+        .withDetail(MESSAGES_ON_DLQ.healthName, dlqAttributes.attributes[MESSAGES_ON_DLQ.awsName]?.toInt())
   }
 
   private fun getQueueAttributesRequest(url: GetQueueUrlResult) =
