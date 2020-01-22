@@ -84,8 +84,8 @@ jobs:
             - gradle-
       - run:
           environment:
-            SQS_PROVIDER: localstack
-            SQS_EMBEDDED: false
+            SQS_PROVIDER: 'localstack'
+            SQS_EMBEDDED: 'false'
           command: ./gradlew build -i
 
       - run:
