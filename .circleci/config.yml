@@ -86,7 +86,7 @@ jobs:
           environment:
             SQS_PROVIDER: localstack
             SQS_EMBEDDED: false
-          command: ./gradlew build
+          command: ./gradlew build -i
 
       - run:
           name: Record the Application Version

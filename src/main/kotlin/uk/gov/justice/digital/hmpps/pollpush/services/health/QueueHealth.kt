@@ -66,10 +66,10 @@ class QueueHealth(@Autowired @Qualifier("awsSqsClient") private val awsSqsClient
       val url = awsSqsDlqClient.getQueueUrl(dlqName)
       awsSqsDlqClient.getQueueAttributes(getQueueAttributesRequest(url))
     } catch (e: QueueDoesNotExistException) {
-      log.info("Unable to retrieve dead letter queue URL for queue '{}' due to exception:", queueName, e)
+      log.error("Unable to retrieve dead letter queue URL for queue '{}' due to exception:", queueName, e)
       return this.down(e).withDetail("dlqStatus", DlqStatus.NOT_FOUND.description)
     } catch (e: Exception) {
-      log.info("Unable to retrieve dead letter queue attributes for queue '{}' due to exception:", queueName, e)
+      log.error("Unable to retrieve dead letter queue attributes for queue '{}' due to exception:", queueName, e)
       return this.down(e).withDetail("dlqStatus", DlqStatus.NOT_AVAILABLE.description)
     }
 
