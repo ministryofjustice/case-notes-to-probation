@@ -30,9 +30,14 @@ abstract class IntegrationTest {
   @Autowired
   lateinit var restTemplate: TestRestTemplate
 
+  // TODO change this to a spy and drop the dlq aws client.  The changes exist only to debug a build issue
   @MockBean
   @Qualifier("awsSqsClient")
   protected lateinit var awsSqsClient: AmazonSQS
+
+  @MockBean
+  @Qualifier("awsSqsDlqClient")
+  protected lateinit var awsSqsDlqClient: AmazonSQS
 
   @Value("\${token}")
   private val token: String? = null
