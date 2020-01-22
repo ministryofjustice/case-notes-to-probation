@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.annotation.EnableJms
@@ -74,4 +75,20 @@ open class JmsConfig {
           .withEndpointConfiguration(EndpointConfiguration(serviceEndpoint, region))
           .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
           .build()
+
+  // TODO remove this bean and class SqsConfig - using to debug properties in build
+  @Bean
+  @ConfigurationProperties(prefix = "sqs")
+  open fun sqsConfig(): SqsConfig {
+    return SqsConfig()
+  }
+}
+
+open class SqsConfig {
+  var embedded: String = "none"
+  var provider: String = "none"
+
+  override fun toString(): String {
+    return "embedded=${embedded}, provider=${provider}"
+  }
 }
