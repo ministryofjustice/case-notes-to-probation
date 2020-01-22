@@ -65,6 +65,7 @@ jwt:
 sqs:
   provider: aws
   endpoint.region: eu-west-2
+  embedded: false
 
 delius:
   enabled: true

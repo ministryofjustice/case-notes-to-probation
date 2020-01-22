@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.OAuthMockSe
 
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test", "test-queue")
+@ActiveProfiles("test")
 abstract class IntegrationTest {
   @Suppress("unused")
   @Autowired

@@ -9,6 +9,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -57,7 +58,7 @@ open class JmsConfig {
           .build()
 
   @Bean("awsSqsClient")
-  @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
+  @ConditionalOnExpression("'\${sqs.provider}'.equals('localstack') and '\${sqs.embedded}'.equals('false')")
   open fun awsSqsClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String,
                                   @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
@@ -66,7 +67,7 @@ open class JmsConfig {
           .build()
 
   @Bean("awsSqsDlqClient")
-  @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
+  @ConditionalOnExpression("'\${sqs.provider}'.equals('localstack') and '\${sqs.embedded}'.equals('false')")
   open fun awsSqsDlqClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String,
                                      @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()

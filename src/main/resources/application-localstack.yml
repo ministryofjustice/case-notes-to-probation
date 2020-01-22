@@ -3,9 +3,13 @@ graceful:
 
 sqs:
   provider: localstack
+  embedded: false
   endpoint.url: http://localhost:4576
   queue.name: case_note_queue
   dlq.name: case_note_dlq
+  sqs.aws.access.key.id: foobar
+  sqs.aws.secret.access.key: foobar
+
 
 oauth:
   endpoint.url: http://localhost:9090/auth
