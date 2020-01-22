@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
@@ -30,14 +29,9 @@ abstract class IntegrationTest {
   @Autowired
   lateinit var restTemplate: TestRestTemplate
 
-  // TODO change this to a spy and drop the dlq aws client.  The changes exist only to debug a build issue
-  @MockBean
+  @SpyBean
   @Qualifier("awsSqsClient")
   protected lateinit var awsSqsClient: AmazonSQS
-
-  @MockBean
-  @Qualifier("awsSqsDlqClient")
-  protected lateinit var awsSqsDlqClient: AmazonSQS
 
   @Value("\${token}")
   private val token: String? = null

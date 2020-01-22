@@ -9,24 +9,13 @@ import com.nhaarman.mockito_kotlin.whenever
 import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.test.util.ReflectionTestUtils
-import uk.gov.justice.digital.hmpps.pollpush.config.SqsConfig
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.*
 
 class HealthCheckIntegrationTest : IntegrationTest() {
-  companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
-  }
-
-  // TODO remove this bean and the setUp method - only using to debug properties in build
-  @Autowired
-  private lateinit var sqsConfig: SqsConfig
 
   @Autowired
   private lateinit var queueHealth: QueueHealth
@@ -38,11 +27,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Autowired
   @Value("\${sqs.dlq.name}")
   private lateinit var dlqName: String
-
-  @Before
-  fun setUp() {
-    log.warn("SqsConfig: + ${sqsConfig}")
-  }
 
   @After
   fun tearDown() {

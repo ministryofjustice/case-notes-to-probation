@@ -2,7 +2,9 @@ package uk.gov.justice.digital.hmpps.pollpush.config
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration
 import com.amazon.sqs.javamessaging.SQSConnectionFactory
-import com.amazonaws.auth.*
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.auth.AnonymousAWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.services.sqs.AmazonSQS
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder
@@ -11,7 +13,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.annotation.EnableJms
@@ -37,30 +38,29 @@ open class JmsConfig {
     factory.setErrorHandler { t: Throwable? -> log.error("Error caught in jms listener", t) }
     return factory
   }
-// TODO beans removed for debugging circle build failures
-//
-//  @Bean
-//  @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
-//  open fun awsSqsClient(@Value("\${sqs.aws.access.key.id}") accessKey: String,
-//                        @Value("\${sqs.aws.secret.access.key}") secretKey: String,
-//                        @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
-//      AmazonSQSClientBuilder.standard()
-//          .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
-//          .withRegion(region)
-//          .build()
-//
-//  @Bean
-//  @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
-//  open fun awsSqsDlqClient(@Value("\${sqs.aws.dlq.access.key.id}") accessKey: String,
-//                           @Value("\${sqs.aws.dlq.secret.access.key}") secretKey: String,
-//                           @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
-//      AmazonSQSClientBuilder.standard()
-//          .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
-//          .withRegion(region)
-//          .build()
+
+  @Bean
+  @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
+  open fun awsSqsClient(@Value("\${sqs.aws.access.key.id}") accessKey: String,
+                        @Value("\${sqs.aws.secret.access.key}") secretKey: String,
+                        @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
+      AmazonSQSClientBuilder.standard()
+          .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
+          .withRegion(region)
+          .build()
+
+  @Bean
+  @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
+  open fun awsSqsDlqClient(@Value("\${sqs.aws.dlq.access.key.id}") accessKey: String,
+                           @Value("\${sqs.aws.dlq.secret.access.key}") secretKey: String,
+                           @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
+      AmazonSQSClientBuilder.standard()
+          .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
+          .withRegion(region)
+          .build()
 
   @Bean("awsSqsClient")
-//  @ConditionalOnExpression("'\${sqs.provider}'.equals('localstack') and '\${sqs.embedded}'.equals('false')")
+  @ConditionalOnExpression("'\${sqs.provider}'.equals('localstack') and '\${sqs.embedded}'.equals('false')")
   open fun awsSqsClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String,
                                   @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
@@ -69,7 +69,7 @@ open class JmsConfig {
           .build()
 
   @Bean("awsSqsDlqClient")
-//  @ConditionalOnExpression("'\${sqs.provider}'.equals('localstack') and '\${sqs.embedded}'.equals('false')")
+  @ConditionalOnExpression("'\${sqs.provider}'.equals('localstack') and '\${sqs.embedded}'.equals('false')")
   open fun awsSqsDlqClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String,
                                      @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
@@ -77,19 +77,4 @@ open class JmsConfig {
           .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
           .build()
 
-  // TODO remove this bean and class SqsConfig - using to debug properties in build
-  @Bean
-  @ConfigurationProperties(prefix = "sqs")
-  open fun sqsConfig(): SqsConfig {
-    return SqsConfig()
-  }
-}
-
-open class SqsConfig {
-  var embedded: String = "none"
-  var provider: String = "none"
-
-  override fun toString(): String {
-    return "embedded=${embedded}, provider=${provider}"
-  }
 }
