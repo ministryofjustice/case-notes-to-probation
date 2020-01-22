@@ -85,7 +85,7 @@ Localstack has been introduced for some integration tests and it is also possibl
 * Checkout localstack from [GitHub](https://github.com/localstack/localstack)
 * Make sure you have docker, docker-compose and aws CLI installed
 * In the root of the localstack project, run command `docker-compose up` to bring up localstack
-* Start the Spring Boot app with profile `localstack`
+* Start the Spring Boot app with profile='localstack', env var SQS_PROVIDER=localstack and SQS_EMBEDDED=false 
 * You can now use the aws CLI to send messages to the queue
-* The queue's health status should appear at the local healtheck: http://localhost:8082/health
+* The queue's health status should appear at the local healthcheck: http://localhost:8082/health
 * Note that you will also have to have local copies of Oauth server, Case notes API and Delius API running to do anything useful
