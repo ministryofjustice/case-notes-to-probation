@@ -88,4 +88,4 @@ Localstack has been introduced for some integration tests and it is also possibl
 * Start the Spring Boot app with profile='localstack', env var SQS_PROVIDER=localstack and SQS_EMBEDDED=false 
 * You can now use the aws CLI to send messages to the queue
 * The queue's health status should appear at the local healthcheck: http://localhost:8082/health
-* Note that you will also have to have local copies of Oauth server, Case notes API and Delius API running to do anything useful
+* Note that you will also need local copies of Oauth server, Case notes API and Delius API running to do anything useful

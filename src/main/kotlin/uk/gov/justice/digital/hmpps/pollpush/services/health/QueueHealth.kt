@@ -58,7 +58,7 @@ class QueueHealth(@Autowired @Qualifier("awsSqsClient") private val awsSqsClient
 
   private fun Health.Builder.addDlqHealth(mainQueueAttributes: GetQueueAttributesResult): Health.Builder {
     if (!mainQueueAttributes.attributes.containsKey("RedrivePolicy")) {
-      log.info("Queue '{}' is missing a RedrivePolicy attribute indicating it does not have a dead letter queue", queueName)
+      log.error("Queue '{}' is missing a RedrivePolicy attribute indicating it does not have a dead letter queue", queueName)
       return this.down().withDetail("dlqStatus", DlqStatus.NOT_ATTACHED.description)
     }
 
