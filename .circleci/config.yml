@@ -55,7 +55,7 @@ executors:
   builder:
     docker:
       - image: circleci/openjdk:11-jdk
-      - image: localstack/localstack:0.13.0
+      - image: localstack/localstack:0.10.8
         environment:
           - SERVICES=sqs
           - DEBUG=${DEBUG- }
