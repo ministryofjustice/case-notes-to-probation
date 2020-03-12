@@ -8,15 +8,14 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.nhaarman.mockito_kotlin.whenever
 import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.test.util.ReflectionTestUtils
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.*
 
 class HealthCheckIntegrationTest : IntegrationTest() {
-
   @Autowired
   private lateinit var queueHealth: QueueHealth
 
@@ -28,7 +27,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   @Value("\${sqs.dlq.name}")
   private lateinit var dlqName: String
 
-  @After
+  @AfterEach
   fun tearDown() {
     ReflectionTestUtils.setField(queueHealth, "queueName", queueName)
     ReflectionTestUtils.setField(queueHealth, "dlqName", dlqName)

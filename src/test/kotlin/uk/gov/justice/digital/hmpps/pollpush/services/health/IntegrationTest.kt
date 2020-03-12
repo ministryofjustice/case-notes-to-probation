@@ -1,27 +1,21 @@
 package uk.gov.justice.digital.hmpps.pollpush.services.health
 
 import com.amazonaws.services.sqs.AmazonSQS
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.CaseNotesMockServer
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.DeliusMockServer
 import uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock.OAuthMockServer
 
-@RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 abstract class IntegrationTest {
@@ -33,21 +27,31 @@ abstract class IntegrationTest {
   @Qualifier("awsSqsClient")
   protected lateinit var awsSqsClient: AmazonSQS
 
-  @Value("\${token}")
-  private val token: String? = null
-
   companion object {
-    @get:ClassRule
-    @JvmStatic
-    val oauthMockServer = OAuthMockServer()
+    @JvmField
+    internal val oauthMockServer = OAuthMockServer()
 
-    @get:ClassRule
-    @JvmStatic
-    val caseNotesMockServer = CaseNotesMockServer()
+    @JvmField
+    internal val caseNotesMockServer = CaseNotesMockServer()
 
-    @get:ClassRule
+    @JvmField
+    internal val deliusMockServer = DeliusMockServer()
+
+    @BeforeAll
     @JvmStatic
-    val deliusMockServer = DeliusMockServer()
+    fun startMocks() {
+      oauthMockServer.start()
+      caseNotesMockServer.start()
+      deliusMockServer.start()
+    }
+
+    @AfterAll
+    @JvmStatic
+    fun stopMocks() {
+      oauthMockServer.stop()
+      caseNotesMockServer.stop()
+      deliusMockServer.stop()
+    }
   }
 
   init {
@@ -56,19 +60,12 @@ abstract class IntegrationTest {
     System.setProperty("http.keepAlive", "false")
   }
 
-  @Before
+  @BeforeEach
   fun resetStubs() {
     oauthMockServer.resetAll()
     caseNotesMockServer.resetAll()
     deliusMockServer.resetAll()
 
     oauthMockServer.stubGrantToken()
-  }
-
-  internal fun createHeaderEntity(entity: Any): HttpEntity<*> {
-    val headers = HttpHeaders()
-    headers.add("Authorization", "bearer $token")
-    headers.contentType = MediaType.APPLICATION_JSON
-    return HttpEntity(entity, headers)
   }
 }

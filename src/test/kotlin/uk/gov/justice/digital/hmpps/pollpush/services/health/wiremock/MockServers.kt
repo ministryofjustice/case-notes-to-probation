@@ -1,16 +1,16 @@
 package uk.gov.justice.digital.hmpps.whereabouts.integration.wiremock
 
+import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.http.HttpHeader
 import com.github.tomakehurst.wiremock.http.HttpHeaders
-import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.google.gson.GsonBuilder
 
-class CaseNotesMockServer : WireMockRule(8083)
+class CaseNotesMockServer : WireMockServer(8083)
 
-class DeliusMockServer : WireMockRule(8096)
+class DeliusMockServer : WireMockServer(8096)
 
-class OAuthMockServer : WireMockRule(8090) {
+class OAuthMockServer : WireMockServer(8090) {
   private val gson = GsonBuilder().create()
 
   fun stubGrantToken() {
