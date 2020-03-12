@@ -12,8 +12,10 @@ plugins {
   kotlin("plugin.spring") version "1.3.61"
   id("org.springframework.boot") version "2.2.5.RELEASE"
   id("io.spring.dependency-management") version "1.0.9.RELEASE"
-  id("org.owasp.dependencycheck") version "5.3.0"
+  id("org.owasp.dependencycheck") version "5.3.1"
   id("com.github.ben-manes.versions") version "0.28.0"
+  id("se.patrikerdes.use-latest-versions") version "0.2.13"
+  id("com.gorylenko.gradle-git-properties") version "2.2.2"
 }
 
 repositories {
@@ -73,7 +75,7 @@ springBoot {
 }
 
 configurations {
-  implementation { exclude(mapOf("module" to "tomcat-jdbc")) }
+  implementation { exclude("module", "tomcat-jdbc") }
 }
 
 dependencyManagement {
@@ -96,7 +98,7 @@ dependencies {
   implementation("net.logstash.logback:logstash-logback-encoder:6.3")
   implementation("com.microsoft.azure:applicationinsights-spring-boot-starter:2.5.1")
   implementation("com.microsoft.azure:applicationinsights-logging-logback:2.5.1")
-  implementation("com.github.timpeeters:spring-boot-graceful-shutdown:2.2.0")
+  implementation("com.github.timpeeters:spring-boot-graceful-shutdown:2.2.1")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
@@ -108,15 +110,18 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.735"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.741"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-test") {
+    exclude("org.junit.vintage", "junit-vintage-engine")
+  }
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.github.tomakehurst:wiremock-standalone:2.26.2")
+  testImplementation("com.github.tomakehurst:wiremock-standalone:2.26.3")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.14.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
-  testImplementation("org.testcontainers:localstack:1.12.5")
+  testImplementation("org.testcontainers:localstack:1.13.0")
+  testImplementation("org.testcontainers:junit-jupiter:1.13.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.2")
 }
 

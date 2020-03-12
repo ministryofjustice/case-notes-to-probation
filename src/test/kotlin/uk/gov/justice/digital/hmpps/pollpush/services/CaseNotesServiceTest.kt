@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package uk.gov.justice.digital.hmpps.pollpush.services
 
 import com.nhaarman.mockito_kotlin.any
@@ -5,25 +7,16 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.OAuth2RestTemplate
 import java.time.LocalDateTime
 
-@RunWith(MockitoJUnitRunner::class)
 class CaseNotesServiceTest {
   private val restTemplate: OAuth2RestTemplate = mock()
 
-  private lateinit var service: CaseNotesService
-
-  @Before
-  fun before() {
-    service = CaseNotesService(restTemplate)
-  }
+  private val service = CaseNotesService(restTemplate)
 
   @Test
   fun `test get case note calls rest template`() {

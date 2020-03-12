@@ -1,22 +1,20 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.never
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import com.google.gson.GsonBuilder
+import com.microsoft.applicationinsights.TelemetryClient
+import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
 
-@RunWith(MockitoJUnitRunner::class)
 class CaseNoteListenerPusherTest {
   private val caseNotesService: CaseNotesService = mock()
   private val deliusService: DeliusService = mock()
+  private val telemetryClient: TelemetryClient = mock()
+  private val gson = GsonBuilder().create()
 
-  private lateinit var pusher: CaseNoteListenerPusher
+  private val pusher = CaseNoteListenerPusher(caseNotesService, deliusService, telemetryClient, gson)
 
   private val validCaseNoteEvent = """{
     "MessageId": "ae06c49e-1f41-4b9f-b2f2-dcca610d02cd", "Type": "Notification", "Timestamp": "2019-10-21T14:01:18.500Z", 
@@ -43,16 +41,21 @@ class CaseNoteListenerPusherTest {
     }
   }""".trimIndent()
 
-  @Before
-  fun before() {
-    pusher = CaseNoteListenerPusher(caseNotesService, deliusService)
-  }
-
   @Test
   fun `case note service called with hydrated event`() {
     whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote())
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
     verify(caseNotesService).getCaseNote("G4803UT", "1234")
+  }
+
+  @Test
+  fun `case note service calls telemetry client`() {
+    whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote())
+    pusher.pushCaseNoteToDelius(validCaseNoteEvent)
+    verify(telemetryClient).trackEvent(eq("CaseNoteCreate"), check {
+      assertThat(it).containsExactlyInAnyOrderEntriesOf(
+          mapOf("caseNoteId" to "1234", "type" to "NEG-IEP_WARN", "eventId" to "123456"))
+    }, isNull())
   }
 
   @Test
@@ -69,7 +72,7 @@ class CaseNoteListenerPusherTest {
   }
 
   private fun createCaseNote() = CaseNote(
-      eventId = 1234,
+      eventId = 123456,
       offenderIdentifier = "offenderId",
       type = "NEG",
       subType = "IEP_WARN",
@@ -81,7 +84,7 @@ class CaseNoteListenerPusherTest {
       amendments = listOf())
 
   private fun createDeliusCaseNote() = DeliusCaseNote(
-      header = CaseNoteHeader("offenderId", 1234),
+      header = CaseNoteHeader("offenderId", 123456),
       body = CaseNoteBody(
           noteType = "NEG IEP_WARN",
           content = "note content",

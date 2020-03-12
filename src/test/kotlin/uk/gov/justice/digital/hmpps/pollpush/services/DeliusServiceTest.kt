@@ -4,27 +4,17 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.security.oauth2.client.OAuth2RestTemplate
 
 @Suppress("DEPRECATION")
-@RunWith(MockitoJUnitRunner::class)
 class DeliusServiceTest {
   private val restTemplate: OAuth2RestTemplate = mock()
 
-  private lateinit var service: DeliusService
-  private lateinit var disabledService: DeliusService
-
-  @Before
-  fun before() {
-    service = DeliusService(restTemplate, true)
-    disabledService = DeliusService(restTemplate, false)
-  }
+  private val service = DeliusService(restTemplate, true)
+  private val disabledService = DeliusService(restTemplate, false)
 
   @Test
   fun `test put case note calls rest template`() {
