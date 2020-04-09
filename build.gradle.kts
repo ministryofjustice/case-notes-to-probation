@@ -8,11 +8,11 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_DATE
 
 plugins {
-  kotlin("jvm") version "1.3.61"
-  kotlin("plugin.spring") version "1.3.61"
-  id("org.springframework.boot") version "2.2.5.RELEASE"
+  kotlin("jvm") version "1.3.71"
+  kotlin("plugin.spring") version "1.3.71"
+  id("org.springframework.boot") version "2.2.6.RELEASE"
   id("io.spring.dependency-management") version "1.0.9.RELEASE"
-  id("org.owasp.dependencycheck") version "5.3.1"
+  id("org.owasp.dependencycheck") version "5.3.2.1"
   id("com.github.ben-manes.versions") version "0.28.0"
   id("se.patrikerdes.use-latest-versions") version "0.2.13"
   id("com.gorylenko.gradle-git-properties") version "2.2.2"
@@ -96,8 +96,8 @@ dependencies {
   implementation("org.springframework.security:spring-security-jwt:1.1.0.RELEASE")
 
   implementation("net.logstash.logback:logstash-logback-encoder:6.3")
-  implementation("com.microsoft.azure:applicationinsights-spring-boot-starter:2.5.1")
-  implementation("com.microsoft.azure:applicationinsights-logging-logback:2.5.1")
+  implementation("com.microsoft.azure:applicationinsights-spring-boot-starter:2.6.0")
+  implementation("com.microsoft.azure:applicationinsights-logging-logback:2.6.0")
   implementation("com.github.timpeeters:spring-boot-graceful-shutdown:2.2.1")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
@@ -110,7 +110,7 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.741"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.762"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -118,7 +118,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.26.3")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.14.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.17.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
   testImplementation("org.testcontainers:localstack:1.13.0")
   testImplementation("org.testcontainers:junit-jupiter:1.13.0")
@@ -130,7 +130,7 @@ tasks {
 
   val agentDeps by configurations.register("agentDeps") {
     dependencies {
-      "agentDeps"("com.microsoft.azure:applicationinsights-agent:2.5.1") {
+      "agentDeps"("com.microsoft.azure:applicationinsights-agent:2.6.0") {
         isTransitive = false
       }
     }
