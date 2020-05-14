@@ -215,12 +215,11 @@ workflows:
   scheduled:
     triggers:
       - schedule:
-          cron: "50 9 * * 1-5"
+          cron: "0 7 * * 1-5"
           filters:
             branches:
               only:
                 - master
-                - pgp-DT-850-security-audit-owasp
     jobs:
       - owasp/gradle_owasp_dependency_check:
           executor: hmpps/java
