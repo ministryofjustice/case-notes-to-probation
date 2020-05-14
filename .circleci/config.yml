@@ -84,6 +84,7 @@ orbs:
   helm: circleci/helm@0.2.3
   owasp: entur/owasp@0.0.10
   slack: circleci/slack@3.4.2
+  hmpps: ministryofjustice/hmpps@1.0.0
 
 jobs:
   build:
@@ -214,11 +215,11 @@ workflows:
   scheduled:
     triggers:
       - schedule:
-          cron: "0 7 * * 1-5"
-          filters:
-            branches:
-              only:
-                - master
+          cron: "30 9 * * 1-5"
+#          filters:
+#            branches:
+#              only:
+#                - master
     jobs:
       - owasp/gradle_owasp_dependency_check:
-          executor: builder
+          executor: hmpps/java
