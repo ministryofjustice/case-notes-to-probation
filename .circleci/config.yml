@@ -42,8 +42,6 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
-      - persist_to_workspace:
-          root: .
 
 workflows:
   version: 2
