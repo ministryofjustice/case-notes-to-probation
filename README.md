@@ -1,4 +1,4 @@
-# case-notes-poll-push
+# case-notes-to-probation
 
 Self-contained fat-jar micro-service to poll a source API for case notes and push to a target API.
 
