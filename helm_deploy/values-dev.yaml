@@ -4,7 +4,7 @@
 replicaCount: 2
 
 image:
-  repository: docker.io/mojdigitalstudio/case-notes-to-probation
+  repository: quay.io/hmpps/case-notes-to-probation
   tag: latest
   pullPolicy: Always
   port: 8080
