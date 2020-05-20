@@ -4,9 +4,9 @@ plugins {
 }
 
 configurations {
-  implementation { exclude("module", "tomcat-jdbc") }
-  implementation { exclude("module", "spring-boot-starter-validation") }
-  implementation { exclude("module", "spring-boot-graceful-shutdown") }
+  implementation { exclude(module = "tomcat-jdbc") }
+  implementation { exclude(module = "spring-boot-starter-validation") }
+  implementation { exclude(module = "spring-boot-graceful-shutdown") }
   testImplementation { exclude(group = "org.junit.vintage") }
 }
 
