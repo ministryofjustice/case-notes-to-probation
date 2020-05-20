@@ -5,7 +5,7 @@ import com.amazonaws.services.sqs.model.GetQueueAttributesResult
 import com.amazonaws.services.sqs.model.QueueAttributeName
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.whenever
 import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.test.util.ReflectionTestUtils
-import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.*
+import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_IN_FLIGHT
+import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_DLQ
+import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_QUEUE
 
 class HealthCheckIntegrationTest : IntegrationTest() {
   @Autowired
@@ -48,9 +50,23 @@ class HealthCheckIntegrationTest : IntegrationTest() {
 
   @Test
   fun `Health ping page is accessible`() {
-    subPing(200)
-
     val response = restTemplate.getForEntity("/health/ping", String::class.java)
+
+    assertThatJson(response.body).node("status").isEqualTo("UP")
+    assertThat(response.statusCodeValue).isEqualTo(200)
+  }
+
+  @Test
+  fun `Health liveness page is accessible`() {
+    val response = restTemplate.getForEntity("/health/liveness", String::class.java)
+
+    assertThatJson(response.body).node("status").isEqualTo("UP")
+    assertThat(response.statusCodeValue).isEqualTo(200)
+  }
+
+  @Test
+  fun `Health readiness page is accessible`() {
+    val response = restTemplate.getForEntity("/health/readiness", String::class.java)
 
     assertThatJson(response.body).node("status").isEqualTo("UP")
     assertThat(response.statusCodeValue).isEqualTo(200)
@@ -174,7 +190,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   private fun subPing(status: Int) {
     oauthMockServer.stubFor(get("/auth/ping").willReturn(aResponse()
         .withHeader("Content-Type", "application/json")
-        .withBody(if (status == 200) "pong" else "some error")
+        .withBody(if (status == 200) """{"status":"UP"}""" else "some error")
         .withStatus(status)))
 
     caseNotesMockServer.stubFor(get("/ping").willReturn(aResponse()

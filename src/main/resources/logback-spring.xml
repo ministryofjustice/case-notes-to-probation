@@ -51,6 +51,11 @@
     <appender-ref ref="aiAppender"/>
   </logger>
 
+  <logger name="com.amazonaws.retry" additivity="false" level="INFO">
+    <appender-ref ref="consoleAppender"/>
+    <appender-ref ref="aiAppender"/>
+  </logger>
+
   <logger name="com.amazonaws.request" additivity="false" level="INFO">
     <appender-ref ref="consoleAppender"/>
     <appender-ref ref="aiAppender"/>

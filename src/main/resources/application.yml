@@ -17,14 +17,10 @@ server:
     context-path: /
   forward-headers-strategy: native
   tomcat:
-    remote-ip-header: x-forwarded-for
-    protocol_header: x-forwarded-proto
-
-logging:
-  level:
-    org.springframework: INFO
-    org.springframework.security: INFO
-    uk.gov.justice.digital: DEBUG
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol_header: x-forwarded-proto
+  shutdown: graceful
 
 management:
   endpoints:
@@ -41,6 +37,9 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+  health:
+    probes:
+      enabled: true
 
 oauth:
   token.url: ${oauth.endpoint.url}/oauth/token
@@ -52,9 +51,6 @@ casenotes:
     access-token-uri: ${oauth.token.url}
     authentication-scheme: header
     client-authentication-scheme: header
-
-graceful:
-  shutdown.enabled: true
 
 azure:
   application-insights.web.enable-W3C: true

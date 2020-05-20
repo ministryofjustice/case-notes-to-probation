@@ -47,7 +47,7 @@ open class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
         .and().csrf().disable()
         .authorizeRequests()
         .antMatchers("/webjars/**", "/favicon.ico", "/csrf",
-            "/health", "/info", "/health/ping").permitAll()
+            "/health/**", "/info").permitAll()
         .anyRequest()
         .authenticated()
   }

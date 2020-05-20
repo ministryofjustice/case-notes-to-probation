@@ -1,12 +1,12 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.3.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.0"
   kotlin("plugin.spring") version "1.3.72"
 }
 
-extra["spring-security.version"] = "5.3.2.RELEASE" // Updated since spring-boot-starter-oauth2-resource-server-2.2.7.RELEASE only pulls in 5.2.4.RELEASE (still affected by CVE-2018-1258 though)
-
 configurations {
-  implementation { exclude("module", "tomcat-jdbc") }
+  implementation { exclude(module = "tomcat-jdbc") }
+  implementation { exclude(module = "spring-boot-starter-validation") }
+  implementation { exclude(module = "spring-boot-graceful-shutdown") }
   testImplementation { exclude(group = "org.junit.vintage") }
 }
 
@@ -26,18 +26,16 @@ dependencies {
   implementation("com.sun.xml.bind:jaxb-core:2.3.0.1")
   implementation("com.google.code.gson:gson:2.8.6")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.784"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.786"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.26.3")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.17.0")
-  testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
   testImplementation("org.testcontainers:localstack:1.13.0")
   testImplementation("org.testcontainers:junit-jupiter:1.13.0")
-  testImplementation("org.awaitility:awaitility-kotlin:4.0.2")
+  testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 }
