@@ -43,12 +43,12 @@
 
   <logger name="org.springframework.messaging" additivity="false" level="DEBUG">
     <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="aiAppender"/>
+    <appender-ref ref="logAppender"/>
   </logger>
 
   <logger name="com.amazonaws.auth.AWS4Signer" additivity="false" level="INFO">
     <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="aiAppender"/>
+    <appender-ref ref="logAppender"/>
   </logger>
 
   <logger name="com.amazonaws.retry" additivity="false" level="INFO">
@@ -65,7 +65,7 @@
 
   <logger name="com.amazonaws.services.sqs.MessageMD5ChecksumHandler" additivity="false" level="INFO">
     <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="aiAppender"/>
+    <appender-ref ref="logAppender"/>
   </logger>
 
   <logger name="com.amazonaws.http.conn.ssl.SdkTLSSocketFactory" additivity="false" level="INFO">
