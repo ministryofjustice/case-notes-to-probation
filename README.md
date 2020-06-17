@@ -1,6 +1,6 @@
 # case-notes-to-probation
 
-[![CircleCI](https://circleci.com/gh/ministryofjustice/case-notes-to-probation/tree/master.svg?style=svg)](https://circleci.com/gh/ministryofjustice/case-notes-to-probation)
+[![CircleCI](https://circleci.com/gh/ministryofjustice/case-notes-to-probation/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/case-notes-to-probation)
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/case-notes-to-probation/status)](https://quay.io/repository/hmpps/case-notes-to-probation)
 
 A Spring Boot app to listen on AWS queue and send case notes to probation.
