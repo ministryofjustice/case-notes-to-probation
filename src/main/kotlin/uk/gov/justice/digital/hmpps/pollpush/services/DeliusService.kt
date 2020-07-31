@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -9,13 +8,13 @@ import org.springframework.web.client.RestTemplate
 import java.time.format.DateTimeFormatter
 
 @Service
-open class DeliusService(@Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate,
-                         @Value("\${delius.enabled}") private val deliusEnabled: Boolean) {
+class DeliusService(@Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate,
+                    @Value("\${delius.enabled}") private val deliusEnabled: Boolean) {
   companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 
-  open fun postCaseNote(caseNote: DeliusCaseNote) {
+  fun postCaseNote(caseNote: DeliusCaseNote) {
     val (header, body) = caseNote
     if (deliusEnabled) {
       restTemplate.put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
@@ -29,7 +28,7 @@ data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
   companion object {
     // This is rubbish, but that's how nomis-api did it so we have replicated it here so we send the same data to delius
     // Quoted "Z" to indicate UTC, no timezone offset
-    val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   }
 
   constructor(cn: CaseNote) : this(header = CaseNoteHeader(cn.offenderIdentifier, cn.eventId),

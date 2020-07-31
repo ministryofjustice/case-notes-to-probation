@@ -29,7 +29,7 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.828"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.831"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.security:spring-security-test")
