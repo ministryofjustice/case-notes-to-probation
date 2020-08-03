@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package uk.gov.justice.digital.hmpps.pollpush.config
 
 import org.springframework.beans.factory.annotation.Value
@@ -6,6 +8,7 @@ import org.springframework.boot.web.client.RootUriTemplateHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.ClientHttpResponse
 import org.springframework.security.oauth2.client.OAuth2RestTemplate
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails
 import org.springframework.web.client.DefaultResponseErrorHandler
@@ -53,7 +56,10 @@ class RestTemplateConfiguration(private val apiDetails: ClientCredentialsResourc
 
 class NotFoundAndConflictIgnoringResponseErrorHandler : DefaultResponseErrorHandler() {
   // ignore not found and conflict errors as they are very frequent and fill up the logs
-  // don't need to retry on those errors either
-  override fun hasError(statusCode: HttpStatus): Boolean =
-      statusCode.isError && statusCode != HttpStatus.NOT_FOUND && statusCode != HttpStatus.CONFLICT
+  // don't need to retry on those errors either  override fun handleError(response: ClientHttpResponse) {
+  override fun handleError(response: ClientHttpResponse) {
+    if (response.statusCode == HttpStatus.NOT_FOUND || response.statusCode == HttpStatus.CONFLICT) return
+
+    super.handleError(response)
+  }
 }
