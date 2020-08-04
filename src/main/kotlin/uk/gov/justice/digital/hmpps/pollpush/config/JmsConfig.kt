@@ -12,7 +12,7 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest
 import com.amazonaws.services.sqs.model.QueueAttributeName
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -24,14 +24,14 @@ import javax.jms.Session
 
 @Configuration
 @EnableJms
-open class JmsConfig {
+class JmsConfig {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
   @Bean
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-  open fun jmsListenerContainerFactory(awsSqsClient: AmazonSQS): DefaultJmsListenerContainerFactory {
+  fun jmsListenerContainerFactory(@Qualifier("awsSqsClient") awsSqsClient: AmazonSQS): DefaultJmsListenerContainerFactory {
     val factory = DefaultJmsListenerContainerFactory()
     factory.setConnectionFactory(SQSConnectionFactory(ProviderConfiguration(), awsSqsClient))
     factory.setDestinationResolver(DynamicDestinationResolver())
@@ -43,9 +43,9 @@ open class JmsConfig {
 
   @Bean
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
-  open fun awsSqsClient(@Value("\${sqs.aws.access.key.id}") accessKey: String,
-                        @Value("\${sqs.aws.secret.access.key}") secretKey: String,
-                        @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
+  fun awsSqsClient(@Value("\${sqs.aws.access.key.id}") accessKey: String,
+                   @Value("\${sqs.aws.secret.access.key}") secretKey: String,
+                   @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
           .withRegion(region)
@@ -53,9 +53,9 @@ open class JmsConfig {
 
   @Bean
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "aws")
-  open fun awsSqsDlqClient(@Value("\${sqs.aws.dlq.access.key.id}") accessKey: String,
-                           @Value("\${sqs.aws.dlq.secret.access.key}") secretKey: String,
-                           @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
+  fun awsSqsDlqClient(@Value("\${sqs.aws.dlq.access.key.id}") accessKey: String,
+                      @Value("\${sqs.aws.dlq.secret.access.key}") secretKey: String,
+                      @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
           .withRegion(region)
@@ -64,7 +64,7 @@ open class JmsConfig {
   @Bean("awsSqsClient")
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
   open fun awsSqsClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String,
-                                  @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
+                             @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withEndpointConfiguration(EndpointConfiguration(serviceEndpoint, region))
           .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
@@ -73,7 +73,7 @@ open class JmsConfig {
   @Bean("awsSqsDlqClient")
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
   open fun awsSqsDlqClientLocalstack(@Value("\${sqs.endpoint.url}") serviceEndpoint: String,
-                                     @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
+                                @Value("\${sqs.endpoint.region}") region: String): AmazonSQS =
       AmazonSQSClientBuilder.standard()
           .withEndpointConfiguration(EndpointConfiguration(serviceEndpoint, region))
           .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
@@ -81,7 +81,7 @@ open class JmsConfig {
 
   @Bean
   @ConditionalOnProperty(name = ["sqs.provider"], havingValue = "localstack")
-  open fun queueUrl(@Autowired awsSqsClient: AmazonSQS,
+  open fun queueUrl(@Qualifier("awsSqsClient") awsSqsClient: AmazonSQS,
                     @Value("\${sqs.queue.name}") queueName: String,
                     @Value("\${sqs.dlq.name}") dlqName: String): String {
     val result = awsSqsClient.createQueue(CreateQueueRequest(dlqName))

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.pollpush.services.health
 
+import com.amazonaws.services.sqs.AmazonSQS
 import com.amazonaws.services.sqs.model.GetQueueAttributesRequest
 import com.amazonaws.services.sqs.model.GetQueueAttributesResult
 import com.amazonaws.services.sqs.model.QueueAttributeName
@@ -11,8 +12,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.util.ReflectionTestUtils
+import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension.Companion.authApi
+import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
+import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_IN_FLIGHT
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_DLQ
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_QUEUE
@@ -20,6 +26,10 @@ import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MES
 class HealthCheckIntegrationTest : IntegrationTest() {
   @Autowired
   private lateinit var queueHealth: QueueHealth
+
+  @SpyBean
+  @Qualifier("awsSqsClient")
+  private lateinit var awsSqsClient: AmazonSQS
 
   @Autowired
   @Value("\${sqs.queue.name}")
@@ -188,17 +198,17 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   }
 
   private fun subPing(status: Int) {
-    oauthMockServer.stubFor(get("/auth/ping").willReturn(aResponse()
+    authApi.stubFor(get("/auth/ping").willReturn(aResponse()
         .withHeader("Content-Type", "application/json")
         .withBody(if (status == 200) """{"status":"UP"}""" else "some error")
         .withStatus(status)))
 
-    caseNotesMockServer.stubFor(get("/ping").willReturn(aResponse()
+    caseNotesApi.stubFor(get("/ping").willReturn(aResponse()
         .withHeader("Content-Type", "application/json")
         .withBody(if (status == 200) "pong" else "some error")
         .withStatus(status)))
 
-    deliusMockServer.stubFor(get("/ping").willReturn(aResponse()
+    communityApi.stubFor(get("/ping").willReturn(aResponse()
         .withHeader("Content-Type", "application/json")
         .withBody(if (status == 200) "pong" else "some error")
         .withStatus(status)))
