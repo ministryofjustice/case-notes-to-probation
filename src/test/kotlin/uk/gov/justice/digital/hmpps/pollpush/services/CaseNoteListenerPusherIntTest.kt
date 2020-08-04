@@ -49,7 +49,6 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
 
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
 
-    // ensure that we've called the community api endpoint
     communityApi.verify(putRequestedFor(urlPathEqualTo("/secure/nomisCaseNotes/A1234AF/-25")))
   }
 
