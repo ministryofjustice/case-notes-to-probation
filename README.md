@@ -38,7 +38,11 @@ For offenders that don't yet exist in Delius this will create a 404 which will t
 
 Localstack has been introduced for some integration tests and it is also possible to run the application against localstack.
 
-* In the root of the localstack project, run command `docker-compose up` to bring up localstack
+* In the root of the localstack project, run command
+```
+sudo rm -rf /tmp/localstack && docker-compose down && docker-compose up
+```
+to clear down and then bring up localstack
 * Start the Spring Boot app with profile='localstack'
 * You can now use the aws CLI to send messages to the queue
 * The queue's health status should appear at the local healthcheck: http://localhost:8082/health
