@@ -16,7 +16,7 @@ import org.springframework.web.client.HttpServerErrorException
 import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
-@ActiveProfiles("no-localstack")
+@ActiveProfiles("no-queues")
 class CaseNoteListenerPusherIntTest : IntegrationTest() {
   @Autowired
   private lateinit var pusher: CaseNoteListenerPusher
