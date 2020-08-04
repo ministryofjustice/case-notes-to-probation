@@ -3,10 +3,9 @@ server:
 
 sqs:
   provider: localstack
-  embedded: false
   endpoint.url: http://localhost:4576
-  queue.name: case_note_queue
-  dlq.name: case_note_dlq
+  queue.name: offender_case_notes_queue
+  dlq.name: offender_case_notes_dlq
   sqs.aws.access.key.id: foobar
   sqs.aws.secret.access.key: foobar
 

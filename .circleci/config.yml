@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@1.0.0
+  hmpps: ministryofjustice/hmpps@1.1.1
 
 executors:
   validator:
@@ -29,11 +29,7 @@ jobs:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
-      - run:
-          environment:
-            SQS_PROVIDER: 'localstack'
-            SQS_EMBEDDED: 'false'
-          command: ./gradlew test
+      - run: ./gradlew test
       - save_cache:
           paths:
             - ~/.gradle
