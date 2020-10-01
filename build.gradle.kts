@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.2"
-  kotlin("plugin.spring") version "1.4.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.6"
+  kotlin("plugin.spring") version "1.4.10"
 }
 
 configurations {
@@ -29,10 +29,10 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.854"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.873"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.18.1")
+  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.19.0")
 }
