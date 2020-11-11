@@ -16,7 +16,7 @@ import org.springframework.web.client.HttpServerErrorException
 import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
-@ActiveProfiles("no-queues")
+@ActiveProfiles("z-no-queues")
 class CaseNoteListenerPusherIntTest : IntegrationTest() {
   @Autowired
   private lateinit var pusher: CaseNoteListenerPusher
@@ -31,7 +31,8 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
   @Qualifier("awsSqsDlqClient")
   private lateinit var awsSqsDlqClient: AmazonSQS
 
-  private val validCaseNoteEvent = """{
+  private val validCaseNoteEvent =
+    """{
     "MessageId": "ae06c49e-1f41-4b9f-b2f2-dcca610d02cd", "Type": "Notification", "Timestamp": "2019-10-21T14:01:18.500Z", 
     "Message": 
       "{\"eventId\":\"5958295\",\"eventType\":\"KA-KE\",\"eventDatetime\":\"2019-10-21T15:00:25.489964\",
@@ -40,12 +41,15 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
     "MessageAttributes": {"eventType": {"Type": "String", "Value": "KA-KE"}, 
     "id": {"Type": "String", "Value": "8b07cbd9-0820-0a0f-c32f-a9429b618e0b"}, 
     "contentType": {"Type": "String", "Value": "text/plain;charset=UTF-8"}, 
-    "timestamp": {"Type": "Number.java.lang.Long", "Value": "1571666478344"}}}""".trimIndent()
+    "timestamp": {"Type": "Number.java.lang.Long", "Value": "1571666478344"}}}
+    """.trimIndent()
 
   @Test
   fun `not found in delius should be ignored`() {
-    communityApi.stubFor(put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
-        .willReturn(aResponse().withStatus(404)))
+    communityApi.stubFor(
+      put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
+        .willReturn(aResponse().withStatus(404))
+    )
 
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
 
@@ -54,10 +58,12 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
 
   @Test
   fun `service errors in delius should be thrown`() {
-    communityApi.stubFor(put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
-        .willReturn(aResponse().withStatus(503)))
+    communityApi.stubFor(
+      put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
+        .willReturn(aResponse().withStatus(503))
+    )
 
     assertThatThrownBy { pusher.pushCaseNoteToDelius(validCaseNoteEvent) }
-        .isInstanceOf(HttpServerErrorException.ServiceUnavailable::class.java)
+      .isInstanceOf(HttpServerErrorException.ServiceUnavailable::class.java)
   }
 }
