@@ -14,34 +14,36 @@ open class CaseNotesService(@Qualifier("caseNotesApiRestTemplate") private val r
   }
 }
 
-data class CaseNote(val eventId: Int,
-                    val offenderIdentifier: String,
-                    val type: String,
-                    val subType: String,
-                    val creationDateTime: LocalDateTime,
-                    val occurrenceDateTime: LocalDateTime,
-                    val authorName: String,
-                    val text: String,
-                    val locationId: String,
-                    val amendments: List<CaseNoteAmendment>) {
+data class CaseNote(
+  val eventId: Int,
+  val offenderIdentifier: String,
+  val type: String,
+  val subType: String,
+  val creationDateTime: LocalDateTime,
+  val occurrenceDateTime: LocalDateTime,
+  val authorName: String,
+  val text: String,
+  val locationId: String,
+  val amendments: List<CaseNoteAmendment>
+) {
   private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
 
   fun getNoteTextWithAmendments(): String =
-      // need format This is a case note ...[PPHILLIPS_ADM updated the case notes on 2019/09/04 11:20:11] Amendment to case note ...[PPHILLIPS_ADM updated the case notes on 2019/09/09 09:23:42] another amendment
-      text + amendments.joinToString(separator = "") { a ->
-        " ...[${a.authorName} updated the case notes on ${dtf.format(a.creationDateTime)}] ${a.additionalNoteText}"
-      }
+    // need format This is a case note ...[PPHILLIPS_ADM updated the case notes on 2019/09/04 11:20:11] Amendment to case note ...[PPHILLIPS_ADM updated the case notes on 2019/09/09 09:23:42] another amendment
+    text + amendments.joinToString(separator = "") { a ->
+      " ...[${a.authorName} updated the case notes on ${dtf.format(a.creationDateTime)}] ${a.additionalNoteText}"
+    }
 
   fun getAuthorNameWithComma(): String =
-      // delius will throw a 400 bad request if it can't find a comma in the author name
-      if (authorName.contains(',')) authorName
-      else
-      // didn't find a comma, so split and change from forename surname to surname, forename
-        "${authorName.substringAfterLast(" ")}, ${authorName.substringBeforeLast(" ")}"
+    // delius will throw a 400 bad request if it can't find a comma in the author name
+    if (authorName.contains(',')) authorName
+    else
+    // didn't find a comma, so split and change from forename surname to surname, forename
+      "${authorName.substringAfterLast(" ")}, ${authorName.substringBeforeLast(" ")}"
 
   fun calculateModicationDateTime(): LocalDateTime =
-      if (amendments.isEmpty()) creationDateTime
-      else amendments.mapNotNull { it.creationDateTime }.sorted().lastOrNull() ?: creationDateTime
+    if (amendments.isEmpty()) creationDateTime
+    else amendments.mapNotNull { it.creationDateTime }.sorted().lastOrNull() ?: creationDateTime
 }
 
 data class CaseNoteAmendment(val creationDateTime: LocalDateTime?, val authorName: String, val additionalNoteText: String)

@@ -35,12 +35,14 @@ class DeliusServiceTest {
   }
 
   private fun createDeliusCaseNote() = DeliusCaseNote(
-      header = CaseNoteHeader("AB123D", 1234),
-      body = CaseNoteBody(
-          noteType = "NEG IEP_WARN",
-          content = "note content",
-          contactTimeStamp = "2019-03-23T11:22:00.000Z",
-          systemTimeStamp = "2019-04-16T11:22:33.000Z",
-          staffName = "Some Name",
-          establishmentCode = "LEI"))
+    header = CaseNoteHeader("AB123D", 1234),
+    body = CaseNoteBody(
+      noteType = "NEG IEP_WARN",
+      content = "note content",
+      contactTimeStamp = "2019-03-23T11:22:00.000Z",
+      systemTimeStamp = "2019-04-16T11:22:33.000Z",
+      staffName = "Some Name",
+      establishmentCode = "LEI"
+    )
+  )
 }

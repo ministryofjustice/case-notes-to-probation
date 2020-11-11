@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.pollpush.config
 
-
 import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -40,16 +39,21 @@ open class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
   override fun configure(http: HttpSecurity) {
 
     http.headers().frameOptions().sameOrigin().and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      .sessionManagement()
+      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-        // Can't have CSRF protection as requires session
-        .and().csrf().disable()
-        .authorizeRequests()
-        .antMatchers("/webjars/**", "/favicon.ico", "/csrf",
-            "/health/**", "/info").permitAll()
-        .anyRequest()
-        .authenticated()
+      // Can't have CSRF protection as requires session
+      .and().csrf().disable()
+      .authorizeRequests()
+      .antMatchers(
+        "/webjars/**",
+        "/favicon.ico",
+        "/csrf",
+        "/health/**",
+        "/info"
+      ).permitAll()
+      .anyRequest()
+      .authenticated()
   }
 
   override fun configure(config: ResourceServerSecurityConfigurer) {

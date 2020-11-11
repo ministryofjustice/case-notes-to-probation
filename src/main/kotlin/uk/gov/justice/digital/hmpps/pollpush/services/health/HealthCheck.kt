@@ -30,4 +30,3 @@ constructor(@Qualifier("deliusApiHealthRestTemplate") restTemplate: RestTemplate
 @Component
 class OAuthApiHealth
 constructor(@Qualifier("oauthApiRestTemplate") restTemplate: RestTemplate) : HealthCheck(restTemplate)
-
