@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 
-
 class NotFoundAndConflictIgnoringResponseErrorHandlerTest {
   private val oAuth2ProtectedResourceDetails: OAuth2ProtectedResourceDetails = mock()
   private val errorHandler = OAuth2ErrorHandler(NotFoundAndConflictIgnoringResponseErrorHandler(), oAuth2ProtectedResourceDetails)

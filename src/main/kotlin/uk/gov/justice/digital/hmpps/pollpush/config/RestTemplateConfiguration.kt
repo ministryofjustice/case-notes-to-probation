@@ -15,13 +15,15 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-class RestTemplateConfiguration(private val apiDetails: ClientCredentialsResourceDetails,
-                                @Value("\${delius.endpoint.url}") private val deliusRootUri: String,
-                                @Value("\${casenotes.endpoint.url}") private val caseNotesRootUri: String,
-                                @Value("\${oauth.endpoint.url}") private val oauthRootUri: String) {
+class RestTemplateConfiguration(
+  private val apiDetails: ClientCredentialsResourceDetails,
+  @Value("\${delius.endpoint.url}") private val deliusRootUri: String,
+  @Value("\${casenotes.endpoint.url}") private val caseNotesRootUri: String,
+  @Value("\${oauth.endpoint.url}") private val oauthRootUri: String
+) {
   @Bean(name = ["oauthApiRestTemplate"])
   fun oauthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-      getRestTemplate(restTemplateBuilder, oauthRootUri)
+    getRestTemplate(restTemplateBuilder, oauthRootUri)
 
   @Bean(name = ["deliusApiRestTemplate"])
   fun deliusRestTemplate(): OAuth2RestTemplate {
@@ -35,11 +37,11 @@ class RestTemplateConfiguration(private val apiDetails: ClientCredentialsResourc
 
   @Bean(name = ["deliusApiHealthRestTemplate"])
   fun deliusHealthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-      getRestTemplate(restTemplateBuilder, deliusRootUri)
+    getRestTemplate(restTemplateBuilder, deliusRootUri)
 
   @Bean(name = ["caseNotesApiHealthRestTemplate"])
   fun caseNotesHealthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-      getRestTemplate(restTemplateBuilder, caseNotesRootUri)
+    getRestTemplate(restTemplateBuilder, caseNotesRootUri)
 
   @Bean(name = ["caseNotesApiRestTemplate"])
   fun caseNotesApiRestTemplate(): OAuth2RestTemplate {
@@ -51,7 +53,7 @@ class RestTemplateConfiguration(private val apiDetails: ClientCredentialsResourc
   }
 
   private fun getRestTemplate(restTemplateBuilder: RestTemplateBuilder, uri: String?): RestTemplate =
-      restTemplateBuilder.rootUri(uri).build()
+    restTemplateBuilder.rootUri(uri).build()
 }
 
 class NotFoundAndConflictIgnoringResponseErrorHandler : DefaultResponseErrorHandler() {

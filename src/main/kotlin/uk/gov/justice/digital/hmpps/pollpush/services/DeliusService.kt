@@ -8,8 +8,10 @@ import org.springframework.web.client.RestTemplate
 import java.time.format.DateTimeFormatter
 
 @Service
-class DeliusService(@Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate,
-                    @Value("\${delius.enabled}") private val deliusEnabled: Boolean) {
+class DeliusService(
+  @Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate,
+  @Value("\${delius.enabled}") private val deliusEnabled: Boolean
+) {
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
@@ -31,20 +33,25 @@ data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
     private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   }
 
-  constructor(cn: CaseNote) : this(header = CaseNoteHeader(cn.offenderIdentifier, cn.eventId),
-      body = CaseNoteBody(
-          noteType = "${cn.type} ${cn.subType}",
-          content = cn.getNoteTextWithAmendments(),
-          contactTimeStamp = dtf.format(cn.occurrenceDateTime),
-          systemTimeStamp = dtf.format(cn.calculateModicationDateTime()),
-          staffName = cn.getAuthorNameWithComma(),
-          establishmentCode = cn.locationId))
+  constructor(cn: CaseNote) : this(
+    header = CaseNoteHeader(cn.offenderIdentifier, cn.eventId),
+    body = CaseNoteBody(
+      noteType = "${cn.type} ${cn.subType}",
+      content = cn.getNoteTextWithAmendments(),
+      contactTimeStamp = dtf.format(cn.occurrenceDateTime),
+      systemTimeStamp = dtf.format(cn.calculateModicationDateTime()),
+      staffName = cn.getAuthorNameWithComma(),
+      establishmentCode = cn.locationId
+    )
+  )
 }
 
 data class CaseNoteHeader(val nomisId: String, val noteId: Int)
-data class CaseNoteBody(val noteType: String,
-                        val content: String,
-                        val contactTimeStamp: String,
-                        val systemTimeStamp: String,
-                        val staffName: String,
-                        val establishmentCode: String)
+data class CaseNoteBody(
+  val noteType: String,
+  val content: String,
+  val contactTimeStamp: String,
+  val systemTimeStamp: String,
+  val staffName: String,
+  val establishmentCode: String
+)

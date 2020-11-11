@@ -198,27 +198,38 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   }
 
   private fun subPing(status: Int) {
-    authApi.stubFor(get("/auth/ping").willReturn(aResponse()
-        .withHeader("Content-Type", "application/json")
-        .withBody(if (status == 200) """{"status":"UP"}""" else "some error")
-        .withStatus(status)))
+    authApi.stubFor(
+      get("/auth/ping").willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(if (status == 200) """{"status":"UP"}""" else "some error")
+          .withStatus(status)
+      )
+    )
 
-    caseNotesApi.stubFor(get("/ping").willReturn(aResponse()
-        .withHeader("Content-Type", "application/json")
-        .withBody(if (status == 200) "pong" else "some error")
-        .withStatus(status)))
+    caseNotesApi.stubFor(
+      get("/ping").willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(if (status == 200) "pong" else "some error")
+          .withStatus(status)
+      )
+    )
 
-    communityApi.stubFor(get("/ping").willReturn(aResponse()
-        .withHeader("Content-Type", "application/json")
-        .withBody(if (status == 200) "pong" else "some error")
-        .withStatus(status)))
+    communityApi.stubFor(
+      get("/ping").willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(if (status == 200) "pong" else "some error")
+          .withStatus(status)
+      )
+    )
   }
 
   private fun mockQueueWithoutRedrivePolicyAttributes() {
     val queueName = ReflectionTestUtils.getField(queueHealth, "queueName") as String
     val queueUrl = awsSqsClient.getQueueUrl(queueName)
     whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(queueUrl.queueUrl).withAttributeNames(listOf(QueueAttributeName.All.toString()))))
-        .thenReturn(GetQueueAttributesResult())
+      .thenReturn(GetQueueAttributesResult())
   }
-
 }

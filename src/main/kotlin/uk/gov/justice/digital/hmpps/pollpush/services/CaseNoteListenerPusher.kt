@@ -7,12 +7,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 
-
 @Service
-class CaseNoteListenerPusher(private val caseNotesService: CaseNotesService,
-                             private val deliusService: DeliusService,
-                             private val telemetryClient: TelemetryClient,
-                             private val gson: Gson) {
+class CaseNoteListenerPusher(
+  private val caseNotesService: CaseNotesService,
+  private val deliusService: DeliusService,
+  private val telemetryClient: TelemetryClient,
+  private val gson: Gson
+) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
@@ -28,7 +29,7 @@ class CaseNoteListenerPusher(private val caseNotesService: CaseNotesService,
       val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
       with(caseNote) {
         log.debug("Found case note {} of type {} {} in case notes service, now pushing to delius with event id {}", caseNoteId, type, subType, eventId)
-        telemetryClient.trackEvent("CaseNoteCreate", mapOf("caseNoteId" to caseNoteId, "type" to "${type}-${subType}", "eventId" to eventId.toString()), null)
+        telemetryClient.trackEvent("CaseNoteCreate", mapOf("caseNoteId" to caseNoteId, "type" to "$type-$subType", "eventId" to eventId.toString()), null)
       }
       deliusService.postCaseNote(DeliusCaseNote(caseNote))
     }
