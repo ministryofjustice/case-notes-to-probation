@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.1.2"
-  kotlin("plugin.spring") version "1.4.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "2.1.0"
+  kotlin("plugin.spring") version "1.4.21"
 }
 
 configurations {
@@ -22,14 +22,14 @@ dependencies {
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
-  implementation("com.sun.xml.bind:jaxb-impl:2.3.3")
-  implementation("com.sun.xml.bind:jaxb-core:2.3.0.1")
+  implementation("com.sun.xml.bind:jaxb-impl:3.0.0")
+  implementation("com.sun.xml.bind:jaxb-core:3.0.0")
   implementation("com.google.code.gson:gson:2.8.6")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.909"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.918"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.security:spring-security-test")
