@@ -25,14 +25,30 @@ class CaseNoteListenerPusher(
 
     if (caseNoteId.isNullOrEmpty()) {
       log.warn("Ignoring null case note id for message with id {} and type {}", MessageId, eventType)
-    } else {
-      val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
-      with(caseNote) {
-        log.debug("Found case note {} of type {} {} in case notes service, now pushing to delius with event id {}", caseNoteId, type, subType, eventId)
-        telemetryClient.trackEvent("CaseNoteCreate", mapOf("caseNoteId" to caseNoteId, "type" to "$type-$subType", "eventId" to eventId.toString()), null)
-      }
-      deliusService.postCaseNote(DeliusCaseNote(caseNote))
+      return
     }
+
+    val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
+    if (caseNote.text.isEmpty()) {
+      log.warn("Ignoring case note id for message with id {} and type {} because case note text is empty", MessageId, eventType)
+      return
+    }
+
+    with(caseNote) {
+      log.debug(
+        "Found case note {} of type {} {} in case notes service, now pushing to delius with event id {}",
+        caseNoteId,
+        type,
+        subType,
+        eventId
+      )
+      telemetryClient.trackEvent(
+        "CaseNoteCreate",
+        mapOf("caseNoteId" to caseNoteId, "type" to "$type-$subType", "eventId" to eventId.toString()),
+        null
+      )
+    }
+    deliusService.postCaseNote(DeliusCaseNote(caseNote))
   }
 }
 
