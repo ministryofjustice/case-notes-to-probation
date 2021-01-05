@@ -85,5 +85,4 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
 
     communityApi.verify(exactly(0), putRequestedFor(urlMatching("/secure/nomisCaseNotes/.*")))
   }
-
 }

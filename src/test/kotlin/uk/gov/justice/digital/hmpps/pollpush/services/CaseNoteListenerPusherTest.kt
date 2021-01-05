@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder
 import com.microsoft.applicationinsights.TelemetryClient
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.check
-import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.mock
