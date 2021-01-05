@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
-open class CaseNotesService(@Qualifier("caseNotesApiRestTemplate") private val restTemplate: OAuth2RestTemplate) {
-  open fun getCaseNote(offenderId: String, caseNoteId: String): CaseNote? =
+class CaseNotesService(@Qualifier("caseNotesApiRestTemplate") private val restTemplate: OAuth2RestTemplate) {
+  fun getCaseNote(offenderId: String, caseNoteId: String): CaseNote? =
     try {
       val response = restTemplate.getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, offenderId, caseNoteId)
       response.body

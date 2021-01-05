@@ -29,9 +29,7 @@ class CaseNoteListenerPusher(
     }
 
     val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
-    if (caseNote.isInvalid(MessageId, eventType)) {
-      return
-    }
+    if (caseNote.isInvalid(MessageId, eventType)) return
 
     with(caseNote!!) {
       log.debug(
