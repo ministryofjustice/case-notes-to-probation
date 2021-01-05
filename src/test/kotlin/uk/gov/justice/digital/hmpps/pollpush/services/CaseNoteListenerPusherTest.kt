@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.pollpush.services
 
 import com.google.gson.GsonBuilder
 import com.microsoft.applicationinsights.TelemetryClient
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.check
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.isNull
@@ -86,7 +87,14 @@ class CaseNoteListenerPusherTest {
     verify(caseNotesService, never()).getCaseNote(anyString(), anyString())
   }
 
-  private fun createCaseNote() = CaseNote(
+  @Test
+  fun `delius service not called if case note has empty text`() {
+    whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote(text = ""))
+    pusher.pushCaseNoteToDelius(validCaseNoteEvent)
+    verify(deliusService, never()).postCaseNote(any())
+  }
+
+  private fun createCaseNote(text: String = "note content") = CaseNote(
     eventId = 123456,
     offenderIdentifier = "offenderId",
     type = "NEG",
@@ -94,7 +102,7 @@ class CaseNoteListenerPusherTest {
     creationDateTime = LocalDateTime.parse("2019-04-16T11:22:33"),
     occurrenceDateTime = LocalDateTime.parse("2019-03-23T11:22:00"),
     authorName = "Some Name",
-    text = "note content",
+    text = text,
     locationId = "LEI",
     amendments = listOf()
   )
