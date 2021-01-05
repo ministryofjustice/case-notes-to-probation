@@ -13,7 +13,7 @@ class CaseNotesService(@Qualifier("caseNotesApiRestTemplate") private val restTe
     try {
       val response = restTemplate.getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, offenderId, caseNoteId)
       response.body
-    } catch(ex: HttpClientErrorException.NotFound) {
+    } catch (ex: HttpClientErrorException.NotFound) {
       null
     }
 }
