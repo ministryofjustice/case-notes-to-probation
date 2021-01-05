@@ -29,12 +29,11 @@ class CaseNoteListenerPusher(
     }
 
     val caseNote = caseNotesService.getCaseNote(offenderIdDisplay, caseNoteId)
-    if (caseNote.text.isEmpty()) {
-      log.warn("Ignoring case note id for message with id {} and type {} because case note text is empty", MessageId, eventType)
+    if (caseNote.isInvalid(MessageId, eventType)) {
       return
     }
 
-    with(caseNote) {
+    with(caseNote!!) {
       log.debug(
         "Found case note {} of type {} {} in case notes service, now pushing to delius with event id {}",
         caseNoteId,
@@ -49,6 +48,28 @@ class CaseNoteListenerPusher(
       )
     }
     deliusService.postCaseNote(DeliusCaseNote(caseNote))
+  }
+
+  private fun CaseNote?.isInvalid(messageId: String, eventType: String): Boolean {
+    if (this == null) {
+      log.warn(
+        "Ignoring case note id for message with id {} and type {} because we could not find the case note",
+        messageId,
+        eventType
+      )
+      return true
+    }
+
+    if (this.text.isEmpty()) {
+      log.warn(
+        "Ignoring case note id for message with id {} and type {} because case note text is empty",
+        messageId,
+        eventType
+      )
+      return true
+    }
+
+    return false
   }
 }
 

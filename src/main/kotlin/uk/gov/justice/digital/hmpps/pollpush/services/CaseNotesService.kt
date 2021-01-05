@@ -3,15 +3,19 @@ package uk.gov.justice.digital.hmpps.pollpush.services
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.oauth2.client.OAuth2RestTemplate
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
 open class CaseNotesService(@Qualifier("caseNotesApiRestTemplate") private val restTemplate: OAuth2RestTemplate) {
-  open fun getCaseNote(offenderId: String, caseNoteId: String): CaseNote {
-    val response = restTemplate.getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, offenderId, caseNoteId)
-    return response.body!!
-  }
+  open fun getCaseNote(offenderId: String, caseNoteId: String): CaseNote? =
+    try {
+      val response = restTemplate.getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, offenderId, caseNoteId)
+      response.body
+    } catch(ex: HttpClientErrorException.NotFound) {
+      null
+    }
 }
 
 data class CaseNote(
