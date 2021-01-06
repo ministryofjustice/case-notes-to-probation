@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
-import java.time.Duration
 
 abstract class HealthCheck(private val webClient: WebClient) : HealthIndicator {
 
@@ -19,7 +18,7 @@ abstract class HealthCheck(private val webClient: WebClient) : HealthIndicator {
       .flatMap { Mono.just(Health.up().withDetail("HttpStatus", it?.statusCode).build()) }
       .onErrorResume(WebClientResponseException::class.java) { Mono.just(Health.down(it).withDetail("body", it.responseBodyAsString).withDetail("HttpStatus", it.statusCode).build()) }
       .onErrorResume(Exception::class.java) { Mono.just(Health.down(it).build()) }
-      .block(Duration.ofSeconds(2))
+      .block()
   }
 }
 
