@@ -2,33 +2,11 @@
 
 package uk.gov.justice.digital.hmpps.pollpush.services
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.springframework.http.ResponseEntity
-import org.springframework.security.oauth2.client.OAuth2RestTemplate
 import java.time.LocalDateTime
 
 class CaseNotesServiceTest {
-  private val restTemplate: OAuth2RestTemplate = mock()
-
-  private val service = CaseNotesService(restTemplate)
-
-  @Test
-  fun `test get case note calls rest template`() {
-    val expectedNote = createCaseNote()
-    whenever(restTemplate.getForEntity<CaseNote>(anyString(), any(), anyString(), anyString())).thenReturn(ResponseEntity.ok(expectedNote))
-
-    val note = service.getCaseNote("AB123D", "1234")
-
-    assertThat(note).isEqualTo(expectedNote)
-
-    verify(restTemplate).getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, "AB123D", "1234")
-  }
 
   @Test
   fun `test amendments built when none exist`() {

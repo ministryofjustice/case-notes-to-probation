@@ -3,14 +3,21 @@ package uk.gov.justice.digital.hmpps.pollpush.services
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
 import java.time.format.DateTimeFormatter
 
 @Service
 class DeliusService(
-  @Qualifier("deliusApiRestTemplate") private val restTemplate: RestTemplate,
-  @Value("\${delius.enabled}") private val deliusEnabled: Boolean
+  @Qualifier("authorizedWebClient") private val webClient: WebClient,
+  @Value("\${delius.enabled}") private val deliusEnabled: Boolean,
+  @Value("\${delius.endpoint.url}") private val communityApiRootUri: String,
 ) {
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -19,11 +26,24 @@ class DeliusService(
   fun postCaseNote(caseNote: DeliusCaseNote) {
     val (header, body) = caseNote
     if (deliusEnabled) {
-      restTemplate.put("/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", body, header.nomisId, header.noteId)
+      webClient.put()
+        .uri("$communityApiRootUri/secure/nomisCaseNotes/{nomsId}/{caseNoteId}", header.nomisId, header.noteId)
+        .bodyValue(body)
+        .retrieve()
+        .toBodilessEntity()
+        .onErrorResume(WebClientResponseException::class.java) { emptyWhenNotFound(it) }
+        .onErrorResume(WebClientResponseException::class.java) { emptyWhenConflict(it) }
+        .block()
     } else {
       log.info("Delius integration disabled, so not pushing case note ${header.noteId} of type ${body.noteType} for ${header.nomisId}")
     }
   }
+
+  private fun <T> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> = emptyWhen(exception, NOT_FOUND)
+  private fun <T> emptyWhenConflict(exception: WebClientResponseException): Mono<T> = emptyWhen(exception, CONFLICT)
+  private fun <T> emptyWhen(exception: WebClientResponseException, statusCode: HttpStatus): Mono<T> =
+    if (exception.rawStatusCode == statusCode.value()) Mono.empty() else Mono.error(exception)
+
 }
 
 data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {

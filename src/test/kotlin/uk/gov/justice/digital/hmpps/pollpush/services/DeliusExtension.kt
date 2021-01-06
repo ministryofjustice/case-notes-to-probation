@@ -18,7 +18,7 @@ class DeliusExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback 
   }
 
   override fun beforeEach(context: ExtensionContext) {
-    communityApi.resetRequests()
+    communityApi.resetAll()
   }
 
   override fun afterAll(context: ExtensionContext) {

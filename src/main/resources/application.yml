@@ -5,11 +5,30 @@ info.app:
 spring:
   application:
     name: case-notes-to-probation
+  codec:
+    max-in-memory-size: 10MB
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${oauth.endpoint.url}/.well-known/jwks.json
+      client:
+        registration:
+          case-notes-to-probation:
+            provider: hmpps-auth
+            client-id: ${oauth.client.id}
+            client-secret: ${oauth.client.secret}
+            authorization-grant-type: client_credentials
+            scope: read
+        provider:
+          hmpps-auth:
+            token-uri: ${oauth.endpoint.url}/oauth/token
 
 server:
   port: 8082
