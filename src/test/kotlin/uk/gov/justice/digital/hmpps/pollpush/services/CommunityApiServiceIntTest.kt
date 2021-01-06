@@ -5,44 +5,62 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.put
 import com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.util.ReflectionTestUtils
+import org.springframework.test.context.TestPropertySource
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
 @Suppress("DEPRECATION")
-class CommunityApiServiceIntTest : IntegrationTest() {
+class CommunityApiServiceIntTest {
 
-  @Autowired
-  private lateinit var communityApiService: CommunityApiService
+  @Nested
+  @TestPropertySource(
+    properties = [
+      "delius.enabled=true"
+    ]
+  )
+  inner class DeliusEnabled : IntegrationTest() {
 
-  @Test
-  fun `test put case note calls rest template`() {
-    communityApi.stubFor(
-      put(urlMatching("/secure/nomisCaseNotes/AB123D/1234"))
-        .willReturn(
-          aResponse().withHeader("Content-type", "application/json")
-            .withStatus(200)
-            .withBody(createDeliusCaseNoteJson())
-        )
-    )
-    val expectedNote = createDeliusCaseNote()
+    @Autowired
+    private lateinit var communityApiService: CommunityApiService
 
-    communityApiService.postCaseNote(expectedNote)
+    @Test
+    fun `test put case note calls rest template`() {
+      communityApi.stubFor(
+        put(urlMatching("/secure/nomisCaseNotes/AB123D/1234"))
+          .willReturn(
+            aResponse().withHeader("Content-type", "application/json")
+              .withStatus(200)
+              .withBody(createDeliusCaseNoteJson())
+          )
+      )
+      val expectedNote = createDeliusCaseNote()
 
-    communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
+      communityApiService.postCaseNote(expectedNote)
+
+      communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
+    }
   }
 
-  @Test
-  fun `test put case note doesn't call rest template when disabled`() {
-    ReflectionTestUtils.setField(communityApiService, "deliusEnabled", false)
+  @Nested
+  @TestPropertySource(
+    properties = [
+      "delius.enabled=false"
+    ]
+  )
+  inner class DeliusNotEnabled : IntegrationTest() {
 
-    communityApiService.postCaseNote(createDeliusCaseNote())
+    @Autowired
+    private lateinit var communityApiService: CommunityApiService
 
-    communityApi.verify(WireMock.exactly(0), putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
+    @Test
+    fun `test put case note doesn't call rest template when disabled`() {
+      communityApiService.postCaseNote(createDeliusCaseNote())
 
-    ReflectionTestUtils.setField(communityApiService, "deliusEnabled", true)
+      communityApi.verify(WireMock.exactly(0), putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
+    }
   }
 
   private fun createDeliusCaseNoteJson() =
