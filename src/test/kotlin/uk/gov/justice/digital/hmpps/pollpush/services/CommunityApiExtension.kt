@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class DeliusExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class CommunityApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
   companion object {
     @JvmField
     val communityApi = CommunityApiMockServer()

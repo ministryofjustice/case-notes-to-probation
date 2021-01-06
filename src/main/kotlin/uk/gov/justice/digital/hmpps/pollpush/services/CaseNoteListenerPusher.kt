@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class CaseNoteListenerPusher(
   private val caseNotesService: CaseNotesService,
-  private val deliusService: DeliusService,
+  private val communityApiService: CommunityApiService,
   private val telemetryClient: TelemetryClient,
   private val gson: Gson
 ) {
@@ -45,7 +45,7 @@ class CaseNoteListenerPusher(
         null
       )
     }
-    deliusService.postCaseNote(DeliusCaseNote(caseNote))
+    communityApiService.postCaseNote(DeliusCaseNote(caseNote))
   }
 
   private fun CaseNote?.isInvalid(messageId: String, eventType: String): Boolean {

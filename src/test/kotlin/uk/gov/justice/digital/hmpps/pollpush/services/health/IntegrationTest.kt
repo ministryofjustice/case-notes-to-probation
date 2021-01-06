@@ -9,11 +9,11 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension
-import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension
+import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@ExtendWith(DeliusExtension::class, AuthExtension::class, CaseNotesExtension::class)
+@ExtendWith(CommunityApiExtension::class, AuthExtension::class, CaseNotesExtension::class)
 abstract class IntegrationTest {
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired

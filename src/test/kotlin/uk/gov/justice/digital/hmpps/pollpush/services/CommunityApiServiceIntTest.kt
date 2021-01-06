@@ -8,14 +8,14 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.util.ReflectionTestUtils
-import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension.Companion.communityApi
+import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
 @Suppress("DEPRECATION")
-class DeliusServiceIntTest : IntegrationTest() {
+class CommunityApiServiceIntTest : IntegrationTest() {
 
   @Autowired
-  private lateinit var deliusService: DeliusService
+  private lateinit var communityApiService: CommunityApiService
 
   @Test
   fun `test put case note calls rest template`() {
@@ -29,20 +29,20 @@ class DeliusServiceIntTest : IntegrationTest() {
     )
     val expectedNote = createDeliusCaseNote()
 
-    deliusService.postCaseNote(expectedNote)
+    communityApiService.postCaseNote(expectedNote)
 
     communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
   }
 
   @Test
   fun `test put case note doesn't call rest template when disabled`() {
-    ReflectionTestUtils.setField(deliusService, "deliusEnabled", false)
+    ReflectionTestUtils.setField(communityApiService, "deliusEnabled", false)
 
-    deliusService.postCaseNote(createDeliusCaseNote())
+    communityApiService.postCaseNote(createDeliusCaseNote())
 
     communityApi.verify(WireMock.exactly(0), putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
 
-    ReflectionTestUtils.setField(deliusService, "deliusEnabled", true)
+    ReflectionTestUtils.setField(communityApiService, "deliusEnabled", true)
   }
 
   private fun createDeliusCaseNoteJson() =

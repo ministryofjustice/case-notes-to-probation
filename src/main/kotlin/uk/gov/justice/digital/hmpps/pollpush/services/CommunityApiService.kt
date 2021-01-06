@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 import java.time.format.DateTimeFormatter
 
 @Service
-class DeliusService(
+class CommunityApiService(
   @Qualifier("authorizedWebClient") private val webClient: WebClient,
   @Value("\${delius.enabled}") private val deliusEnabled: Boolean,
   @Value("\${delius.endpoint.url}") private val communityApiRootUri: String,

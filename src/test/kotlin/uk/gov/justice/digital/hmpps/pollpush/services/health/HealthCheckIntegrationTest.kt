@@ -16,7 +16,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.util.ReflectionTestUtils
 import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension.Companion.authApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
-import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension.Companion.communityApi
+import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_IN_FLIGHT
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_DLQ
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_QUEUE
