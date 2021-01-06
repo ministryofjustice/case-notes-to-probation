@@ -7,6 +7,7 @@ import com.amazonaws.services.sqs.model.QueueAttributeName
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.nhaarman.mockitokotlin2.whenever
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -104,8 +105,14 @@ class HealthCheckIntegrationTest : IntegrationTest() {
       .expectBody()
       .jsonPath("status").isEqualTo("DOWN")
       .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
+      .jsonPath("components.OAuthApiHealth.details.error").value(containsString("Exception"))
+      .jsonPath("components.OAuthApiHealth.details.error").value(containsString("404 Not Found"))
       .jsonPath("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
+      .jsonPath("components.caseNotesApiHealth.details.error").value(containsString("Exception"))
+      .jsonPath("components.caseNotesApiHealth.details.error").value(containsString("404 Not Found"))
       .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
+      .jsonPath("components.communityApiHealth.details.error").value(containsString("Exception"))
+      .jsonPath("components.communityApiHealth.details.error").value(containsString("404 Not Found"))
   }
 
   @Test
@@ -118,10 +125,16 @@ class HealthCheckIntegrationTest : IntegrationTest() {
       .expectStatus()
       .is5xxServerError
       .expectBody()
-      .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
-      .jsonPath("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
-      .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
       .jsonPath("status").isEqualTo("DOWN")
+      .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
+      .jsonPath("components.OAuthApiHealth.details.error").value(containsString("Exception"))
+      .jsonPath("components.OAuthApiHealth.details.error").value(containsString("418 I'm a teapot"))
+      .jsonPath("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
+      .jsonPath("components.caseNotesApiHealth.details.error").value(containsString("Exception"))
+      .jsonPath("components.caseNotesApiHealth.details.error").value(containsString("418 I'm a teapot"))
+      .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
+      .jsonPath("components.communityApiHealth.details.error").value(containsString("Exception"))
+      .jsonPath("components.communityApiHealth.details.error").value(containsString("418 I'm a teapot"))
   }
 
   @Test
