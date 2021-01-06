@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
-import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension.Companion.communityApi
+import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
 @ActiveProfiles("z-no-queues")
@@ -67,7 +67,7 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
     )
 
     assertThatThrownBy { pusher.pushCaseNoteToDelius(validCaseNoteEvent()) }
-      .isInstanceOf(HttpServerErrorException.ServiceUnavailable::class.java)
+      .isInstanceOf(WebClientResponseException.ServiceUnavailable::class.java)
   }
 
   @Test

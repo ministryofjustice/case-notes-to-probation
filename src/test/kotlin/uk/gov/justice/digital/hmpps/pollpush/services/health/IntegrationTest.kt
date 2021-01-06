@@ -3,21 +3,21 @@ package uk.gov.justice.digital.hmpps.pollpush.services.health
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension
-import uk.gov.justice.digital.hmpps.pollpush.services.DeliusExtension
+import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@ExtendWith(DeliusExtension::class, AuthExtension::class, CaseNotesExtension::class)
+@ExtendWith(CommunityApiExtension::class, AuthExtension::class, CaseNotesExtension::class)
 abstract class IntegrationTest {
-  @Suppress("unused")
+  @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
-  lateinit var restTemplate: TestRestTemplate
+  lateinit var webTestClient: WebTestClient
 
   init {
     SecurityContextHolder.getContext().authentication = TestingAuthenticationToken("user", "pw")

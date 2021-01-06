@@ -9,6 +9,7 @@
       "Content-Type": "application/json"
     },
     "jsonBody": {
+      "token_type": "bearer",
       "access_token": "ABCDE"
     }
   }

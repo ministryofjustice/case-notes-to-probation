@@ -1,21 +1,37 @@
 package uk.gov.justice.digital.hmpps.pollpush.services
 
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.security.oauth2.client.OAuth2RestTemplate
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
-class CaseNotesService(@Qualifier("caseNotesApiRestTemplate") private val restTemplate: OAuth2RestTemplate) {
+class CaseNotesService(
+  @Qualifier("authorizedWebClient") private val webClient: WebClient,
+  @Value("\${casenotes.endpoint.url}") private val caseNotesApiRootUri: String,
+) {
   fun getCaseNote(offenderId: String, caseNoteId: String): CaseNote? =
     try {
-      val response = restTemplate.getForEntity("/case-notes/{offenderId}/{caseNoteId}", CaseNote::class.java, offenderId, caseNoteId)
-      response.body
+      webClient.get()
+        .uri("$caseNotesApiRootUri/case-notes/{offenderId}/{caseNoteId}", offenderId, caseNoteId)
+        .retrieve()
+        .bodyToMono(CaseNote::class.java)
+        .onErrorResume(WebClientResponseException::class.java) { emptyWhenNotFound(it) }
+        .block()
     } catch (ex: HttpClientErrorException.NotFound) {
       null
     }
+
+  private fun <T> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> = emptyWhen(exception, NOT_FOUND)
+  private fun <T> emptyWhen(exception: WebClientResponseException, statusCode: HttpStatus): Mono<T> =
+    if (exception.rawStatusCode == statusCode.value()) Mono.empty() else Mono.error(exception)
 }
 
 data class CaseNote(

@@ -18,7 +18,7 @@ class AuthExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
   }
 
   override fun beforeEach(context: ExtensionContext) {
-    authApi.resetRequests()
+    authApi.resetAll()
   }
 
   override fun afterAll(context: ExtensionContext) {

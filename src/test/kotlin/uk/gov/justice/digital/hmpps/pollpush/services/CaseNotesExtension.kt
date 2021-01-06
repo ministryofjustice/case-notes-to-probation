@@ -18,7 +18,7 @@ class CaseNotesExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
   }
 
   override fun beforeEach(context: ExtensionContext) {
-    caseNotesApi.resetRequests()
+    caseNotesApi.resetAll()
   }
 
   override fun afterAll(context: ExtensionContext) {

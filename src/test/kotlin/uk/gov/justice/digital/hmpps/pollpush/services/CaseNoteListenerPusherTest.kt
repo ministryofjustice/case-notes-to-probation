@@ -17,11 +17,11 @@ import java.time.LocalDateTime
 
 class CaseNoteListenerPusherTest {
   private val caseNotesService: CaseNotesService = mock()
-  private val deliusService: DeliusService = mock()
+  private val communityApiService: CommunityApiService = mock()
   private val telemetryClient: TelemetryClient = mock()
   private val gson = GsonBuilder().create()
 
-  private val pusher = CaseNoteListenerPusher(caseNotesService, deliusService, telemetryClient, gson)
+  private val pusher = CaseNoteListenerPusher(caseNotesService, communityApiService, telemetryClient, gson)
 
   private val validCaseNoteEvent =
     """{
@@ -78,7 +78,7 @@ class CaseNoteListenerPusherTest {
   fun `delius service called with case note from case notes service`() {
     whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote())
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
-    verify(deliusService).postCaseNote(createDeliusCaseNote())
+    verify(communityApiService).postCaseNote(createDeliusCaseNote())
   }
 
   @Test
@@ -91,7 +91,7 @@ class CaseNoteListenerPusherTest {
   fun `delius service not called if case note has empty text`() {
     whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote(text = ""))
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
-    verify(deliusService, never()).postCaseNote(any())
+    verify(communityApiService, never()).postCaseNote(any())
   }
 
   private fun createCaseNote(text: String = "note content") = CaseNote(
