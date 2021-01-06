@@ -12,7 +12,6 @@ import org.springframework.test.context.TestPropertySource
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
 import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
-@Suppress("DEPRECATION")
 class CommunityApiServiceIntTest {
 
   @Nested
@@ -27,7 +26,7 @@ class CommunityApiServiceIntTest {
     private lateinit var communityApiService: CommunityApiService
 
     @Test
-    fun `test put case note calls rest template`() {
+    fun `put case note calls community API`() {
       communityApi.stubFor(
         put(urlMatching("/secure/nomisCaseNotes/AB123D/1234"))
           .willReturn(
@@ -36,9 +35,8 @@ class CommunityApiServiceIntTest {
               .withBody(createDeliusCaseNoteJson())
           )
       )
-      val expectedNote = createDeliusCaseNote()
 
-      communityApiService.postCaseNote(expectedNote)
+      communityApiService.postCaseNote(createDeliusCaseNote())
 
       communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
     }
@@ -56,7 +54,7 @@ class CommunityApiServiceIntTest {
     private lateinit var communityApiService: CommunityApiService
 
     @Test
-    fun `test put case note doesn't call rest template when disabled`() {
+    fun `put case note doesn't call community API when disabled`() {
       communityApiService.postCaseNote(createDeliusCaseNote())
 
       communityApi.verify(WireMock.exactly(0), putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))

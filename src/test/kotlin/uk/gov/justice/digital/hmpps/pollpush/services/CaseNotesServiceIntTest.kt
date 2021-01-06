@@ -16,7 +16,7 @@ class CaseNotesServiceIntTest : IntegrationTest() {
   private lateinit var service: CaseNotesService
 
   @Test
-  fun `test get case note calls rest template`() {
+  fun `get case note calls community API`() {
     caseNotesApi.stubFor(
       WireMock.get(urlMatching(".*"))
         .willReturn(
