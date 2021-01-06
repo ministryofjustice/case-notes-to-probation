@@ -31,7 +31,6 @@ class DeliusServiceIntTest : IntegrationTest() {
 
     deliusService.postCaseNote(expectedNote)
 
-    // TODO how to capture the body?
     communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/AB123D/1234")))
   }
 
