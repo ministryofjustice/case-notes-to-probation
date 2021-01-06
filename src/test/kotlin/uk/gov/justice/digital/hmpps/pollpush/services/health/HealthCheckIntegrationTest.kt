@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.util.ReflectionTestUtils
 import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension.Companion.authApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
@@ -58,7 +57,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
       .jsonPath("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("OK")
       .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("OK")
       .jsonPath("status").isEqualTo("UP")
-
   }
 
   @Test
@@ -98,7 +96,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   fun `Health page reports down`() {
     subPing(404)
 
-
     webTestClient.get()
       .uri("/health")
       .exchange()
@@ -109,7 +106,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
       .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
       .jsonPath("components.caseNotesApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
       .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
-
   }
 
   @Test
@@ -213,7 +209,6 @@ class HealthCheckIntegrationTest : IntegrationTest() {
       .jsonPath("components.queueHealth.status").isEqualTo("DOWN")
       .jsonPath("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_ATTACHED.description)
       .jsonPath("status").isEqualTo("DOWN")
-
   }
 
   @Test

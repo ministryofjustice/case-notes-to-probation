@@ -32,7 +32,6 @@ class CaseNotesService(
   private fun <T> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> = emptyWhen(exception, NOT_FOUND)
   private fun <T> emptyWhen(exception: WebClientResponseException, statusCode: HttpStatus): Mono<T> =
     if (exception.rawStatusCode == statusCode.value()) Mono.empty() else Mono.error(exception)
-
 }
 
 data class CaseNote(

@@ -24,5 +24,4 @@ abstract class IntegrationTest {
     // Resolves an issue where Wiremock keeps previous sockets open from other tests causing connection resets
     System.setProperty("http.keepAlive", "false")
   }
-
 }

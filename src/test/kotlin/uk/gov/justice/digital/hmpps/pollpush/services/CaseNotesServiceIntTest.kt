@@ -33,7 +33,8 @@ class CaseNotesServiceIntTest : IntegrationTest() {
     caseNotesApi.verify(getRequestedFor(urlMatching("/case-notes/AB123D/1234")))
   }
 
-  private fun createCaseNoteJson() = """
+  private fun createCaseNoteJson() =
+    """
     {
       "eventId": 12345,
       "offenderIdentifier": "offenderId",
@@ -46,7 +47,7 @@ class CaseNotesServiceIntTest : IntegrationTest() {
       "locationId": "LEI",
       "amendments": []
    }
-   """.trimIndent()
+    """.trimIndent()
 
   private fun createCaseNote() = CaseNote(
     eventId = 12345,
@@ -60,5 +61,4 @@ class CaseNotesServiceIntTest : IntegrationTest() {
     locationId = "LEI",
     amendments = listOf()
   )
-
 }

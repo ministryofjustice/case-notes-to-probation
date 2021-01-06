@@ -46,7 +46,8 @@ class DeliusServiceIntTest : IntegrationTest() {
     ReflectionTestUtils.setField(deliusService, "deliusEnabled", true)
   }
 
-  private fun createDeliusCaseNoteJson() = """
+  private fun createDeliusCaseNoteJson() =
+    """
     {
       "caseNoteHeader": {
         "nomisId": "AB123D",
@@ -61,7 +62,7 @@ class DeliusServiceIntTest : IntegrationTest() {
         "establishmentCode": "LEI"                     
       }
     }
-  """.trimIndent()
+    """.trimIndent()
 
   private fun createDeliusCaseNote() = DeliusCaseNote(
     header = CaseNoteHeader("AB123D", 1234),

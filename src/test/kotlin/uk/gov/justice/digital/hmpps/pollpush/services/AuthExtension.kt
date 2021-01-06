@@ -49,5 +49,4 @@ class AuthApiMockServer : WireMockServer(wireMockConfig().port(8090).usingFilesU
         )
     )
   }
-
 }
