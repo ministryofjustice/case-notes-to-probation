@@ -18,9 +18,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.1")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.5.1")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.1")
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.2")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.5.2")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.2")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
@@ -32,7 +32,7 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.931"))
+  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.934"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
   testImplementation("org.springframework.security:spring-security-test")
