@@ -18,14 +18,14 @@ class QueueAdminResource(private val queueAdminService: QueueAdminService) {
   @PreAuthorize("hasRole('CASE_NOTE_QUEUE_ADMIN')")
   @Operation(
     summary = "Purges the DLQ",
-    description = "Requires CASE_NOTE_QUEUE_ADMIN role"
+    description = "Requires ROLE_CASE_NOTE_QUEUE_ADMIN"
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(
         responseCode = "403",
-        description = "Forbidden, requires an authorisation with role CASE_NOTE_QUEUE_ADMIN"
+        description = "Forbidden, requires an authorisation with ROLE_CASE_NOTE_QUEUE_ADMIN"
       )
     ]
   )
@@ -35,14 +35,14 @@ class QueueAdminResource(private val queueAdminService: QueueAdminService) {
   @PreAuthorize("hasRole('CASE_NOTE_QUEUE_ADMIN')")
   @Operation(
     summary = "Transfers all DLQ messages to the main queue",
-    description = "Requires CASE_NOTE_QUEUE_ADMIN role"
+    description = "Requires ROLE_CASE_NOTE_QUEUE_ADMIN"
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(
         responseCode = "403",
-        description = "Forbidden, requires an authorisation with role CASE_NOTE_QUEUE_ADMIN"
+        description = "Forbidden, requires an authorisation with ROLE_CASE_NOTE_QUEUE_ADMIN"
       )
     ]
   )

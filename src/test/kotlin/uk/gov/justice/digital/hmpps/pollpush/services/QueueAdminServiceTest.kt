@@ -74,7 +74,7 @@ class QueueAdminServiceTest {
 
       queueAdminService.transferDlqMessages()
 
-      verify(awsSqsDlqClient).receiveMessage(any<ReceiveMessageRequest>())
+      verify(awsSqsDlqClient).receiveMessage(ReceiveMessageRequest().withQueueUrl(dlqUrl).withMaxNumberOfMessages(1))
       verify(awsSqsClient).sendMessage(queueUrl, "some body")
       verify(awsSqsDlqClient).deleteMessage(DeleteMessageRequest(dlqUrl, "some-receipt-handle"))
     }
@@ -90,7 +90,7 @@ class QueueAdminServiceTest {
 
       queueAdminService.transferDlqMessages()
 
-      verify(awsSqsDlqClient, times(3)).receiveMessage(any<ReceiveMessageRequest>())
+      verify(awsSqsDlqClient, times(3)).receiveMessage(ReceiveMessageRequest().withQueueUrl(dlqUrl).withMaxNumberOfMessages(1))
       verify(awsSqsClient).sendMessage(queueUrl, "some body")
       verify(awsSqsClient).sendMessage(queueUrl, "some body 2")
       verify(awsSqsClient).sendMessage(queueUrl, "some body 3")
