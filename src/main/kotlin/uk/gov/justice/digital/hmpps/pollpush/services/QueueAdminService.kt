@@ -16,7 +16,7 @@ class QueueAdminService(
   @Qualifier("awsSqsDlqClient") private val awsSqsDlqClient: AmazonSQS,
   @Value("\${sqs.queue.name}") private val queueName: String,
   @Value("\${sqs.dlq.name}") private val dlqName: String,
-  ) {
+) {
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -37,7 +37,7 @@ class QueueAdminService(
   fun transferDlqMessages() =
     repeat(getDlqMessageCount()) {
       awsSqsDlqClient.receiveMessage(ReceiveMessageRequest(dlqUrl).withMaxNumberOfMessages(1)).messages
-        .also { log.info("Transfer all DLQ messages to main queue")}
+        .also { log.info("Transfer all DLQ messages to main queue") }
         .forEach { msg ->
           awsSqsClient.sendMessage(queueUrl, msg.body)
           awsSqsDlqClient.deleteMessage(DeleteMessageRequest(dlqUrl, msg.receiptHandle))
@@ -48,5 +48,4 @@ class QueueAdminService(
     awsSqsDlqClient.getQueueAttributes(dlqUrl, listOf("ApproximateNumberOfMessages"))
       .attributes["ApproximateNumberOfMessages"]
       ?.toInt() ?: 0
-
 }

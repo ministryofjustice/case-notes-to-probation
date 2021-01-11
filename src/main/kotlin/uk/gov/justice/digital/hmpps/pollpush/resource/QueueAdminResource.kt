@@ -23,7 +23,10 @@ class QueueAdminResource(private val queueAdminService: QueueAdminService) {
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role CASE_NOTE_QUEUE_ADMIN")
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role CASE_NOTE_QUEUE_ADMIN"
+      )
     ]
   )
   fun purgeDlq(): Unit = queueAdminService.clearAllDlqMessages()
@@ -37,9 +40,11 @@ class QueueAdminResource(private val queueAdminService: QueueAdminService) {
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role CASE_NOTE_QUEUE_ADMIN")
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role CASE_NOTE_QUEUE_ADMIN"
+      )
     ]
   )
   fun transferDlq(): Unit = queueAdminService.transferDlqMessages()
-
 }
