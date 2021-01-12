@@ -28,21 +28,24 @@ class QueueAdminService(
   fun clearAllDlqMessages() {
     getDlqMessageCount()
       .takeIf { it > 0 }
-      ?.run {
-        awsSqsDlqClient.purgeQueue(PurgeQueueRequest(dlqUrl))
-        log.info("Clear all messages on DLQ")
-      }
+      ?.also { log.info("Clear all messages on DLQ - found $it message(s)") }
+      ?.also { awsSqsDlqClient.purgeQueue(PurgeQueueRequest(dlqUrl)) }
   }
 
-  fun transferDlqMessages() =
-    repeat(getDlqMessageCount()) {
-      awsSqsDlqClient.receiveMessage(ReceiveMessageRequest(dlqUrl).withMaxNumberOfMessages(1)).messages
-        .also { log.info("Transfer all DLQ messages to main queue") }
-        .forEach { msg ->
-          awsSqsClient.sendMessage(queueUrl, msg.body)
-          awsSqsDlqClient.deleteMessage(DeleteMessageRequest(dlqUrl, msg.receiptHandle))
+  fun transferDlqMessages() {
+    getDlqMessageCount()
+      .takeIf { it > 0 }
+      ?.also { log.info("Transfer all DLQ messages to main queue - found $it message(s)") }
+      ?.also { dlqMessageCount ->
+        repeat(dlqMessageCount) {
+          awsSqsDlqClient.receiveMessage(ReceiveMessageRequest(dlqUrl).withMaxNumberOfMessages(1)).messages
+            .forEach { msg ->
+              awsSqsClient.sendMessage(queueUrl, msg.body)
+              awsSqsDlqClient.deleteMessage(DeleteMessageRequest(dlqUrl, msg.receiptHandle))
+            }
         }
-    }
+      }
+  }
 
   private fun getDlqMessageCount() =
     awsSqsDlqClient.getQueueAttributes(dlqUrl, listOf("ApproximateNumberOfMessages"))
