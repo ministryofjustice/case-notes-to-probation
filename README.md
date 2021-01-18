@@ -67,11 +67,11 @@ However, if the error is not recoverable - e.g. some new error scenario we weren
 
 #### Steps for investigating DLQ messages
 * call the `/queue-admin/transfer-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
-* cd into the scripts directory and run the `copy-dlq.sh` script which copies the contents of the DLQ
+* cd into the `scripts` directory and run the `copy-dlq.sh` script which copies the contents of the DLQ locally and summarises in `summary.csv` 
   
 Then for each message copied from the DLQ:
-* run an AppInsights Logs query looking for exceptions shortly after the `/transfer-dlq` endpoint was called
+* run an AppInsights Logs query looking for exceptions shortly after the timestamp found in the csv
 * if there was an error calling a DPS service, check the logs for that service and possibly check the data in DPS
 * if there was an error calling a Delius service, check the Delius AWS logs and possibly check the data in Delius
 * identify mitigation for the error - fix bug or ignore error
-* once this code change is in production transfer the DLQ messages onto the main queue again and all should now be handled without error 
+* once this code change is in production transfer the DLQ messages onto the main queue again and all should now be handled without exceptions
