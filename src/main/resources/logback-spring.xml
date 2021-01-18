@@ -37,49 +37,6 @@
     <appender-ref ref="logAppender"/>
   </logger>
 
-  <logger name="org.springframework.jms" additivity="false" level="DEBUG">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="org.springframework.messaging" additivity="false" level="DEBUG">
-    <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws.auth.AWS4Signer" additivity="false" level="INFO">
-    <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws.retry" additivity="false" level="INFO">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws.request" additivity="false" level="INFO">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws.requestId" additivity="false" level="INFO">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws.services.sqs.MessageMD5ChecksumHandler" additivity="false" level="INFO">
-    <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws.http.conn.ssl.SdkTLSSocketFactory" additivity="false" level="INFO">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazonaws" additivity="false" level="DEBUG">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
-  <logger name="com.amazon.sqs" additivity="false" level="DEBUG">
-    <appender-ref ref="logAppender"/>
-  </logger>
-
   <logger name="com.microsoft.applicationinsights" additivity="false" level="INFO">
     <appender-ref ref="logAppender"/>
   </logger>
