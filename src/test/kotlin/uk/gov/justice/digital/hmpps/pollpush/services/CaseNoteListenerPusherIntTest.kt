@@ -153,7 +153,7 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
       )
       communityApi.stubFor(
         put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
-          .willReturn(aResponse().withStatus(500))
+          .willReturn(aResponse().withStatus(400))
       )
 
       pusher.pushCaseNoteToDelius(caseNoteEvent(agency = "FYI"))
@@ -173,7 +173,7 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
       )
       communityApi.stubFor(
         put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
-          .willReturn(aResponse().withStatus(500))
+          .willReturn(aResponse().withStatus(400))
       )
 
       pusher.pushCaseNoteToDelius(caseNoteEvent(agency = "TRN"))
