@@ -24,6 +24,7 @@ getSecret() {
 AWS_DEFAULT_REGION=eu-west-2
 export AWS_DEFAULT_REGION
 kubectl config set-context live-1.cloud-platform.service.justice.gov.uk --namespace "case-notes-to-probation-$ENV"
+kubectl config use-context live-1.cloud-platform.service.justice.gov.uk
 AWS_ACCESS_KEY_ID=$(getSecret 'access_key_id')
 AWS_SECRET_ACCESS_KEY=$(getSecret 'secret_access_key')
 URL=$(getSecret 'sqs_cnpp_url')
