@@ -54,3 +54,24 @@ With localstack now up and running (see previous section), run
 ```bash
 ./gradlew test
 ```
+
+### Investigating Dead Letter Queue (DLQ) messages
+
+When we fail to process a case note due to an unexpected error an exception will be thrown and the case note will be moved to the DLQ.
+
+If the failure was due to a recoverable error - e.g. network issues - then the DLQ message can and should be retried.
+
+However, if the error is not recoverable - e.g. some new error scenario we weren't expecting - then we need to investigate the error and either:
+* fix the bug that is causing the error OR
+* handle and log the error so that the exception is no longer thrown and the message does not end up on the DLQ
+
+#### Steps for investigating DLQ messages
+* call the `/queue-admin/transfer-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
+* cd into the `scripts` directory and run the `copy-dlq.sh` script which copies the contents of the DLQ locally and summarises in `summary.csv` 
+  
+Then for each message copied from the DLQ:
+* run an AppInsights Logs query looking for exceptions shortly after the timestamp found in the csv
+* if there was an error calling a DPS service, check the logs for that service and possibly check the data in DPS
+* if there was an error calling a Delius service, check the Delius AWS logs and possibly check the data in Delius
+* identify mitigation for the error - fix bug or ignore error
+* once this code change is in production transfer the DLQ messages onto the main queue again and all should now be handled without exceptions

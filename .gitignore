@@ -6,3 +6,4 @@ build
 out
 dps-gradle-spring-boot-suppressions.xml
 .editorconfig
+/scripts/dlq-messages/**
