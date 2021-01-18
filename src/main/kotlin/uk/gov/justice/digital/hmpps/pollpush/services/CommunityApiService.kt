@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -32,6 +33,7 @@ class CommunityApiService(
         .toBodilessEntity()
         .onErrorResume(WebClientResponseException::class.java) { emptyWhenNotFound(it) }
         .onErrorResume(WebClientResponseException::class.java) { emptyWhenConflict(it) }
+        .onErrorResume(WebClientResponseException::class.java) { emptyWhenIgnoringDeliusError(it, caseNote) }
         .block()
     } else {
       log.info("Delius integration disabled, so not pushing case note ${header.noteId} of type ${body.noteType} for ${header.nomisId}")
@@ -42,6 +44,22 @@ class CommunityApiService(
   private fun <T> emptyWhenConflict(exception: WebClientResponseException): Mono<T> = emptyWhen(exception, CONFLICT)
   private fun <T> emptyWhen(exception: WebClientResponseException, statusCode: HttpStatus): Mono<T> =
     if (exception.rawStatusCode == statusCode.value()) Mono.empty() else Mono.error(exception)
+  private fun <T> emptyWhenIgnoringDeliusError(exception: WebClientResponseException, caseNote: DeliusCaseNote): Mono<T> =
+    if (ignoreDeliusError(exception, caseNote)) Mono.empty() else Mono.error(exception)
+
+  // TODO We can stop ignoring these errors once they are fixed in Delius - i.e. when we stop receiving the warning log messages
+  private fun ignoreDeliusError(exception: WebClientResponseException, caseNote: DeliusCaseNote): Boolean {
+    if (exception.rawStatusCode != INTERNAL_SERVER_ERROR.value()) return false
+    if (listOf("FYI", "TRN").contains(caseNote.body.establishmentCode)) {
+      log.warn("Ignoring Delius server error because we know Delius cannot handle agency ${caseNote.body.establishmentCode}")
+      return true
+    }
+    if (caseNote.body.noteType.startsWith("OMIC_OPD")) {
+      log.warn("Ignoring Delius server error because we know Delius cannot handle NSI case notes of type ${caseNote.body.noteType}")
+      return true
+    }
+    return false
+  }
 }
 
 data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
