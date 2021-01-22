@@ -1,5 +1,6 @@
 # case-notes-to-probation
 
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://case-notes-to-probation-dev.prison.service.justice.gov.uk/swagger-ui/index.html)
 [![CircleCI](https://circleci.com/gh/ministryofjustice/case-notes-to-probation/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/case-notes-to-probation)
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/case-notes-to-probation/status)](https://quay.io/repository/hmpps/case-notes-to-probation)
 
@@ -66,10 +67,13 @@ However, if the error is not recoverable - e.g. some new error scenario we weren
 * handle and log the error so that the exception is no longer thrown and the message does not end up on the DLQ
 
 #### Steps for investigating DLQ messages
-* call the `/queue-admin/transfer-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
+* Import the swagger collection into Postman - link to API docs at the top of this README.
+* Obtain an access token with `ROLE_CASE_NOTE_QUEUE_ADMIN` role - #dps_tech_team will be able to help with that
+* Call the `/queue-admin/transfer-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
+* Check that the messages have gone from the dlq by going to https://case-notes-to-probation.prison.service.justice.gov.uk/health
+
+For messages that don't then disappear from the dlq:
 * cd into the `scripts` directory and run the `copy-dlq.sh` script which copies the contents of the DLQ locally and summarises in `summary.csv` 
-  
-Then for each message copied from the DLQ:
 * run an AppInsights Logs query looking for exceptions shortly after the timestamp found in the csv
 * if there was an error calling a DPS service, check the logs for that service and possibly check the data in DPS
 * if there was an error calling a Delius service, check the Delius AWS logs and possibly check the data in Delius
