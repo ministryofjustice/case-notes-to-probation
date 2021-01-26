@@ -1,4 +1,4 @@
-package uk.gov.justice.hmpps.casenotes.config
+package uk.gov.justice.digital.hmpps.pollpush.config
 
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
