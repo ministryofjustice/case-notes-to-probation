@@ -55,7 +55,7 @@ class CommunityApiService(
   // TODO We can stop ignoring these errors once they are fixed in Delius - i.e. when we stop receiving the warning log messages
   private fun ignoreDeliusError(exception: WebClientResponseException, caseNote: DeliusCaseNote): Boolean {
     if (exception.rawStatusCode == BAD_REQUEST.value() &&
-      listOf("FYI", "TRN").contains(caseNote.body.establishmentCode)
+      listOf("FYI", "TRN", "ZZGHI").contains(caseNote.body.establishmentCode)
     ) {
       log.warn("Ignoring Delius server error because we know Delius cannot handle agency ${caseNote.body.establishmentCode}")
       return true
