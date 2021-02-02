@@ -181,5 +181,24 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
       caseNotesApi.verify(getRequestedFor(urlMatching("/case-notes/G4803UT/1234")))
       communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
     }
+    @Test
+    fun `Missing probation area for ZZGHI`() {
+      caseNotesApi.stubFor(
+        get(urlMatching("/case-notes/([A-Z0-9]*)/([0-9-]*)"))
+          .willReturn(
+            aResponse().withStatus(200).withHeader(CONTENT_TYPE, "application/json")
+              .withBody(caseNote(agency = "ZZGHI"))
+          )
+      )
+      communityApi.stubFor(
+        put(urlMatching("/secure/nomisCaseNotes/([A-Z0-9]*)/([0-9-]*)"))
+          .willReturn(aResponse().withStatus(400))
+      )
+
+      pusher.pushCaseNoteToDelius(caseNoteEvent(agency = "ZZGHI"))
+
+      caseNotesApi.verify(getRequestedFor(urlMatching("/case-notes/G4803UT/1234")))
+      communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
+    }
   }
 }
