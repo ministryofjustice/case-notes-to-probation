@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.pollpush.resources
 
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
+import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

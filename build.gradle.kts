@@ -35,6 +35,7 @@ dependencies {
   implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.959"))
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
 
+  testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.24.0")

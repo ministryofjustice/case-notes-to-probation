@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.MediaType
-import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
+import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 
 class QueueAdminResourceIntTest : IntegrationTest() {
 

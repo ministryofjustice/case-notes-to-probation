@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.pollpush.services.health
 
-import com.amazonaws.services.sqs.AmazonSQS
 import com.amazonaws.services.sqs.model.GetQueueAttributesRequest
 import com.amazonaws.services.sqs.model.GetQueueAttributesResult
 import com.amazonaws.services.sqs.model.QueueAttributeName
@@ -11,10 +10,8 @@ import org.hamcrest.CoreMatchers.containsString
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.util.ReflectionTestUtils
+import uk.gov.justice.digital.hmpps.pollpush.QueueIntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension.Companion.authApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
@@ -22,21 +19,9 @@ import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MES
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_DLQ
 import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_QUEUE
 
-class HealthCheckIntegrationTest : IntegrationTest() {
+class HealthCheckIntegrationTest : QueueIntegrationTest() {
   @Autowired
   private lateinit var queueHealth: QueueHealth
-
-  @SpyBean
-  @Qualifier("awsSqsClient")
-  private lateinit var awsSqsClient: AmazonSQS
-
-  @Autowired
-  @Value("\${sqs.queue.name}")
-  private lateinit var queueName: String
-
-  @Autowired
-  @Value("\${sqs.dlq.name}")
-  private lateinit var dlqName: String
 
   @AfterEach
   fun tearDown() {
@@ -268,9 +253,7 @@ class HealthCheckIntegrationTest : IntegrationTest() {
   }
 
   private fun mockQueueWithoutRedrivePolicyAttributes() {
-    val queueName = ReflectionTestUtils.getField(queueHealth, "queueName") as String
-    val queueUrl = awsSqsClient.getQueueUrl(queueName)
-    whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(queueUrl.queueUrl).withAttributeNames(listOf(QueueAttributeName.All.toString()))))
+    whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(getQueueUrl()).withAttributeNames(listOf(QueueAttributeName.All.toString()))))
       .thenReturn(GetQueueAttributesResult())
   }
 }

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.pollpush.services.health
+package uk.gov.justice.digital.hmpps.pollpush.integration
 
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired

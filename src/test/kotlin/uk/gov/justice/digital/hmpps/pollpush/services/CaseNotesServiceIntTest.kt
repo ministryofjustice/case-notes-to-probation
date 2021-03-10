@@ -6,8 +6,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
-import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 import java.time.LocalDateTime
 
 class CaseNotesServiceIntTest : IntegrationTest() {

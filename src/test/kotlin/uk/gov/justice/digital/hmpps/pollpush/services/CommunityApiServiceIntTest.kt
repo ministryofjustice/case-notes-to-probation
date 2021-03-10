@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.TestPropertySource
+import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
-import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 
 class CommunityApiServiceIntTest {
 

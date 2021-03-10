@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
-import uk.gov.justice.digital.hmpps.pollpush.services.health.IntegrationTest
 import wiremock.org.apache.http.protocol.HTTP.CONTENT_TYPE
 
 @ActiveProfiles("z-no-queues")
