@@ -4,11 +4,13 @@ import com.amazonaws.services.sqs.AmazonSQS
 import com.amazonaws.services.sqs.model.DeleteMessageRequest
 import com.amazonaws.services.sqs.model.PurgeQueueRequest
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest
+import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.pollpush.config.TelemetryEvents
 
 @Service
 class QueueAdminService(
@@ -16,6 +18,7 @@ class QueueAdminService(
   @Qualifier("awsSqsDlqClient") private val awsSqsDlqClient: AmazonSQS,
   @Value("\${sqs.queue.name}") private val queueName: String,
   @Value("\${sqs.dlq.name}") private val dlqName: String,
+  private val telemetryClient: TelemetryClient,
 ) {
 
   companion object {
@@ -28,14 +31,18 @@ class QueueAdminService(
   fun clearAllDlqMessages() {
     getDlqMessageCount()
       .takeIf { it > 0 }
-      ?.also { log.info("Clear all messages on DLQ - found $it message(s)") }
       ?.also { awsSqsDlqClient.purgeQueue(PurgeQueueRequest(dlqUrl)) }
+      ?.also {
+        log.info("Clear all messages on DLQ - found $it message(s)")
+        telemetryClient.trackEvent(
+          TelemetryEvents.PURGED_EVENT_DLQ.name, mapOf("messages-on-queue" to "$it"), null
+        )
+      }
   }
 
   fun transferDlqMessages() {
     getDlqMessageCount()
       .takeIf { it > 0 }
-      ?.also { log.info("Transfer all DLQ messages to main queue - found $it message(s)") }
       ?.also { dlqMessageCount ->
         repeat(dlqMessageCount) {
           awsSqsDlqClient.receiveMessage(ReceiveMessageRequest(dlqUrl).withMaxNumberOfMessages(1)).messages
@@ -44,6 +51,12 @@ class QueueAdminService(
               awsSqsDlqClient.deleteMessage(DeleteMessageRequest(dlqUrl, msg.receiptHandle))
             }
         }
+      }
+      ?.also {
+        telemetryClient.trackEvent(
+          TelemetryEvents.TRANSFERRED_EVENT_DLQ.name, mapOf("messages-on-queue" to "$it"), null
+        )
+        log.info("Transfer all DLQ messages to main queue - found $it message(s)")
       }
   }
 
