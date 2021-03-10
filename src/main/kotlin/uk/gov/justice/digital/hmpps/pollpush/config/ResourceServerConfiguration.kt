@@ -26,6 +26,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
           "/v3/api-docs/**",
           "/swagger-ui/**",
           "/swagger-ui.html",
+          "/queue-admin/queue-housekeeping",
         )
           .permitAll().anyRequest().authenticated()
       }.oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
