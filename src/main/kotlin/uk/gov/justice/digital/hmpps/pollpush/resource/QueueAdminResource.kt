@@ -47,4 +47,11 @@ class QueueAdminResource(private val queueAdminService: QueueAdminService) {
     ]
   )
   fun transferDlq(): Unit = queueAdminService.transferDlqMessages()
+
+  @PutMapping("/queue-housekeeping")
+  @Operation(
+    summary = "Triggers maintenance of the queues",
+    description = "This is an internal service which isn't exposed to the outside world. It is called from a Kubernetes CronJob named `queue-housekeeping-cronjob`"
+  )
+  fun eventQueueHousekeeping() = queueAdminService.transferDlqMessages()
 }
