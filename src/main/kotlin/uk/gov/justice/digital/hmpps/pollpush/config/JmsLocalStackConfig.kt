@@ -20,7 +20,7 @@ import org.springframework.jms.annotation.EnableJms
 class JmsLocalStackConfig {
 
   @Bean("awsSqsClient")
-  open fun awsSqsClientLocalstack(
+  fun awsSqsClientLocalstack(
     @Value("\${sqs.endpoint.url}") serviceEndpoint: String,
     @Value("\${sqs.endpoint.region}") region: String
   ): AmazonSQS =
@@ -30,7 +30,7 @@ class JmsLocalStackConfig {
       .build()
 
   @Bean("awsSqsDlqClient")
-  open fun awsSqsDlqClientLocalstack(
+  fun awsSqsDlqClientLocalstack(
     @Value("\${sqs.endpoint.url}") serviceEndpoint: String,
     @Value("\${sqs.endpoint.region}") region: String
   ): AmazonSQS =
@@ -40,7 +40,7 @@ class JmsLocalStackConfig {
       .build()
 
   @Bean
-  open fun queueUrl(
+  fun queueUrl(
     @Qualifier("awsSqsClient") awsSqsClient: AmazonSQS,
     @Value("\${sqs.queue.name}") queueName: String,
     @Value("\${sqs.dlq.name}") dlqName: String
