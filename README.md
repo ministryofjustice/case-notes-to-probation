@@ -1,8 +1,8 @@
 # case-notes-to-probation
 
-[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://case-notes-to-probation-dev.prison.service.justice.gov.uk/swagger-ui/index.html)
 [![CircleCI](https://circleci.com/gh/ministryofjustice/case-notes-to-probation/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/case-notes-to-probation)
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/case-notes-to-probation/status)](https://quay.io/repository/hmpps/case-notes-to-probation)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://case-notes-to-probation-dev.prison.service.justice.gov.uk/swagger-ui.html)
 
 A Spring Boot app to listen on an AWS queue and send case notes to probation.
 
