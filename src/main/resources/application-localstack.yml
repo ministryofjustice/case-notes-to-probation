@@ -3,7 +3,7 @@ server:
 
 sqs:
   provider: localstack
-  endpoint.url: http://localhost:4576
+  endpoint.url: http://localhost:4566
   queue.name: offender_case_notes_queue
   dlq.name: offender_case_notes_dlq
   sqs.aws.access.key.id: foobar
