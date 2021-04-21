@@ -24,6 +24,6 @@ admin-token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbnRlcm5hbFVzZXIiOmZhbHNlLC
 
 sqs:
   provider: localstack
-  endpoint.url: http://localhost:4576
+  endpoint.url: http://localhost:4566
   queue.name: case_notes_queue
   dlq.name: case_notes_dlq
