@@ -38,3 +38,7 @@ whitelist:
 generic-prometheus-alerts:
   alertSeverity: digital-prison-service
 
+
+# CloudPlatform AlertManager receiver to route promethues alerts to slack
+generic-prometheus-alerts:
+  alertSeverity: hmpps_tech
