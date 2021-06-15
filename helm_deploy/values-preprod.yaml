@@ -25,6 +25,7 @@ env:
   CASENOTES_ENDPOINT_URL: "https://preprod.offender-case-notes.service.justice.gov.uk"
   DELIUS_ENDPOINT_URL: "https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io"
   DELIUS_ENABLED: "true"
+  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
 whitelist:
   office: "217.33.148.210/32"
