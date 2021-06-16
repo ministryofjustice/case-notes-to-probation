@@ -36,6 +36,9 @@ env:
   - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     value: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
 
+  - name: APPLICATIONINSIGHTS_CONFIGURATION_FILE
+    value: "{{ .Values.env.APPLICATIONINSIGHTS_CONFIGURATION_FILE }}"
+
   - name: OAUTH_CLIENT_ID
     valueFrom:
       secretKeyRef:
