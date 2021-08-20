@@ -1,6 +1,11 @@
 package uk.gov.justice.digital.hmpps.pollpush
 
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.put
+import com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
@@ -15,11 +20,11 @@ class HouseKeepingIntegrationTest : QueueIntegrationTest() {
 
   @Test
   fun `will purge any messages on the dlq`() {
-    awsSqsDlqClient.sendMessage(getDlqUrl(), "{}")
+    awsSqsDlqClient.sendMessage(dlqUrl, "{}")
     await untilCallTo { getNumberOfMessagesCurrentlyOnDlq() } matches { it == 1 }
 
     webTestClient.put()
-      .uri("/queue-admin/purge-dlq")
+      .uri("/queue-admin/purge-queue/$dlqName")
       .headers(setAuthorisation(roles = listOf("ROLE_CASE_NOTE_QUEUE_ADMIN")))
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
@@ -37,10 +42,10 @@ class HouseKeepingIntegrationTest : QueueIntegrationTest() {
   fun `housekeeping will consume a message on the dlq and return to main queue`() {
     stubApiCalls()
 
-    awsSqsDlqClient.sendMessage(getDlqUrl(), caseNoteEvent())
+    awsSqsDlqClient.sendMessage(dlqUrl, caseNoteEvent())
 
     webTestClient.put()
-      .uri("/queue-admin/queue-housekeeping")
+      .uri("/queue-admin/retry-all-dlqs")
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().isOk
@@ -48,18 +53,18 @@ class HouseKeepingIntegrationTest : QueueIntegrationTest() {
     await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 0 }
     await untilCallTo { getNumberOfMessagesCurrentlyOnDlq() } matches { it == 0 }
 
-    caseNotesApi.verify(1, WireMock.getRequestedFor(WireMock.urlMatching("/case-notes/G4803UT/1234")))
-    communityApi.verify(1, WireMock.putRequestedFor(WireMock.urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
+    caseNotesApi.verify(1, getRequestedFor(urlMatching("/case-notes/G4803UT/1234")))
+    communityApi.verify(1, putRequestedFor(urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
   }
 
   @Test
   fun `will consume a message on the dlq and return to main queue`() {
     stubApiCalls()
 
-    awsSqsDlqClient.sendMessage(getDlqUrl(), caseNoteEvent())
+    awsSqsDlqClient.sendMessage(dlqUrl, caseNoteEvent())
 
     webTestClient.put()
-      .uri("/queue-admin/transfer-dlq")
+      .uri("/queue-admin/retry-dlq/$dlqName")
       .headers(setAuthorisation(roles = listOf("ROLE_CASE_NOTE_QUEUE_ADMIN")))
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
@@ -68,22 +73,22 @@ class HouseKeepingIntegrationTest : QueueIntegrationTest() {
     await untilCallTo { getNumberOfMessagesCurrentlyOnDlq() } matches { it == 0 }
     await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 0 }
 
-    caseNotesApi.verify(1, WireMock.getRequestedFor(WireMock.urlMatching("/case-notes/G4803UT/1234")))
-    communityApi.verify(1, WireMock.putRequestedFor(WireMock.urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
+    caseNotesApi.verify(1, getRequestedFor(urlMatching("/case-notes/G4803UT/1234")))
+    communityApi.verify(1, putRequestedFor(urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
   }
 }
 
 private fun stubApiCalls() {
   // stub calls
   caseNotesApi.stubFor(
-    WireMock.get(WireMock.urlMatching("/case-notes/G4803UT/1234"))
+    get(urlMatching("/case-notes/G4803UT/1234"))
       .willReturn(
         WireMock.aResponse().withStatus(200).withHeader(HTTP.CONTENT_TYPE, "application/json")
           .withBody(caseNote())
       )
   )
   communityApi.stubFor(
-    WireMock.put(WireMock.urlMatching("/secure/nomisCaseNotes/G4803UT/-25"))
+    put(urlMatching("/secure/nomisCaseNotes/G4803UT/-25"))
       .willReturn(WireMock.aResponse().withStatus(200))
   )
 }

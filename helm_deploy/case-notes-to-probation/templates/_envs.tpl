@@ -51,37 +51,37 @@ env:
         name: {{ template "app.name" . }}
         key: CASENOTES_CLIENT_SECRET
 
-  - name: SQS_AWS_ACCESS_KEY_ID
+  - name: HMPPS_SQS_QUEUES_EVENTS_QUEUE_ACCESS_KEY_ID
     valueFrom:
       secretKeyRef:
         name: cnpp-sqs-instance-output
         key: access_key_id
 
-  - name: SQS_AWS_SECRET_ACCESS_KEY
+  - name: HMPPS_SQS_QUEUES_EVENTS_QUEUE_SECRET_ACCESS_KEY
     valueFrom:
       secretKeyRef:
         name: cnpp-sqs-instance-output
         key: secret_access_key
 
-  - name: SQS_QUEUE_NAME
+  - name: HMPPS_SQS_QUEUES_EVENTS_QUEUE_NAME
     valueFrom:
       secretKeyRef:
         name: cnpp-sqs-instance-output
         key: sqs_cnpp_name
 
-  - name: SQS_AWS_DLQ_ACCESS_KEY_ID
+  - name: HMPPS_SQS_QUEUES_EVENTS_DLQ_ACCESS_KEY_ID
     valueFrom:
       secretKeyRef:
         name: cnpp-sqs-dl-instance-output
         key: access_key_id
 
-  - name: SQS_AWS_DLQ_SECRET_ACCESS_KEY
+  - name: HMPPS_SQS_QUEUES_EVENTS_DLQ_SECRET_ACCESS_KEY
     valueFrom:
       secretKeyRef:
         name: cnpp-sqs-dl-instance-output
         key: secret_access_key
 
-  - name: SQS_DLQ_NAME
+  - name: HMPPS_SQS_QUEUES_EVENTS_DLQ_NAME
     valueFrom:
       secretKeyRef:
         name: cnpp-sqs-dl-instance-output

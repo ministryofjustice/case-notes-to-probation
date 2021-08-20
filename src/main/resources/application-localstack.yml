@@ -1,20 +1,6 @@
-server:
-  shutdown: immediate
-
-sqs:
+hmpps.sqs:
   provider: localstack
-  endpoint.url: http://localhost:4566
-  queue.name: offender_case_notes_queue
-  dlq.name: offender_case_notes_dlq
-  sqs.aws.access.key.id: foobar
-  sqs.aws.secret.access.key: foobar
-
-
-oauth:
-  endpoint.url: http://localhost:9090/auth
-
-casenotes:
-  endpoint.url: http://localhost:8083
-
-delius:
-  endpoint.url: http://localhost:8096/delius
+  queues:
+    events:
+      queueName: offender_case_notes_queue
+      dlqName: offender_case_notes_dlq

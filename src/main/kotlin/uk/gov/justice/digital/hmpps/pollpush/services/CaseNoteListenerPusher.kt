@@ -18,7 +18,7 @@ class CaseNoteListenerPusher(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  @JmsListener(destination = "\${sqs.queue.name}")
+  @JmsListener(destination = "events", containerFactory = "hmppsQueueContainerFactoryProxy")
   fun pushCaseNoteToDelius(requestJson: String?) {
     val (Message, MessageId) = gson.fromJson<Message>(requestJson, Message::class.java)
     val (offenderIdDisplay, caseNoteId, eventType) = gson.fromJson(Message, CaseNoteMessage::class.java)

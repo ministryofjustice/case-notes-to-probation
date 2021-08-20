@@ -1,33 +1,15 @@
 package uk.gov.justice.digital.hmpps.pollpush.services.health
 
-import com.amazonaws.services.sqs.model.GetQueueAttributesRequest
-import com.amazonaws.services.sqs.model.GetQueueAttributesResult
-import com.amazonaws.services.sqs.model.QueueAttributeName
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.nhaarman.mockitokotlin2.whenever
 import org.hamcrest.CoreMatchers.containsString
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.util.ReflectionTestUtils
 import uk.gov.justice.digital.hmpps.pollpush.QueueIntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.AuthExtension.Companion.authApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
-import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_IN_FLIGHT
-import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_DLQ
-import uk.gov.justice.digital.hmpps.pollpush.services.health.QueueAttributes.MESSAGES_ON_QUEUE
 
 class HealthCheckIntegrationTest : QueueIntegrationTest() {
-  @Autowired
-  private lateinit var queueHealth: QueueHealth
-
-  @AfterEach
-  fun tearDown() {
-    ReflectionTestUtils.setField(queueHealth, "queueName", queueName)
-    ReflectionTestUtils.setField(queueHealth, "dlqName", dlqName)
-  }
 
   @Test
   fun `Health page reports ok`() {
@@ -123,20 +105,6 @@ class HealthCheckIntegrationTest : QueueIntegrationTest() {
   }
 
   @Test
-  fun `Queue Health page reports ok`() {
-    subPing(200)
-
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBody()
-      .jsonPath("components.queueHealth.status").isEqualTo("UP")
-      .jsonPath("status").isEqualTo("UP")
-  }
-
-  @Test
   fun `Queue Health page reports interesting attributes`() {
     subPing(200)
 
@@ -146,81 +114,13 @@ class HealthCheckIntegrationTest : QueueIntegrationTest() {
       .expectStatus()
       .isOk
       .expectBody()
-      .jsonPath("components.queueHealth.details.${MESSAGES_ON_QUEUE.healthName}").isEqualTo(0)
-      .jsonPath("components.queueHealth.details.${MESSAGES_IN_FLIGHT.healthName}").isEqualTo(0)
-  }
-
-  @Test
-  fun `Queue does not exist reports down`() {
-    ReflectionTestUtils.setField(queueHealth, "queueName", "missing_queue")
-    subPing(200)
-
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus()
-      .is5xxServerError
-      .expectBody()
-      .jsonPath("components.queueHealth.status").isEqualTo("DOWN")
-      .jsonPath("status").isEqualTo("DOWN")
-  }
-
-  @Test
-  fun `Queue health ok and dlq health ok, reports everything up`() {
-    subPing(200)
-
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBody()
-      .jsonPath("components.queueHealth.status").isEqualTo("UP")
-      .jsonPath("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.UP.description)
-      .jsonPath("status").isEqualTo("UP")
-  }
-
-  @Test
-  fun `Dlq health reports interesting attributes`() {
-    subPing(200)
-
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBody()
-      .jsonPath("components.queueHealth.details.${MESSAGES_ON_DLQ.healthName}").isEqualTo(0)
-  }
-
-  @Test
-  fun `Dlq down brings main health and queue health down`() {
-    subPing(200)
-    mockQueueWithoutRedrivePolicyAttributes()
-
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus()
-      .is5xxServerError
-      .expectBody()
-      .jsonPath("components.queueHealth.status").isEqualTo("DOWN")
-      .jsonPath("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_ATTACHED.description)
-      .jsonPath("status").isEqualTo("DOWN")
-  }
-
-  @Test
-  fun `Dlq not found reports dlq down`() {
-    subPing(200)
-    ReflectionTestUtils.setField(queueHealth, "dlqName", "missing_queue")
-
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus()
-      .is5xxServerError
-      .expectBody()
-      .jsonPath("components.queueHealth.details.dlqStatus").isEqualTo(DlqStatus.NOT_FOUND.description)
+      .jsonPath("components.events-health.status").isEqualTo("UP")
+      .jsonPath("components.events-health.details.queueName").isEqualTo(queueName)
+      .jsonPath("components.events-health.details.messagesOnQueue").isEqualTo(0)
+      .jsonPath("components.events-health.details.messagesInFlight").isEqualTo(0)
+      .jsonPath("components.events-health.details.messagesOnDlq").isEqualTo(0)
+      .jsonPath("components.events-health.details.dlqStatus").isEqualTo("UP")
+      .jsonPath("components.events-health.details.dlqName").isEqualTo(dlqName ?: "not set")
   }
 
   private fun subPing(status: Int) {
@@ -250,10 +150,5 @@ class HealthCheckIntegrationTest : QueueIntegrationTest() {
           .withStatus(status)
       )
     )
-  }
-
-  private fun mockQueueWithoutRedrivePolicyAttributes() {
-    whenever(awsSqsClient.getQueueAttributes(GetQueueAttributesRequest(getQueueUrl()).withAttributeNames(listOf(QueueAttributeName.All.toString()))))
-      .thenReturn(GetQueueAttributesResult())
   }
 }

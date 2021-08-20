@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       server_tokens off;
-      location /queue-admin/queue-housekeeping {
+      location /queue-admin/retry-all-dlqs {
         deny all;
         return 401;
       }

@@ -18,28 +18,27 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.9")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.5.9")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.9")
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.10")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.5.10")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.10")
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
-  implementation("com.sun.xml.bind:jaxb-impl:3.0.1")
-  implementation("com.sun.xml.bind:jaxb-core:3.0.1")
+  implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
+  implementation("com.sun.xml.bind:jaxb-core:3.0.2")
 
   implementation("com.google.code.gson:gson:2.8.7")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  implementation("org.springframework:spring-jms")
-  implementation(platform("com.amazonaws:aws-java-sdk-bom:1.12.16"))
-  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.0.0")
 
   testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
+  testImplementation("org.testcontainers:localstack:1.16.0")
 }
 
 tasks {
