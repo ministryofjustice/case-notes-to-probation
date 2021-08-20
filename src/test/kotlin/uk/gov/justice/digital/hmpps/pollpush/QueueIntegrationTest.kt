@@ -1,56 +1,52 @@
 package uk.gov.justice.digital.hmpps.pollpush
 
-import com.amazonaws.services.sqs.AmazonSQS
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.matches
-import org.awaitility.kotlin.untilCallTo
+import com.amazonaws.services.sqs.model.PurgeQueueRequest
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import uk.gov.justice.digital.hmpps.pollpush.LocalStackContainer.setLocalStackProperties
 import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
+import uk.gov.justice.hmpps.sqs.HmppsQueue
+import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 abstract class QueueIntegrationTest : IntegrationTest() {
-
-  @SpyBean
-  @Qualifier("awsSqsClient")
-  internal lateinit var awsSqsClient: AmazonSQS
-
-  @SpyBean
-  @Qualifier("awsSqsDlqClient")
-  internal lateinit var awsSqsDlqClient: AmazonSQS
-
   @Autowired
-  @Value("\${sqs.queue.name}")
-  internal lateinit var queueName: String
+  protected lateinit var hmppsQueueService: HmppsQueueService
 
-  @Autowired
-  @Value("\${sqs.dlq.name}")
-  internal lateinit var dlqName: String
+  internal val eventQueue by lazy { hmppsQueueService.findByQueueId("events") as HmppsQueue }
+  internal val awsSqsClient by lazy { eventQueue.sqsClient }
+  internal val awsSqsDlqClient by lazy {
+    eventQueue.sqsDlqClient ?: throw RuntimeException("DLQ doesn't exist")
+  }
+  internal val queueUrl by lazy { eventQueue.queueUrl }
+  internal val queueName by lazy { eventQueue.queueName }
+  internal val dlqName by lazy { eventQueue.dlqName }
+  internal val dlqUrl by lazy { eventQueue.dlqUrl }
 
   @BeforeEach
-  internal fun setUp() {
-    // wait until our queues have been purged
-    await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 0 }
-    await untilCallTo { getNumberOfMessagesCurrentlyOnDlq() } matches { it == 0 }
-  }
-
-  internal fun getQueueUrl(): String? {
-    return awsSqsClient.getQueueUrl(queueName).queueUrl
-  }
-
-  internal fun getDlqUrl(): String? {
-    return awsSqsDlqClient.getQueueUrl(dlqName).queueUrl
+  fun cleanQueues() {
+    awsSqsClient.purgeQueue(PurgeQueueRequest(queueUrl))
+    awsSqsDlqClient.purgeQueue(PurgeQueueRequest(dlqUrl))
   }
 
   internal fun getNumberOfMessagesCurrentlyOnQueue(): Int? {
-    val queueAttributes = awsSqsClient.getQueueAttributes(getQueueUrl(), listOf("ApproximateNumberOfMessages"))
+    val queueAttributes = awsSqsClient.getQueueAttributes(queueUrl, listOf("ApproximateNumberOfMessages"))
     return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
   }
 
   internal fun getNumberOfMessagesCurrentlyOnDlq(): Int? {
-    val queueAttributes = awsSqsDlqClient.getQueueAttributes(getDlqUrl(), listOf("ApproximateNumberOfMessages"))
+    val queueAttributes = awsSqsDlqClient.getQueueAttributes(dlqUrl, listOf("ApproximateNumberOfMessages"))
     return queueAttributes.attributes["ApproximateNumberOfMessages"]?.toInt()
+  }
+
+  companion object {
+    private val localStackContainer = LocalStackContainer.instance
+
+    @JvmStatic
+    @DynamicPropertySource
+    fun testcontainers(registry: DynamicPropertyRegistry) {
+      localStackContainer?.also { setLocalStackProperties(it, registry) }
+    }
   }
 }
