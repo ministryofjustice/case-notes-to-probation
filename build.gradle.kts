@@ -27,22 +27,26 @@ dependencies {
   implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
   implementation("com.sun.xml.bind:jaxb-core:3.0.2")
 
-  implementation("com.google.code.gson:gson:2.8.7")
+  implementation("com.google.code.gson:gson:2.8.8")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.0.2")
 
   testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("org.testcontainers:localstack:1.16.0")
 }
 
+java {
+  toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+}
+
 tasks {
-  compileKotlin {
+  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
       jvmTarget = "16"
     }
