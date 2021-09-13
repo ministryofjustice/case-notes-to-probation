@@ -6,13 +6,13 @@
 
 A Spring Boot app to listen on an AWS queue and send case notes to probation.
 
-### To build:
+## To build:
 
 ```bash
 ./gradlew build
 ```
 
-### Health
+## Health
 
 - `/health/ping`: will respond `{"status":"UP"}` to all requests.  This should be used by dependent systems to check connectivity to keyworker,
 rather than calling the `/health` endpoint.
@@ -20,7 +20,7 @@ rather than calling the `/health` endpoint.
 by keyworker health monitoring (e.g. pager duty) and not other systems who wish to find out the state of keyworker.
 - `/info`: provides information about the version of deployed application.
 
-### Pre Release Testing
+## Pre Release Testing
 
 Case notes to probation is best tested by the DPS front end.  To manually smoke test / regression test:
 
@@ -35,7 +35,7 @@ requests
 ```
 For offenders that don't yet exist in Delius this will create a 404 which will then be ignored.
 
-### Running against localstack
+## Running against localstack
 
 Localstack has been introduced for some integration tests and it is also possible to run the application against localstack.
 
@@ -49,14 +49,14 @@ to clear down and then bring up localstack
 * The queue's health status should appear at the local healthcheck: http://localhost:8082/health
 * Note that you will also need local copies of Oauth server, Case notes API and Delius API running to do anything useful
 
-### Running the tests
+## Running the tests
 
 With localstack now up and running (see previous section), run
 ```bash
 ./gradlew test
 ```
 
-### Investigating Dead Letter Queue (DLQ) messages
+## Investigating Dead Letter Queue (DLQ) messages
 
 When we fail to process a case note due to an unexpected error an exception will be thrown and the case note will be moved to the DLQ.
 
@@ -66,7 +66,7 @@ However, if the error is not recoverable - e.g. some new error scenario we weren
 * fix the bug that is causing the error OR
 * handle and log the error so that the exception is no longer thrown and the message does not end up on the DLQ
 
-#### Steps for investigating DLQ messages
+### Steps for investigating DLQ messages
 * Import the swagger collection into Postman - link to API docs at the top of this README.
 * Obtain an access token with `ROLE_CASE_NOTE_QUEUE_ADMIN` role - #dps_tech_team will be able to help with that
 * Call the `/queue-admin/transfer-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
@@ -79,3 +79,13 @@ For messages that don't then disappear from the dlq:
 * if there was an error calling a Delius service, check the Delius AWS logs and possibly check the data in Delius
 * identify mitigation for the error - fix bug or ignore error
 * once this code change is in production transfer the DLQ messages onto the main queue again and all should now be handled without exceptions
+
+## Alerts
+
+### Inactivity alert
+
+We've had issues in the past where a pod stopped reading from the queue but nobody noticed. Eventually all 4 pods stopped reading and we stopped sending case notes to probation. Nobody noticed for a couple of weeks.
+
+To warn us if this happens again we've created an alert in Application Insights that fires if any of the pods stop producing telemetry events. The alert is called `Case Notes to Probation - office hours inactivity alert`. Note that the alert only fires during office hours as low volumes outside office hours trigger false positives.
+
+If the alert fires click on the `View Search` link which should run the query that failed in Application Insights. Run command `kubectl -n case-notes-to-probation-prod get pods` and compare the pods running to the pods from the query results. Restart the pods that doesn't appear in the query with command `kubectl -n case-notes-to-probation-prod delete pod <insert pod name here>`.
