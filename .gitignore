@@ -7,3 +7,5 @@ out
 dps-gradle-spring-boot-suppressions.xml
 .editorconfig
 /scripts/dlq-messages/**
+helm_deploy/*/Chart.lock
+helm_deploy/*/charts/

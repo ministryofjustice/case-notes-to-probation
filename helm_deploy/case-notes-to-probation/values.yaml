@@ -1,5 +1,59 @@
 ---
 # Values here are the same across all environments
+generic-service:
+  nameOverride: case-notes-to-probation
+
+  image:
+    repository: quay.io/hmpps/case-notes-to-probation
+    tag: app_version    # override at deployment time
+    port: 8080
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/custom-http-errors: "418"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        server_tokens off;
+        location /queue-admin/retry-all-dlqs {
+          deny all;
+          return 401;
+        }
+    tlsSecretName: case-notes-to-probation-cert
+    path: /
+
+  env:
+    SERVER_PORT: "8080"
+    JAVA_OPTS: "-Xmx512m"
+    SPRING_PROFILES_ACTIVE: "logstash"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
+
+  # Pre-existing kubernetes secrets to load as environment variables in the deployment.
+  # namespace_secrets:
+  #   [name of kubernetes secret]:
+  #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
+
+  namespace_secrets:
+    case-notes-to-probation:
+      OAUTH_CLIENT_ID: "CASENOTES_CLIENT_ID"
+      OAUTH_CLIENT_SECRET: "CASENOTES_CLIENT_SECRET"
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+    cnpp-sqs-instance-output:
+      HMPPS_SQS_QUEUES_EVENTS_QUEUE_ACCESS_KEY_ID: "access_key_id"
+      HMPPS_SQS_QUEUES_EVENTS_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
+      HMPPS_SQS_QUEUES_EVENTS_QUEUE_NAME: "sqs_cnpp_name"
+    cnpp-sqs-dl-instance-output:
+      HMPPS_SQS_QUEUES_EVENTS_DLQ_ACCESS_KEY_ID: "access_key_id"
+      HMPPS_SQS_QUEUES_EVENTS_DLQ_SECRET_ACCESS_KEY: "secret_access_key"
+      HMPPS_SQS_QUEUES_EVENTS_DLQ_NAME: "sqs_cnpp_name"
+
+  allowlist:
+    office: "217.33.148.210/32"
+    health-kick: "35.177.252.195/32"
+    mojvpn: "81.134.202.29/32"
+    cloudplatform-live1-1: "35.178.209.113/32"
+    cloudplatform-live1-2: "3.8.51.207/32"
+    cloudplatform-live1-3: "35.177.252.54/32"
 
 generic-prometheus-alerts:
   targetApplication: case-notes-to-probation
