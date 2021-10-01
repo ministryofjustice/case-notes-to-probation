@@ -6,11 +6,9 @@ generic-service:
     host: case-notes-to-probation.prison.service.justice.gov.uk
 
   env:
-    JAVA_OPTS: "-Xmx512m"
     OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     CASENOTES_ENDPOINT_URL: "https://offender-case-notes.service.justice.gov.uk"
     DELIUS_ENDPOINT_URL: "https://community-api-secure.probation.service.justice.gov.uk"
-    DELIUS_ENABLED: "true"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
