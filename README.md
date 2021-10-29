@@ -31,7 +31,7 @@ Case notes to probation is best tested by the DPS front end.  To manually smoke 
 ```
 requests
 | where cloud_RoleName == "community-api"
-| where name == "PUT CaseNoteController/upsertCaseNotesToDelius"
+| where name startswith "PUT /secure/nomisCaseNotes/{nomisId}/{caseNotesId}"
 ```
 For offenders that don't yet exist in Delius this will create a 404 which will then be ignored.
 
