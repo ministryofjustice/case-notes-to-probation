@@ -69,7 +69,7 @@ However, if the error is not recoverable - e.g. some new error scenario we weren
 #### Steps for investigating DLQ messages
 * Import the swagger collection into Postman - link to API docs at the top of this README.
 * Obtain an access token with `ROLE_CASE_NOTE_QUEUE_ADMIN` role - #dps_tech_team will be able to help with that
-* Call the `/queue-admin/transfer-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
+* Call the `/queue-admin/retry-all-dlq` endpoint to transfer all DLQ entries back onto the main queue - this should get rid of any messages with recoverable errors
 * Check that the messages have gone from the dlq by going to https://case-notes-to-probation.prison.service.justice.gov.uk/health
 
 For messages that don't then disappear from the dlq:
