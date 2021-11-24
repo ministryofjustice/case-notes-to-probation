@@ -4,6 +4,7 @@ generic-service:
   replicaCount: 4
   ingress:
     host: case-notes-to-probation-preprod.prison.service.justice.gov.uk
+    contextColour: green
 
   env:
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
