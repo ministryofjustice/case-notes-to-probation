@@ -27,7 +27,7 @@ dependencies {
   implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
   implementation("com.sun.xml.bind:jaxb-core:3.0.2")
 
-  implementation("com.google.code.gson:gson:2.8.9")
+  implementation("com.google.code.gson:gson:2.9.0")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
