@@ -31,14 +31,14 @@ dependencies {
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.0.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.1.2")
 
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.32.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
-  testImplementation("org.testcontainers:localstack:1.16.2")
+  testImplementation("org.testcontainers:localstack:1.16.3")
   testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 }
 
