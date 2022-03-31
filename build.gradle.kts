@@ -22,18 +22,18 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.1")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.1")
 
-  implementation("javax.transaction:javax.transaction-api:1.3")
-  implementation("javax.xml.bind:jaxb-api:2.3.1")
+  implementation("javax.transaction:javax.transaction-api")
+  implementation("javax.xml.bind:jaxb-api")
   implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
   implementation("com.sun.xml.bind:jaxb-core:3.0.2")
 
-  implementation("com.google.code.gson:gson:2.9.0")
+  implementation("com.google.code.gson:gson")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.0.3")
 
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
+  testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.32.0")
