@@ -31,7 +31,7 @@ dependencies {
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.1.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.1.3")
 
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("org.springframework.security:spring-security-test")
