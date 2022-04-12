@@ -38,7 +38,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.33.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
-  testImplementation("org.testcontainers:localstack:1.16.3")
+  testImplementation("org.testcontainers:localstack:1.17.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 }
 
