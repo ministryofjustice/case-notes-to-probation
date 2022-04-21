@@ -72,7 +72,7 @@ class CommunityApiService(
 
 data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
   companion object {
-    const val UNKNOWN_LOCATION = "LOCUNK"
+    const val UNKNOWN_LOCATION = "UNK"
     // This is rubbish, but that's how nomis-api did it so we have replicated it here so we send the same data to delius
     // Quoted "Z" to indicate UTC, no timezone offset
     private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
