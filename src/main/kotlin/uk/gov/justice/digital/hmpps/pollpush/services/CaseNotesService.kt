@@ -43,7 +43,7 @@ data class CaseNote(
   val occurrenceDateTime: LocalDateTime,
   val authorName: String,
   val text: String,
-  val locationId: String,
+  val locationId: String?,
   val amendments: List<CaseNoteAmendment>
 ) {
   private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
