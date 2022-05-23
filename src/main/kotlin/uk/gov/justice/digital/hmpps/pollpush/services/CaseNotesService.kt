@@ -9,13 +9,13 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
 class CaseNotesService(
   @Qualifier("authorizedWebClient") private val webClient: WebClient,
-  @Value("\${casenotes.endpoint.url}") private val caseNotesApiRootUri: String,
+  @Value("\${casenotes.endpoint.url}") private val caseNotesApiRootUri: String
 ) {
   fun getCaseNote(offenderId: String, caseNoteId: String): CaseNote? =
     try {
@@ -39,8 +39,8 @@ data class CaseNote(
   val offenderIdentifier: String,
   val type: String,
   val subType: String,
-  val creationDateTime: LocalDateTime,
-  val occurrenceDateTime: LocalDateTime,
+  val creationDateTime: OffsetDateTime,
+  val occurrenceDateTime: OffsetDateTime,
   val authorName: String,
   val text: String,
   val locationId: String?,
@@ -61,9 +61,13 @@ data class CaseNote(
     // didn't find a comma, so split and change from forename surname to surname, forename
       "${authorName.substringAfterLast(" ")}, ${authorName.substringBeforeLast(" ")}"
 
-  fun calculateModicationDateTime(): LocalDateTime =
+  fun calculateModicationDateTime(): OffsetDateTime =
     if (amendments.isEmpty()) creationDateTime
-    else amendments.mapNotNull { it.creationDateTime }.sorted().lastOrNull() ?: creationDateTime
+    else amendments.mapNotNull { it.creationDateTime }.maxOrNull() ?: creationDateTime
 }
 
-data class CaseNoteAmendment(val creationDateTime: LocalDateTime?, val authorName: String, val additionalNoteText: String)
+data class CaseNoteAmendment(
+  val creationDateTime: OffsetDateTime?,
+  val authorName: String,
+  val additionalNoteText: String
+)

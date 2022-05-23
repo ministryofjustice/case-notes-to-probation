@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -74,8 +73,7 @@ class CommunityApiService(
 data class DeliusCaseNote(val header: CaseNoteHeader, val body: CaseNoteBody) {
   companion object {
     const val UNKNOWN_LOCATION = "UNK"
-    private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-      .withZone(ZoneId.of("UTC"))
+    private val dtf: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
   }
 
   constructor(cn: CaseNote) : this(
