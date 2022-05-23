@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.pollpush.services
 
 import com.amazonaws.services.sqs.AmazonSQS
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.client.WireMock.exactly
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
@@ -21,6 +22,9 @@ import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
 import uk.gov.justice.digital.hmpps.pollpush.services.CommunityApiExtension.Companion.communityApi
 import wiremock.org.apache.http.protocol.HTTP.CONTENT_TYPE
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 @ActiveProfiles("z-no-queues")
 class CaseNoteListenerPusherIntTest : IntegrationTest() {
@@ -37,7 +41,11 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
   @Qualifier("awsSqsDlqClient")
   private lateinit var awsSqsDlqClient: AmazonSQS
 
-  private fun caseNoteEvent(offenderIdDisplay: String = "G4803UT", eventType: String = "KA-KE", agency: String = "MDI") =
+  private fun caseNoteEvent(
+    offenderIdDisplay: String = "G4803UT",
+    eventType: String = "KA-KE",
+    agency: String = "MDI"
+  ) =
     """{
     "MessageId": "ae06c49e-1f41-4b9f-b2f2-dcca610d02cd", "Type": "Notification", "Timestamp": "2019-10-21T14:01:18.500Z", 
     "Message": 
@@ -65,10 +73,39 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
         "text": "This is a case note",
         "locationId": "$agency",
         "amendments": [],
-        "creationDateTime": "2019-03-23T11:22+00:00",
-        "occurrenceDateTime": "2019-03-23T11:22+00:00"
+        "creationDateTime": "2019-03-23T13:22:07.001+01:00",
+        "occurrenceDateTime": "2019-03-23T10:22:08.007"
       }
     """.trimIndent()
+
+  @Test
+  fun `successful dateTime`() {
+    caseNotesApi.stubFor(
+      get(urlMatching("/case-notes/([A-Z0-9]*)/([0-9-]*)"))
+        .willReturn(aResponse().withStatus(200).withHeader(CONTENT_TYPE, "application/json").withBody(caseNote()))
+    )
+
+    pusher.pushCaseNoteToDelius(caseNoteEvent())
+    val contactTimeStamp = LocalDateTime.parse("2019-03-23T10:22:08.007").atOffset(OffsetDateTime.now().offset)
+    val systemTimeStamp = OffsetDateTime.parse("2019-03-23T13:22:07.001+01:00")
+
+    communityApi.verify(
+      putRequestedFor(urlPathEqualTo("/secure/nomisCaseNotes/G4803UT/-25")).withRequestBody(
+        equalToJson(
+          """
+          {
+            "noteType" : "KA KE",
+            "content" : "This is a case note",
+            "contactTimeStamp" : "${DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(contactTimeStamp)}",
+            "systemTimeStamp" : "${DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(systemTimeStamp)}",
+            "staffName" : "Mouse, Mikey",
+            "establishmentCode" : "MDI"
+          }
+          """.trimIndent()
+        )
+      )
+    )
+  }
 
   @Test
   fun `not found in delius should be ignored`() {
@@ -181,6 +218,7 @@ class CaseNoteListenerPusherIntTest : IntegrationTest() {
       caseNotesApi.verify(getRequestedFor(urlMatching("/case-notes/G4803UT/1234")))
       communityApi.verify(putRequestedFor(urlMatching("/secure/nomisCaseNotes/G4803UT/-25")))
     }
+
     @Test
     fun `Missing probation area for ZZGHI`() {
       caseNotesApi.stubFor(

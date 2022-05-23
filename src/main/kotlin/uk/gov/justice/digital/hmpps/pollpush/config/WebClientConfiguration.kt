@@ -19,11 +19,11 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun authorizedWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient =
+  fun authorizedWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, wcb: WebClient.Builder): WebClient =
     ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
       .also { it.setDefaultClientRegistrationId("case-notes-to-probation") }
       .let { oauth2Client ->
-        WebClient.builder()
+        wcb
           .apply(oauth2Client.oauth2Configuration())
           .build()
       }
@@ -42,11 +42,11 @@ class WebClientConfiguration(
       }
 
   @Bean
-  fun communityApiHealthWebClient(): WebClient = WebClient.create(communityApiRootUri)
+  fun communityApiHealthWebClient(wcb: WebClient.Builder): WebClient = wcb.baseUrl(communityApiRootUri).build()
 
   @Bean
-  fun oauthApiHealthWebClient(): WebClient = WebClient.create(oauthRootUri)
+  fun oauthApiHealthWebClient(wcb: WebClient.Builder): WebClient = wcb.baseUrl(oauthRootUri).build()
 
   @Bean
-  fun caseNotesApiHealthWebClient(): WebClient = WebClient.create(caseNotesRootUri)
+  fun caseNotesApiHealthWebClient(wcb: WebClient.Builder): WebClient = wcb.baseUrl(caseNotesRootUri).build()
 }

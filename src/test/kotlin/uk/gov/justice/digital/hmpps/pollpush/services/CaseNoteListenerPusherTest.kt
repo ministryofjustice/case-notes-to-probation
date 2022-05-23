@@ -13,7 +13,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 class CaseNoteListenerPusherTest {
   private val caseNotesService: CaseNotesService = mock()
@@ -76,9 +77,10 @@ class CaseNoteListenerPusherTest {
 
   @Test
   fun `delius service called with case note from case notes service`() {
-    whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(createCaseNote())
+    val caseNote = createCaseNote()
+    whenever(caseNotesService.getCaseNote(anyString(), anyString())).thenReturn(caseNote)
     pusher.pushCaseNoteToDelius(validCaseNoteEvent)
-    verify(communityApiService).postCaseNote(createDeliusCaseNote())
+    verify(communityApiService).postCaseNote(createDeliusCaseNote(caseNote))
   }
 
   @Test
@@ -99,21 +101,21 @@ class CaseNoteListenerPusherTest {
     offenderIdentifier = "offenderId",
     type = "NEG",
     subType = "IEP_WARN",
-    creationDateTime = ZonedDateTime.parse("2019-04-16T11:22:33+00:00"),
-    occurrenceDateTime = ZonedDateTime.parse("2019-03-23T11:22:00+00:00"),
+    creationDateTime = OffsetDateTime.parse("2019-04-16T11:22:33+00:00"),
+    occurrenceDateTime = OffsetDateTime.parse("2019-03-23T11:22:00+00:00"),
     authorName = "Some Name",
     text = text,
     locationId = "LEI",
     amendments = listOf()
   )
 
-  private fun createDeliusCaseNote() = DeliusCaseNote(
+  private fun createDeliusCaseNote(caseNote: CaseNote) = DeliusCaseNote(
     header = CaseNoteHeader("offenderId", 123456),
     body = CaseNoteBody(
       noteType = "NEG IEP_WARN",
       content = "note content",
-      contactTimeStamp = "2019-03-23T11:22:00.000Z",
-      systemTimeStamp = "2019-04-16T11:22:33.000Z",
+      contactTimeStamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(caseNote.occurrenceDateTime),
+      systemTimeStamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(caseNote.creationDateTime),
       staffName = "Name, Some",
       establishmentCode = "LEI"
     )

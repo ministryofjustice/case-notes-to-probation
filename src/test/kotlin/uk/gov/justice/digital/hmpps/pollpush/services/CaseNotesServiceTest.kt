@@ -4,7 +4,7 @@ package uk.gov.justice.digital.hmpps.pollpush.services
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 class CaseNotesServiceTest {
 
@@ -18,8 +18,8 @@ class CaseNotesServiceTest {
     val note = createCaseNote().copy(
       text = "HELLO",
       amendments = listOf(
-        CaseNoteAmendment(ZonedDateTime.parse("2019-05-01T22:21:20+00:00"), "some user", "some amendment"),
-        CaseNoteAmendment(ZonedDateTime.parse("2019-06-02T22:21:20+00:00"), "Another Author", "another amendment")
+        CaseNoteAmendment(OffsetDateTime.parse("2019-05-01T22:21:20+00:00"), "some user", "some amendment"),
+        CaseNoteAmendment(OffsetDateTime.parse("2019-06-02T22:21:20+00:00"), "Another Author", "another amendment")
       )
     )
 
@@ -48,29 +48,29 @@ class CaseNotesServiceTest {
 
   @Test
   fun `test creation date time without amendments`() {
-    assertThat(createCaseNote().calculateModicationDateTime()).isEqualTo(ZonedDateTime.parse("2019-04-16T11:22:33.000+00:00"))
+    assertThat(createCaseNote().calculateModicationDateTime()).isEqualTo(OffsetDateTime.parse("2019-04-16T11:22:33.000+00:00"))
   }
 
   @Test
   fun `test creation date time latest amendment`() {
     val note = createCaseNote().copy(
       amendments = listOf(
-        CaseNoteAmendment(ZonedDateTime.parse("2019-05-01T22:21:20+00:00"), "some user", "some amendment"),
-        CaseNoteAmendment(ZonedDateTime.parse("2019-06-02T22:21:20+00:00"), "Another Author", "another amendment")
+        CaseNoteAmendment(OffsetDateTime.parse("2019-05-01T22:21:20+00:00"), "some user", "some amendment"),
+        CaseNoteAmendment(OffsetDateTime.parse("2019-06-02T22:21:20+00:00"), "Another Author", "another amendment")
       )
     )
-    assertThat(note.calculateModicationDateTime()).isEqualTo(ZonedDateTime.parse("2019-06-02T22:21:20+00:00"))
+    assertThat(note.calculateModicationDateTime()).isEqualTo(OffsetDateTime.parse("2019-06-02T22:21:20+00:00"))
   }
 
   @Test
   fun `test creation date time missing from one amendment`() {
     val note = createCaseNote().copy(
       amendments = listOf(
-        CaseNoteAmendment(ZonedDateTime.parse("2019-05-01T22:21:20+00:00"), "some user", "some amendment"),
+        CaseNoteAmendment(OffsetDateTime.parse("2019-05-01T22:21:20+00:00"), "some user", "some amendment"),
         CaseNoteAmendment(null, "Another Author", "another amendment")
       )
     )
-    assertThat(note.calculateModicationDateTime()).isEqualTo(ZonedDateTime.parse("2019-05-01T22:21:20+00:00"))
+    assertThat(note.calculateModicationDateTime()).isEqualTo(OffsetDateTime.parse("2019-05-01T22:21:20+00:00"))
   }
 
   @Test
@@ -81,7 +81,7 @@ class CaseNotesServiceTest {
         CaseNoteAmendment(null, "Another Author", "another amendment")
       )
     )
-    assertThat(note.calculateModicationDateTime()).isEqualTo(ZonedDateTime.parse("2019-04-16T11:22:33+00:00"))
+    assertThat(note.calculateModicationDateTime()).isEqualTo(OffsetDateTime.parse("2019-04-16T11:22:33+00:00"))
   }
 
   private fun createCaseNote() = CaseNote(
@@ -89,8 +89,8 @@ class CaseNotesServiceTest {
     offenderIdentifier = "offenderId",
     type = "NEG",
     subType = "IEP_WARN",
-    creationDateTime = ZonedDateTime.parse("2019-04-16T11:22:33.000+00:00"),
-    occurrenceDateTime = ZonedDateTime.parse("2019-03-23T11:22:00.000+00:00"),
+    creationDateTime = OffsetDateTime.parse("2019-04-16T11:22:33.000+00:00"),
+    occurrenceDateTime = OffsetDateTime.parse("2019-03-23T11:22:00.000+00:00"),
     authorName = "Some Name",
     text = "note content",
     locationId = "LEI",

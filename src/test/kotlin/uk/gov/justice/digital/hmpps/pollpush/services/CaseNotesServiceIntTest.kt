@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.pollpush.integration.IntegrationTest
 import uk.gov.justice.digital.hmpps.pollpush.services.CaseNotesExtension.Companion.caseNotesApi
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 class CaseNotesServiceIntTest : IntegrationTest() {
 
@@ -54,8 +54,8 @@ class CaseNotesServiceIntTest : IntegrationTest() {
     offenderIdentifier = "offenderId",
     type = "NEG",
     subType = "IEP_WARN",
-    creationDateTime = ZonedDateTime.parse("2019-04-16T11:22:33+00:00[UTC]"),
-    occurrenceDateTime = ZonedDateTime.parse("2019-03-23T11:22:00+00:00[UTC]"),
+    creationDateTime = OffsetDateTime.parse("2019-04-16T11:22:33+00:00"),
+    occurrenceDateTime = OffsetDateTime.parse("2019-03-23T11:22:00+00:00"),
     authorName = "Some Name",
     text = "note content",
     locationId = "LEI",
