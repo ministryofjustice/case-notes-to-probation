@@ -13,7 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 class CaseNoteListenerPusherTest {
   private val caseNotesService: CaseNotesService = mock()
@@ -99,8 +99,8 @@ class CaseNoteListenerPusherTest {
     offenderIdentifier = "offenderId",
     type = "NEG",
     subType = "IEP_WARN",
-    creationDateTime = LocalDateTime.parse("2019-04-16T11:22:33"),
-    occurrenceDateTime = LocalDateTime.parse("2019-03-23T11:22:00"),
+    creationDateTime = ZonedDateTime.parse("2019-04-16T11:22:33+00:00"),
+    occurrenceDateTime = ZonedDateTime.parse("2019-03-23T11:22:00+00:00"),
     authorName = "Some Name",
     text = text,
     locationId = "LEI",

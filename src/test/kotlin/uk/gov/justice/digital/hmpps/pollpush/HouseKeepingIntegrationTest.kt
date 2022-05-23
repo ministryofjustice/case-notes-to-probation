@@ -121,7 +121,7 @@ private fun caseNote(offenderIdentifier: String = "G4803UT", eventType: String =
         "text": "This is a case note",
         "locationId": "$agency",
         "amendments": [],
-        "creationDateTime": "2019-03-23T11:22",
-        "occurrenceDateTime": "2019-03-23T11:22"
+        "creationDateTime": "2019-03-23T11:22+00:00",
+        "occurrenceDateTime": "2019-03-23T11:22+00:00"
       }
   """.trimIndent()

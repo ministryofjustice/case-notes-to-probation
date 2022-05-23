@@ -9,7 +9,7 @@ spring:
     max-in-memory-size: 10MB
 
   jackson:
-    date-format: "yyyy-MM-dd HH:mm:ss"
+    date-format: "yyyy-MM-dd HH:mm:ss.SSSZ"
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
