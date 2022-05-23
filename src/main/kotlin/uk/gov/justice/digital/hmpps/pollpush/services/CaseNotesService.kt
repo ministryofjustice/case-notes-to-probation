@@ -9,7 +9,7 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -39,8 +39,8 @@ data class CaseNote(
   val offenderIdentifier: String,
   val type: String,
   val subType: String,
-  val creationDateTime: LocalDateTime,
-  val occurrenceDateTime: LocalDateTime,
+  val creationDateTime: ZonedDateTime,
+  val occurrenceDateTime: ZonedDateTime,
   val authorName: String,
   val text: String,
   val locationId: String?,
@@ -61,9 +61,13 @@ data class CaseNote(
     // didn't find a comma, so split and change from forename surname to surname, forename
       "${authorName.substringAfterLast(" ")}, ${authorName.substringBeforeLast(" ")}"
 
-  fun calculateModicationDateTime(): LocalDateTime =
+  fun calculateModicationDateTime(): ZonedDateTime =
     if (amendments.isEmpty()) creationDateTime
-    else amendments.mapNotNull { it.creationDateTime }.sorted().lastOrNull() ?: creationDateTime
+    else amendments.mapNotNull { it.creationDateTime }.maxOrNull() ?: creationDateTime
 }
 
-data class CaseNoteAmendment(val creationDateTime: LocalDateTime?, val authorName: String, val additionalNoteText: String)
+data class CaseNoteAmendment(
+  val creationDateTime: ZonedDateTime?,
+  val authorName: String,
+  val additionalNoteText: String
+)
