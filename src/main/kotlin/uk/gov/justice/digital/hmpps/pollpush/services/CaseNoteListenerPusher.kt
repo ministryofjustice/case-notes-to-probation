@@ -6,6 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
+import java.time.format.DateTimeFormatter
 
 @Service
 class CaseNoteListenerPusher(
@@ -39,9 +40,14 @@ class CaseNoteListenerPusher(
         subType,
         eventId
       )
+
+      val dtf = DateTimeFormatter.ISO_OFFSET_DATE_TIME
       telemetryClient.trackEvent(
         "CaseNoteCreate",
-        mapOf("caseNoteId" to caseNoteId, "type" to "$type-$subType", "eventId" to eventId.toString()),
+        mapOf(
+          "caseNoteId" to caseNoteId, "type" to "$type-$subType", "eventId" to eventId.toString(),
+          "created" to dtf.format(caseNote.creationDateTime), "occurence" to dtf.format(caseNote.occurrenceDateTime)
+        ),
         null
       )
     }
