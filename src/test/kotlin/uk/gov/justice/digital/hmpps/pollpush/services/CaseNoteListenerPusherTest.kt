@@ -112,12 +112,12 @@ class CaseNoteListenerPusherTest {
   private fun createDeliusCaseNote(caseNote: CaseNote) = DeliusCaseNote(
     header = CaseNoteHeader("offenderId", 123456),
     body = CaseNoteBody(
-      noteType = "NEG IEP_WARN",
-      content = "note content",
+      noteType = "${caseNote.type} ${caseNote.subType}",
+      content = caseNote.text,
       contactTimeStamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(caseNote.occurrenceDateTime),
       systemTimeStamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(caseNote.creationDateTime),
-      staffName = "Name, Some",
-      establishmentCode = "LEI"
+      staffName = caseNote.getAuthorNameWithComma(),
+      establishmentCode = caseNote.locationId!!
     )
   )
 }
