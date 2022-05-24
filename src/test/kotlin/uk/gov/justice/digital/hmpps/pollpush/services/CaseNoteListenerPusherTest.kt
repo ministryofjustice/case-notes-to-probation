@@ -67,7 +67,7 @@ class CaseNoteListenerPusherTest {
     verify(telemetryClient).trackEvent(
       eq("CaseNoteCreate"),
       check {
-        assertThat(it).containsExactlyInAnyOrderEntriesOf(
+        assertThat(it).containsAllEntriesOf(
           mapOf("caseNoteId" to "1234", "type" to "NEG-IEP_WARN", "eventId" to "123456")
         )
       },
