@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.14
+  mem: circleci/rememborb@0.0.1
 
 jobs:
   validate:
