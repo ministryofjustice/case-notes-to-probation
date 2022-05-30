@@ -11,6 +11,7 @@ generic-service:
     CASENOTES_ENDPOINT_URL: "https://dev.offender-case-notes.service.justice.gov.uk"
     DELIUS_ENDPOINT_URL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
+    JDK_JAVA_OPTIONS: "-javaagent:/agent/agent.jar"
 
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 generic-prometheus-alerts:
