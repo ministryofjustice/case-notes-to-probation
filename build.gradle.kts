@@ -79,7 +79,8 @@ tasks {
 jib {
   container {
     creationTime = "USE_CURRENT_TIMESTAMP"
-    mainClass = "uk.gov.justice.digital.hmpps.pollpush.PollPushApplicationKt"
+    jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
+    mainClass = "uk.gov.justice.digital.hmpps.PollPushApplicationKt"
   }
   from {
     image = "eclipse-temurin:17-jre-alpine"
