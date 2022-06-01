@@ -81,6 +81,7 @@ jib {
     creationTime = "USE_CURRENT_TIMESTAMP"
     jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
     mainClass = "uk.gov.justice.digital.hmpps.PollPushApplicationKt"
+    user = "2000:2000"
   }
   from {
     image = "eclipse-temurin:17-jre-alpine"
