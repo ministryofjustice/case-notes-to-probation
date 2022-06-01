@@ -94,4 +94,13 @@ jib {
       }
     }
   }
+  extraDirectories {
+    paths {
+      path {
+        setFrom("${project.rootDir}")
+        includes.add("applicationinsights*.json")
+        setInto("/app")
+      }
+    }
+  }
 }
