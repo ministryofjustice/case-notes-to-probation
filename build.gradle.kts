@@ -80,7 +80,7 @@ jib {
   container {
     creationTime = "USE_CURRENT_TIMESTAMP"
     jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
-    mainClass = "uk.gov.justice.digital.hmpps.PollPushApplicationKt"
+    mainClass = "uk.gov.justice.digital.hmpps.pollpush.PollPushApplicationKt"
     user = "2000:2000"
   }
   from {
