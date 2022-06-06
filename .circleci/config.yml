@@ -92,7 +92,6 @@ workflows:
             branches:
               only:
                 - main
-                - PI-258
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
