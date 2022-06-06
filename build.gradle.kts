@@ -1,6 +1,7 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.7"
   kotlin("plugin.spring") version "1.6.21"
+  id("com.google.cloud.tools.jib") version "3.2.1"
 }
 
 configurations {
@@ -47,9 +48,59 @@ java {
 }
 
 tasks {
+
+  val copyAgentJar by registering(Copy::class) {
+    from("${project.buildDir}/libs")
+    include("applicationinsights-agent*.jar")
+    into("${project.buildDir}/agent")
+    rename("applicationinsights-agent(.+).jar", "agent.jar")
+    dependsOn("assemble")
+  }
+
+  val jib by getting {
+    dependsOn += copyAgentJar
+  }
+
+  val jibBuildTar by getting {
+    dependsOn += copyAgentJar
+  }
+
+  val jibDockerBuild by getting {
+    dependsOn += copyAgentJar
+  }
+
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
       jvmTarget = "17"
+    }
+  }
+}
+
+jib {
+  container {
+    creationTime = "USE_CURRENT_TIMESTAMP"
+    jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
+    mainClass = "uk.gov.justice.digital.hmpps.pollpush.PollPushApplicationKt"
+    user = "2000:2000"
+  }
+  from {
+    image = "eclipse-temurin:17-jre-alpine"
+  }
+  extraDirectories {
+    paths {
+      path {
+        setFrom("${project.buildDir}")
+        includes.add("agent/agent.jar")
+      }
+    }
+  }
+  extraDirectories {
+    paths {
+      path {
+        setFrom("${project.rootDir}")
+        includes.add("applicationinsights*.json")
+        setInto("/app")
+      }
     }
   }
 }
