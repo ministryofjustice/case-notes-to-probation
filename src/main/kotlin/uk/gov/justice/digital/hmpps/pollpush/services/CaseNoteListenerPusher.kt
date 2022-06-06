@@ -48,7 +48,7 @@ class CaseNoteListenerPusher(
         "CaseNoteCreate",
         mapOf(
           "caseNoteId" to caseNoteId, "type" to "$type-$subType", "eventId" to eventId.toString(),
-          "created" to dtf.format(caseNote.creationDateTime), "occurence" to dtf.format(caseNote.occurrenceDateTime),
+          "created" to dtf.format(caseNote.creationDateTime), "occurrence" to dtf.format(caseNote.occurrenceDateTime),
           "deliusSystem" to deliusCaseNote.body.systemTimeStamp, "deliusContact" to deliusCaseNote.body.contactTimeStamp
         ),
         null
