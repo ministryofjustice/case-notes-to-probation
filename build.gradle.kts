@@ -92,14 +92,10 @@ jib {
         setFrom("${project.buildDir}")
         includes.add("agent/agent.jar")
       }
-    }
-  }
-  extraDirectories {
-    paths {
       path {
         setFrom("${project.rootDir}")
         includes.add("applicationinsights*.json")
-        setInto("/app")
+        setInto("/agent")
       }
     }
   }
