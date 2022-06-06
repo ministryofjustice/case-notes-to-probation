@@ -19,9 +19,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.8")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.8")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.9")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
 
   implementation("javax.transaction:javax.transaction-api")
   implementation("javax.xml.bind:jaxb-api")
