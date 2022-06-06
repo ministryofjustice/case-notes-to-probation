@@ -103,7 +103,6 @@ workflows:
             branches:
               only:
                 - main
-                - PI-258
           requires:
             - jib-build
       - request-preprod-approval:
