@@ -23,11 +23,6 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.9")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
 
-  implementation("javax.transaction:javax.transaction-api")
-  implementation("javax.xml.bind:jaxb-api")
-  implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
-  implementation("com.sun.xml.bind:jaxb-core:3.0.2")
-
   implementation("com.google.code.gson:gson")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
